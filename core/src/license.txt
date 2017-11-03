@@ -1,0 +1,6 @@
+/******************************************************
+*                                                     *
+*   This software is released by Nicola Dal Bianco    *
+*      under the Gnu General Public License V3        *
+*                                                     *
+******************************************************/

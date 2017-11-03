@@ -116,7 +116,7 @@ In order to run an example, you must:
 
 3) Run the example:
   * 3.a) option A: execute the problem reading the Lua datafile. From within the "sources" folder, run the executable by passing the lua datafile as first argument, i.e. "./problem.macosx ../data/data.lua". The solution text file will be written in the "results" folder.
-  
+
   * 3.b) option B: execute the problem from within Python. From within the "data" folder, type "python run.py". In this way, the problem dataset is declared in the python file, then the problem shared library is loaded and the problem is solved. The solution data is returned to python in the form of a dictionary.
 
 ## Project Status
@@ -157,6 +157,9 @@ States (or controls), also named differential states (or controls), are those st
 - **The NLP solver does not manage to find the solution**
 
 First of all, keep in mind that the problem you are trying to solve could be infeasible or undetermined. If this is the case, the solution does not exists. Even if this is not the case, the problem can be ill-conditioned, so it is very difficult to find a solution numerically. Scaling the problem is fundamental in every optimal control problem, so you should try to scale the optimal control problem playing with the "Scaling" options that Maverick exposes. Finally, even if the problem is not ill-conditioned, it can be difficult to solve if you are using algebraic equations of high DAE index.
+
+## Contacts
+If you want to contact me you can email to <my_name>.<my_surname> at gmail.com
 
 ## License
 This software is released under the GNU General Public License v3.0.
