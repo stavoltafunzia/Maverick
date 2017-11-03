@@ -31,12 +31,17 @@ syntax: glob
 *.m~
 *.macosx
 *.unix
+
+#core
 core/build/*
 core/src/MaverickPython/build/*
 core/src/MaverickPython/*.so
 core/src/MaverickPython/*.c
 core/include/
+core/src/Lua/src/lua
+core/src/Lua/src/luac
 
+#examples
 **/out.txt
 **/mh_out.txt
 **/read_sol.m
