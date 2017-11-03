@@ -1,4 +1,4 @@
-## Maverick
+# Maverick
 
 Maverick is a library to solve nonlinear Optimal Control Problems (OCP). It is based on a direct, full collocation method, i.e. it converts the optimal control problem into an NLP and then uses a third party NLP solver.
 Its distinguishing feature from the large majority of OCP software is the **capability to handle control derivatives and totally implicit Differential (of the first order)-Algebraic Equations (DAE)**, leading to a much easier formulation. It implements an heuristic mesh refinement algorithm that allows to automatically increase the number of discretisation points until the integration of the DAE equations are satisfied with a desired accuracy.
