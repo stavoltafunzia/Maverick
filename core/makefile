@@ -60,7 +60,8 @@ endif
 # define the C compiler to use
 CC := g++
 FF := gfortran
-AR := ar rvs
+AR := ar
+ARFLAGS := rvs
 
 ifeq ($(BUILD_TARGET),"debug")
    # -g debug for gdb
@@ -135,7 +136,7 @@ ifeq ($(OS),Darwin) # OsX
 	FORTRAN_LIB := -L/usr/local/gfortran/lib -lgfortran
 	SL_EXT := dylib
 
-	CPP_FLAGS := -std=c++11 -stdlib=libc++ $(OPTIM_FLAGS) $(CPPADDFLAG)
+	CPP_FLAGS := -std=c++11 $(OPTIM_FLAGS) $(CPPADDFLAG)
 
 	LINKER_LOAD_ALL_LIB := -Wl,-all_load
 	LINKER_NO_LOAD_ALL_LIB := -Wl,-noall_load
@@ -146,6 +147,7 @@ ifeq ($(OS),Darwin) # OsX
 
 	ADD_SLLIB_COMMANDS :=
 else ifeq ($(OS),Linux)
+	#default blas libs is atlas
 	ifeq ($(BLAS_LIB),)
 		BLAS_LIB := -lf77blas
 	endif
@@ -305,7 +307,6 @@ clean_lua:
 	rm -f src/Lua/src/lua
 
 ### TARGETS
-
 @(MAVERICK_LIB): @(MAVERICK_SPLINES) @(MAVERICK_GC) @(MAVERICK_UTILS) @(MAVERICK_CORE_LIB) @(MAVERICK_TOIPOPT_LIB) @(MAVERICK_TENSOLVE_LIB)
 
 
@@ -318,7 +319,7 @@ clean_lua:
 	rm -f build/$(LIBNAME).$(SL_EXT)
 	rm -f build/$(LIBNAMEIP).$(SL_EXT)
 	rm -f build/$(LIBNAMETS).$(SL_EXT)
-	$(AR) build/libmaverickcore.a $(MAVERICK_CORE_OBJS_FILES)
+	$(AR) $(ARFLAGS) build/libmaverickcore.a $(MAVERICK_CORE_OBJS_FILES)
 	test -d include/MaverickCore || mkdir -p include/MaverickCore
 	cp src/MaverickCore/Maverick.hh include/MaverickCore/
 	cp src/MaverickCore/MaverickCInterface.h include/MaverickCore/
@@ -341,7 +342,7 @@ clean_lua:
 
 @(MAVERICK_TOIPOPT):$(MAVERICK_TOIPOPT_OBJS_FILES)
 	test -d build || mkdir -p build
-	$(AR) build/$(LIBNAMEIP).a $(MAVERICK_TOIPOPT_OBJS_FILES)
+	$(AR) $(ARFLAGS) build/$(LIBNAMEIP).a $(MAVERICK_TOIPOPT_OBJS_FILES)
 
 @(MAVERICK_TENSOLVE_LIB): @(MAVERICK_TENSOLVE)
 	rm -f build/$(LIBNAMETS).$(SL_EXT)
@@ -352,11 +353,11 @@ clean_lua:
 @(MAVERICK_TENSOLVE): $(MAVERICK_TENSOLVE_OBJS_FILES)
 	cd $(MAVERICK_TENSOLVE_PATH); make PLATFORM=$(PLATFORM) OPTIM_FLAGS='$(OPTIM_FLAGS)' FF=$(FF) BUILD_FLAGS='$(BUILD_FLAGS)'
 	test -d build || mkdir -p build
-	$(AR) build/$(LIBNAMETS).a $(MAVERICK_TENSOLVE_OBJS_FILES) $(MAVERICK_TENSOLVE_PATH)/BLAS_PRT.o $(MAVERICK_TENSOLVE_PATH)/UNCMIN.o $(MAVERICK_TENSOLVE_PATH)/TENSOLVE.o
+	$(AR) $(ARFLAGS) build/$(LIBNAMETS).a $(MAVERICK_TENSOLVE_OBJS_FILES) $(MAVERICK_TENSOLVE_PATH)/BLAS_PRT.o $(MAVERICK_TENSOLVE_PATH)/UNCMIN.o $(MAVERICK_TENSOLVE_PATH)/TENSOLVE.o
 
 @(MAVERICK_GC): $(MAVERICK_GC_OBJS_FILES)
 	test -d build || mkdir -p build
-	$(AR) build/libmaverickgc.a $(MAVERICK_GC_OBJS_FILES)
+	$(AR) $(ARFLAGS) build/libmaverickgc.a $(MAVERICK_GC_OBJS_FILES)
 	test -d include/MaverickGC || mkdir -p include/MaverickGC
 	cp src/MaverickGC/GenericContainer.hh             include/MaverickGC/
 	cp src/MaverickGC/GenericContainerConfig.hh       include/MaverickGC/
@@ -365,11 +366,11 @@ clean_lua:
 
 @(MAVERICK_SPLINES): $(MAVERICK_SPLINES_OBJS_FILES)
 	test -d build || mkdir -p build
-	$(AR) build/libmavericksplines.a $(MAVERICK_SPLINES_OBJS_FILES)
+	$(AR) $(ARFLAGS) build/libmavericksplines.a $(MAVERICK_SPLINES_OBJS_FILES)
 
 @(MAVERICK_UTILS): $(MAVERICK_UTILS_OBJS_FILES)
 	test -d build || mkdir -p build
-	$(AR) build/libmaverickutils.a $(MAVERICK_UTILS_OBJS_FILES)
+	$(AR) $(ARFLAGS) build/libmaverickutils.a $(MAVERICK_UTILS_OBJS_FILES)
 	test -d include/MaverickUtils/ComponentBase || mkdir -p include/MaverickUtils/ComponentBase
 	test -d include/MaverickUtils/GenericFunction || mkdir -p include/MaverickUtils/GenericFunction
 	cp src/MaverickUtils/ComponentBase/ComponentBase.hh include/MaverickUtils/ComponentBase/
