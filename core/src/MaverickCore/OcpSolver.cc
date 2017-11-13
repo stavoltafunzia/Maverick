@@ -261,14 +261,8 @@ SolverOutput OcpSolver::solve( GC::GenericContainer const &gc_run ) {
         }
     }
 
-    if ( run_index == 0 ) {
+    if ( run_index == 0 )
         complete_solver_output << doSingleRun(gc_run);
-//        if ( _ocp_problem.numberOfPhases()==1 ) {
-//
-//        } else {
-//            _maverick.Log(InfoLevel::info_level_warning, "No run data have been found.\n");
-//        }
-    }
 
     //caluclate elapsed time
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -357,11 +351,11 @@ void OcpSolver::setNlpGuess() {
 
 #ifndef MAVERICK_DEBUG
         if (_solver_status.has_mesh_changed_since_last_solution) { // in this case interpolate the last nlp solution to the new mesh
-            _p_ocp_2_nlp->translateOcpGuess2Nlp( _ocp_solutions, _nlp_guess);
-            _p_ocp_2_nlp->setIsTargetLagrangeFromGuess( _ocp_solutions );
+            _nlp_guess = _p_ocp_2_nlp->translateOcpGuess2Nlp( *_ocp_solution );
+            _p_ocp_2_nlp->setIsTargetLagrangeFromGuess( *_ocp_solution );
         } else { // in this case provide the last nlp solution
             _nlp_guess = Nlp(_nlp_solution);
-            _p_ocp_2_nlp->setIsTargetLagrangeFromGuess( _nlp_solution );
+            _p_ocp_2_nlp->setIsTargetLagrangeFromGuess( _nlp_guess );
         }
 #else
         _nlp_guess = _p_ocp_2_nlp->translateOcpGuess2Nlp( *_ocp_solution );
@@ -417,10 +411,6 @@ void OcpSolver::setup( GC::GenericContainer const & gc_setup ) {
 
         if (gc_ocp != nullptr)
             setupOcpOnly(*gc_ocp);
-        // else
-        //     if (!_ocp_problem.hasSetup()) {
-        //         MAVERICK_ASSERT(false, "OcpSolver: you must setup the OCP problem at first.\n")
-        //     }
     }
 
     // setup mesh

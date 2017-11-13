@@ -1100,6 +1100,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_int_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `int_type const*'" ) ;
     }
+    return nullptr;
   }
 
   int_type *
@@ -1139,6 +1140,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_int_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `int_type*'" ) ;
     }
+    return nullptr;
   }
 
   long_type const *
@@ -1178,6 +1180,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_long_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `long_type const*'" ) ;
     }
+    return nullptr;
   }
 
   long_type *
@@ -1217,6 +1220,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_long_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `long_type*'" ) ;
     }
+    return nullptr;
   }
 
   real_type const *
@@ -1256,6 +1260,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_real_pointer, bad data type: `" << typeName[_data_type] <<
                  "' cannot be referred as `real_type cont *'" ) ;
     }
+    return nullptr;
   }
 
   real_type *
@@ -1295,6 +1300,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_real_pointer, bad data type: `" << typeName[_data_type] <<
                  "' cannot be referred as `real_type*'" ) ;
     }
+    return nullptr;
   }
 
   complex_type const *
@@ -1334,6 +1340,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_int_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `complex_type const*'" ) ;
     }
+    return nullptr;
   }
 
   complex_type *
@@ -1373,6 +1380,7 @@ namespace GenericContainerNamespace {
       GC_DO_ERROR( "get_int_pointer, bad data type: `" << typeName[_data_type] <<
                    "' cannot be referred as `complex_type const*'" ) ;
     }
+    return nullptr;
   }
 
   template <>
@@ -1879,6 +1887,7 @@ namespace GenericContainerNamespace {
                  ") can't be converted to int" ) ;
       return int_type(_data.c->real()) ;
     }
+    return 0 ;
   }
 
   uint_type
@@ -1922,6 +1931,7 @@ namespace GenericContainerNamespace {
                  ") can't be converted to int" ) ;
       return uint_type(_data.c->real()) ;
     }
+    return 0 ;
   }
 
   long_type
@@ -1961,6 +1971,7 @@ namespace GenericContainerNamespace {
                  ") can't be converted to long" ) ;
       return long_type(_data.c->real()) ;
     }
+    return 0 ;
   }
 
   ulong_type
@@ -2004,6 +2015,7 @@ namespace GenericContainerNamespace {
                  ") can't be converted to ulong" ) ;
       return ulong_type(_data.c->real()) ;
     }
+    return 0 ;
   }
 
 
