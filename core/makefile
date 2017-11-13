@@ -135,7 +135,7 @@ ifeq ($(OS),Darwin) # OsX
 	FORTRAN_LIB := -L/usr/local/gfortran/lib -lgfortran
 	SL_EXT := dylib
 
-	CPP_FLAGS := -std=c++11 -stdlib=libc++ $(OPTIM_FLAGS) $(CPPADDFLAG)
+	CPP_FLAGS := -std=c++11 $(OPTIM_FLAGS) $(CPPADDFLAG)
 
 	LINKER_LOAD_ALL_LIB := -Wl,-all_load
 	LINKER_NO_LOAD_ALL_LIB := -Wl,-noall_load

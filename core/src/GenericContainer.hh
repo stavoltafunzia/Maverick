@@ -97,9 +97,9 @@ namespace GenericContainerNamespace {
 
   typedef void*                   pointer_type ; //!< generic pointer type
   typedef bool                    bool_type    ; //!< boolean type data
-  typedef Maverick::integer       int_type     ; //!< integer type data
+  typedef int32_t                 int_type     ; //!< integer type data
   typedef int64_t                 long_type    ; //!< long integer type data
-  typedef Maverick::real          real_type    ; //!< floating point type data
+  typedef double                  real_type    ; //!< floating point type data
   typedef std::complex<real_type> complex_type ; //!< complex floating point type data
   typedef std::string             string_type  ; //!< string type data
 
