@@ -7,29 +7,27 @@ using namespace Tensolve;
 using namespace std;
 using namespace Maverick;
 
-// implementation of tensolve C functions
-
-thread_local Tensolve::EquationSolver * _tensolve_solver;
+thread_local Tensolve::EquationSolver * _tensolve_solver = nullptr;
 
 extern "C" {
     void tensolveSetEquationSolver(Tensolve::EquationSolver * const solver) {
         _tensolve_solver = solver;
     }
-
+    
     void tensolveEvalFunctions(Maverick::real const x[], Maverick::real f[], Maverick::integer const * m, Maverick::integer const * n) {
-        _tensolve_solver->evalFunctions(x, f, *m, *n);
+        _tensolve_solver->_eval_func(x, f, *m, *n);
     }
-
+    
     void tensolveEvalJacobian(Maverick::real const x[], Maverick::real jac[], Maverick::integer const * m, Maverick::integer const * n) {
-        _tensolve_solver->evalJacobian(x, jac, *m, *n);
+        _tensolve_solver->_eval_jac(x, jac, *m, *n, _tensolve_solver->getMaxM());
     }
 }
 
 // implementation of EquationSolver class
 
 // constructor which initialize the object to the given problem dimensions
-EquationSolver::EquationSolver(Maverick::integer const num_equations, Maverick::integer const num_unknowns) : _num_equations(num_equations), _num_unknowns(num_unknowns) {
-    setForProblemSize();
+EquationSolver::EquationSolver(Maverick::integer const num_equations, Maverick::integer const num_unknowns, TensolveCppEvalFunc const eval_func, TensolveCppEvalJac const eval_jac) : _num_equations(num_equations), _num_unknowns(num_unknowns), _eval_func(eval_func), _eval_jac(eval_jac) {
+    setupForProblem();
 }
 
 // destructor
@@ -50,10 +48,7 @@ void EquationSolver::deleteAllPointers() {
 }
 
 // initialize the object to the given problem dimensions
-void EquationSolver::setForProblemSize() {
-
-    deleteAllPointers();
-
+void EquationSolver::setupForProblem() {
     //create the scaling arrays
     _typ_x = new Maverick::real[_num_unknowns];
     _typ_f = new Maverick::real[_num_equations];
@@ -62,26 +57,18 @@ void EquationSolver::setForProblemSize() {
     _max_m = _num_equations + _num_unknowns + 2;
     _max_n = _num_unknowns + 2;
     _max_p = ceil(sqrt( _num_unknowns ));
-
+    
     // initialize the parameters with the default tensolve values
     initTensolveDefault();
 }
 
 void EquationSolver::initTensolveDefault() {
+    integer jac_flag;
     // set the default value for the above parameters
-    __tensolve_MOD_tsdflt(&_num_equations, &_num_unknowns, &_it_lim, &_jac_flag, &_grad_tol, &_step_tol,
+    __tensolve_MOD_tsdflt(&_num_equations, &_num_unknowns, &_it_lim, &jac_flag, &_grad_tol, &_step_tol,
                           &_f_tol, &_method, &_global, &_step_max, &_dlt,
                           _typ_x, _typ_f, &_ipr);
     _msg = 0;
-}
-
-void EquationSolver::setJacFlag(Maverick::real const x0[]) {
-    //check if the jacobian is analytic or not
-    // use typ_x as a working array
-    Maverick::real jac[_max_m * _num_unknowns];
-    _jac_flag = evalJacobian(x0, jac, _num_equations, _num_unknowns) ? 1 : 0;
-
-    _has_set_jac_flag = true;
 }
 
 // get current problem dimensions
@@ -160,31 +147,32 @@ Maverick::integer EquationSolver::solve(Maverick::real const x0[],    // initial
                                         Maverick::real grad_at_sol[]  // gradient of 0.5*||F(x)||2**2 at sol (lenght = num_unknowns)
                                         ) {
 
-    if (!_has_set_jac_flag) // this cannot be done before becouse we need a guess on xo
-        setJacFlag(x0);
-
-    tensolveSetEquationSolver(this);
-
     Maverick::real ts_x0[_num_unknowns];
     for (Maverick::integer i=0; i<_num_unknowns; i++)
         ts_x0[i] = x0[i];
+                                            
+    tensolveSetEquationSolver(this);
 
     Maverick::integer termcode;
+                                            
+    TensolveEvalJacobian jac_to_use;
+    integer jac_flag;
+                                            
+    if ( _eval_jac == nullptr ) {
+        jac_to_use = &__tensolve_MOD_tsdumj;
+        jac_flag = 0;
+    } else {
+        jac_to_use = &tensolveEvalJacobian;
+        jac_flag = 1;
+    }
 
     __tensolve_MOD_tsneci(&_max_m, &_max_n,  &_max_p, ts_x0,  &_num_equations,  &_num_unknowns,
                           _typ_x, _typ_f, &_it_lim,
-                          &_jac_flag, &_grad_tol, &_step_tol, &_f_tol,
+                          &jac_flag, &_grad_tol, &_step_tol, &_f_tol,
                           &_method, &_global, &_step_max, &_dlt, &_ipr,
-                          &tensolveEvalFunctions, &tensolveEvalJacobian,
+                          &tensolveEvalFunctions, jac_to_use,
                           &_msg, sol, f_at_sol, grad_at_sol, &termcode);
 
     return termcode;
 }
 
-// virtual methods
-bool EquationSolver::evalJacobian(Maverick::real const x[], Maverick::real jac[], Maverick::integer const num_equations, Maverick::integer const num_unknowns) const {
-    Maverick::integer tmp_m = num_equations;
-    Maverick::integer tmp_n = num_unknowns;
-    __tensolve_MOD_tsdumj(x, jac, &tmp_m, &tmp_n);
-    return false;
-}

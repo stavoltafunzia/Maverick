@@ -2,6 +2,7 @@
 #include "MaverickCore/MaverickPrivateDefs.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickSingleton.hh"
+#include <functional>
 
 using namespace Maverick;
 using namespace Tensolve;
@@ -9,8 +10,11 @@ using namespace std;
 
 #define DEFUALT_TENSOLVE_ITERATIONS 100
 
+typedef void (*merda) ();
+
 TensolveEquationSolver::TensolveEquationSolver( EquationSolverSupplierInterface const & problem ) :
-                               EquationSolverInterface(problem), EquationSolver(_problem.getNumEquations(), _problem.getNumUnknowns()) {
+                                                EquationSolverInterface(problem),
+                                                EquationSolver(_problem.getNumEquations(), _problem.getNumUnknowns(), [this](Maverick::real const x[], Maverick::real f[], integer m, integer n){ this->evalFunctions(x, f, m, n); }, [this](Maverick::real const x[], Maverick::real jac[], integer m, integer n, integer max_m){ this->evalJacobian(x, jac, m, n, max_m); } ) {
 
     EquationSolver::setup(8,                          // message level: 0 default, 16 suppress output.
                           DEFUALT_TENSOLVE_ITERATIONS, // maximum nember of iterations.
@@ -20,6 +24,7 @@ TensolveEquationSolver::TensolveEquationSolver( EquationSolverSupplierInterface 
                           nullptr, nullptr, // typ_x, typ_f
                           -1.0, -1.0, -1.0, -1.0, -1.0 //grad_tol, step_tol, f_tol, step_max, dlt
                           );
+    
 }
 
 TensolveEquationSolver::~TensolveEquationSolver() {
@@ -81,18 +86,17 @@ void TensolveEquationSolver::evalFunctions(real const x[], real f[], integer con
                            num_equations, f);
 }
 
-bool TensolveEquationSolver::evalJacobian(real const x[], real tensolve_jac[], integer const num_equations, integer const num_unknowns) const {
+void TensolveEquationSolver::evalJacobian(real const x[], real tensolve_jac[], integer const num_equations, integer const num_unknowns, integer const max_m) const {
     real new_x[num_unknowns];
     copyVectorTo(x, new_x, num_unknowns);
 
     real normal_jac[num_equations*num_unknowns];
     _problem.evalEquationsDenseJac(true,
-                          num_unknowns, new_x,
-                          normal_jac);
+                                   num_unknowns, new_x,
+                                   normal_jac);
+    
     // copy tensolve jac into the jacobian
     for(integer j_col = 0; j_col < num_unknowns; j_col++) {
-        copyVectorTo(normal_jac + j_col * num_equations, tensolve_jac + j_col * _max_m, num_equations);
+        copyVectorTo(normal_jac + j_col * num_equations, tensolve_jac + j_col * max_m, num_equations);
     }
-
-    return true;
 }

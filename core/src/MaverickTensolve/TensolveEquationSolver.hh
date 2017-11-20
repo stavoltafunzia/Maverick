@@ -16,10 +16,16 @@ namespace Maverick {
     class TensolveEquationSolver : public EquationSolverInterface, protected Tensolve::EquationSolver {
 
     public:
+        
+        TensolveEquationSolver() = delete;
+        
+        TensolveEquationSolver(const TensolveEquationSolver&) = delete;
 
         TensolveEquationSolver( EquationSolverSupplierInterface const & problem );
 
         ~TensolveEquationSolver();
+        
+        void pippo();
 
         EquationSolverReturnStatus solve();
 
@@ -27,17 +33,9 @@ namespace Maverick {
 
         TensolveEquationSolver& operator=(const TensolveEquationSolver&) = delete;
 
-//    protected:
+        void evalFunctions(real const x[], real f[], integer const num_equations, integer const num_unknowns) const;
 
-        virtual void evalFunctions(real const x[], real f[], integer const num_equations, integer const num_unknowns) const;
-
-        virtual bool evalJacobian(real const x[], real jac[], integer const num_equations, integer const num_unknowns) const;
-
-    private:
-
-        TensolveEquationSolver();
-
-        TensolveEquationSolver(const TensolveEquationSolver&);
+        void evalJacobian(real const x[], real jac[], integer const num_equations, integer const num_unknowns, integer const max_m) const;
 
     };
 }

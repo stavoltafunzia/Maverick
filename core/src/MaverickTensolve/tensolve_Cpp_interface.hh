@@ -15,6 +15,14 @@
 
 namespace Tensolve {
 
+    // function that evaluates at the point x the functions to be solved
+    typedef std::function<void(Maverick::real const x[], Maverick::real f[], Maverick::integer m, Maverick::integer n)> TensolveCppEvalFunc;
+    /* funtion that evaluates the jacobian.
+     The jacobian matrix, jac, has dimension max_m * n, and it is stored with column-major ordering in a one-dimensional array. The user
+     MUST FILL ONLY the m * n upper block, the other part is a working memory area for tensolve. All the components of the upper m * n block
+     must be written. */
+    typedef std::function<void(Maverick::real const x[], Maverick::real jac[], Maverick::integer m, Maverick::integer n, Maverick::integer max_m)> TensolveCppEvalJac;
+
     // equation solver class
     class EquationSolver {
 
@@ -23,8 +31,8 @@ namespace Tensolve {
         // default constructor
         EquationSolver() = delete;
 
-        // constructor which initialize the object to the given problem dimensions
-        EquationSolver(Maverick::integer const num_equations, Maverick::integer const num_unknowns);
+        // constructor which initialize the object to the given problem dimensions. If the eval_jac function is not specified, finite difference approximation of the jacobian will be used.
+        EquationSolver(Maverick::integer const num_equations, Maverick::integer const num_unknowns, TensolveCppEvalFunc const eval_func, TensolveCppEvalJac const eval_jac = nullptr );
 
         // destructor
         ~EquationSolver();
@@ -35,7 +43,7 @@ namespace Tensolve {
 
         // setup tensolve parameters
         void setup(// Maverick::integer parameters
-                   Maverick::integer const msg,           // message level: 0 default, 16 suppress output.
+                   Maverick::integer const msg,           // message level: 0 default, 8 suppress output.
                                                 // see tensolve help for more information
                                                 // If msg < 0, it will use the default value
                    Maverick::integer const it_lim,        // maximum nember of iterations.
@@ -84,20 +92,12 @@ namespace Tensolve {
                                 Maverick::real grad_at_sol[]  // gradient of 0.5*||F(x)||2**2 at sol (lenght = num_unknowns)
                                );
 
-        // virtual methods
+        // pointer to function evaluation and jacobian functions
+        TensolveCppEvalFunc const _eval_func;
+        TensolveCppEvalJac const _eval_jac;
 
-        // method that evaluates at the point x the functions to be solved
-        virtual void evalFunctions(Maverick::real const x[], Maverick::real f[], Maverick::integer const num_equations, Maverick::integer const num_unknowns) const = 0;
-
-        // method that evaluates the jacobian of the functions to be solved
-        /* OVERRIDE THIS METHOD IF YOU INTEND TO USE ANALYTIC JACOBIAN.
-        If this method is not overridden, finite difference approximation of the jacobian will be used. If this method
-        is overridden, it MUST return true.
-        The jacobian matrix, jac, has dimension _max_m * _num_unknowns, and it is stored with column-major ordering in
-        a one-dimensional array. The user MUST FILL ONLY the _num_equations * _num_unknowns upper block, the other part
-        is a working memory area for tensolve. All the components of the upper _num_equations * _num_unknowns block
-        must be written. */
-        virtual bool evalJacobian(Maverick::real const x[], Maverick::real jac[], Maverick::integer const num_equations, Maverick::integer const num_unknowns) const;
+        // get max_m
+        Maverick::integer getMaxM() const { return _max_m; }
 
     protected:
 
@@ -115,7 +115,7 @@ namespace Tensolve {
                                           // is a function that rounds to the nearest Maverick::integer.
 
         // tensolve settings
-        Maverick::integer _msg, _ipr, _it_lim, _method, _global, _jac_flag;
+        Maverick::integer _msg, _ipr, _it_lim, _method, _global;
 
         // tensolve scaling arrays
         Maverick::real * _typ_x = nullptr, * _typ_f = nullptr;
@@ -130,12 +130,7 @@ namespace Tensolve {
         void initTensolveDefault();
 
         // initialize the object to the given problem dimensions
-        void setForProblemSize();
-
-        // set the correct jacobian flag
-        void setJacFlag(Maverick::real const x0[]);
-
-        bool _has_set_jac_flag = false;
+        void setupForProblem();
 
     };
 }

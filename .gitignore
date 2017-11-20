@@ -46,3 +46,6 @@ core/src/Lua/src/luac
 **/mh_out.txt
 **/read_sol.m
 **/read_mesh_history.m
+
+#test
+core/test/*

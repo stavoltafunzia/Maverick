@@ -15,19 +15,19 @@ extern "C" {
 #endif
 
 // function that evaluates at the point x the functions to be solved
-typedef void (*EvalFunctions) (Maverick::real const x[],       // x value vector of dimension n (input)
-                               Maverick::real f[],             // function value vector of dimension m (output)
-                               Maverick::integer const * m,    // number of equations (input)
-                               Maverick::integer const * n);   // number of unknowns (input)
+typedef void (*TensolveEvalFunctions) (Maverick::real const x[],       // x value vector of dimension n (input)
+                                       Maverick::real f[],             // function value vector of dimension m (output)
+                                       Maverick::integer const * m,    // number of equations (input)
+                                       Maverick::integer const * n);   // number of unknowns (input)
 
 // function that evaluates the jacobian of the functions to be solved
 /* the jacobian matrix, jac, has dimension max_m * n, and it is stored with column-major ordering in
 a one-dimensional array. The user MUST FILL ONLY the m * n upper block, the other part is a working
 memory area for tensolve. All the components of the upper m * n block must be written. */
-typedef void (*EvalJacobian) (Maverick::real const x[],        // x value vector of dimension n (input)
-                              Maverick::real jac[],            // jacobian value vector of dimension max_m * n (output)
-                              Maverick::integer const * m,     // number of equations (input)
-                              Maverick::integer const * n);    // number of unknowns (input)
+typedef void (*TensolveEvalJacobian) (Maverick::real const x[],        // x value vector of dimension n (input)
+                                      Maverick::real jac[],            // jacobian value vector of dimension max_m * n (output)
+                                      Maverick::integer const * m,     // number of equations (input)
+                                      Maverick::integer const * n);    // number of unknowns (input)
 
 
 // Tensolve package functions
@@ -35,7 +35,7 @@ typedef void (*EvalJacobian) (Maverick::real const x[],        // x value vector
 // simple interface for tensolve
 void __tensolve_MOD_tsnesi(Maverick::integer* max_m, Maverick::integer* max_n, Maverick::integer* max_p,
                           Maverick::real* x0, Maverick::integer const * m, Maverick::integer const * n,
-                          EvalFunctions,
+                          TensolveEvalFunctions,
                           Maverick::integer* msg, Maverick::real* xp, Maverick::real* fp, Maverick::real* gp, Maverick::integer* termcd);
 
 // complex interface for tensolve
@@ -43,7 +43,7 @@ void __tensolve_MOD_tsneci(Maverick::integer* max_m, Maverick::integer* max_n, M
                            Maverick::real* typ_x, Maverick::real* typ_f, Maverick::integer* it_lim,
                            Maverick::integer* jac_flag, Maverick::real* grad_tl, Maverick::real* step_tl, Maverick::real* f_tol,
                            Maverick::integer* method, Maverick::integer* global, Maverick::real* step_mx, Maverick::real* dlt, Maverick::integer* ipr,
-                           EvalFunctions, EvalJacobian, Maverick::integer* msg,
+                           TensolveEvalFunctions, TensolveEvalJacobian, Maverick::integer* msg,
                            Maverick::real* xp, Maverick::real* fp, Maverick::real* gp, Maverick::integer* termcd);
 
 // dummy jacobian function

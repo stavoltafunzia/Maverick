@@ -48,7 +48,7 @@ namespace Maverick {
 
         EquationIntegratorType _integrator_type = integrator_tensolve;
 
-        integer _num_threads_to_use = 1;
+        integer _num_threads_to_use;
 
     };
 }

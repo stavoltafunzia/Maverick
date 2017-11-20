@@ -143,6 +143,7 @@ SolverOutput OcpSolver::solve() {
             } else {
 
                 std::unique_ptr<MeshSolutionRefiner> refiner = _p_mesh->getMeshSolutionRefiner(_ocp_problem, _ocp_problem.getScaling() );
+                refiner->setNumThreads(_num_threads_to_use);
 
                 //calculate the errors and get the new mesh
                 real max_mesh_error = 0;

@@ -133,12 +133,6 @@ namespace Maverick {
         integer const num_mesh_points = mesh(i_phase).getNumberOfDiscretisationPoints();
         integer num_mesh_points_per_thread = ceil(num_mesh_points / real(_num_threads_to_use) );
 
-        //TODO fix fortran multithread bug
-        // workaround for fortran multithread bug: use only one thread
-        if (_integrator_type == integrator_tensolve) {
-            num_mesh_points_per_thread = num_mesh_points + 1;
-        }
-
         // calculate the number of mesh points to be spanned by each thread
         vec_1d_integer thread_mesh_points = {0};
         thread_mesh_points.reserve(_num_threads_to_use+1);
