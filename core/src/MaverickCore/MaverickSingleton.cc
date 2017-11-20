@@ -6,15 +6,11 @@
 using namespace Maverick;
 using namespace std;
 
-MaverickSingleton::MaverickSingleton() {
-//    cout << "Singleton constructed\n";
-}
+MaverickSingleton::MaverickSingleton() {}
 
 MaverickSingleton::~MaverickSingleton() {
-    // printInfo();
     closeMavericktoipSharedLibHandle();
     closeMavericktsSharedLibHandle();
-//    cout << "Singleton destructed\n";
 }
 
 MaverickSingleton & MaverickSingleton::getInstance() {
@@ -22,20 +18,6 @@ MaverickSingleton & MaverickSingleton::getInstance() {
                                        // Instantiated on first use.
     return instance;
 }
-
-//void MaverickSingleton::setNumThreadsToUse( u_integer const num_threads ) {
-//    _nt_mutex.lock();
-//    threads_to_use = num_threads;
-//    _nt_mutex.unlock();
-//}
-
-//u_integer MaverickSingleton::getNumThreadsToUse() {
-//    //WARNING: sarebbe da mettere un lock anche qui, ma questa race condition non accadrà mai. Per tenere il codice + snello omettiamo il lock
-//    // _nt_mutex.lock();
-//    // u_integer threads_to_use_copy = threads_to_use;
-//    // _nt_mutex.unlock();
-//    return threads_to_use;
-//}
 
 integer MaverickSingleton::getHardwareConcurrencyNumThreads() const {
 
@@ -53,7 +35,7 @@ void MaverickSingleton::setInfoLevel( InfoLevel const level ) {
 }
 
 bool MaverickSingleton::Log( InfoLevel const level, std::string const & mess ) const {
-    //WARNING: sarebbe da mettere un lock anche qui, ma questa rece condition non accadrà mai. Per tenere il codice + snello omettiamo il lock
+    //WARNING: a lock should be used. However a race condition will never happes due to the workflow of the solver.
     // _il_mutex.lock();
     if ( _info_level >= level ) {
         // _il_mutex.unlock();
@@ -66,7 +48,7 @@ bool MaverickSingleton::Log( InfoLevel const level, std::string const & mess ) c
 }
 
 Maverick::InfoLevel MaverickSingleton::getInfoLevel() const {
-    //WARNING: sarebbe da mettere un lock anche qui, ma questa rece condition non accadrà mai. Per tenere il codice + snello omettiamo il lock
+    //WARNING: a lock should be used. However a race condition will never happes due to the workflow of the solver.
     // _il_mutex.lock();
     // InfoLevel info_level_copy = info_level;
     // _il_mutex.unlock();

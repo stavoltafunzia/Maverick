@@ -28,11 +28,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
 #pragma GCC diagnostic ignored "-Wc++98-compat"
+#pragma GCC diagnostic ignored "-Wc++98-compat-pedantic"
 #endif
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpadded"
 #pragma clang diagnostic ignored "-Wc++98-compat"
+#pragma clang diagnostic ignored "-Wc++98-compat-pedantic"
 #endif
 
 #include <iostream>
@@ -43,12 +45,6 @@
 #include <vector>
 #include <sstream>
 #include <stdexcept>
-
-#ifdef GENERIC_CONTAINER_USE_CXX11
-#include <cstdint>
-#else
-#include <stdint.h>
-#endif
 
 #include "GenericContainerConfig.hh"
 #include "MaverickCore/MaverickDefinitions.hh"
@@ -171,7 +167,7 @@ namespace GenericContainerNamespace {
 
     GENERIC_CONTAINER_API_DLL
     TYPE const & operator () ( unsigned i, unsigned j ) const ;
-
+    
     GENERIC_CONTAINER_API_DLL
     TYPE & operator () ( unsigned i, unsigned j ) ;
 
@@ -187,6 +183,13 @@ namespace GenericContainerNamespace {
 
   // ---------------------------------------------------------------------------
 
+  #if defined(GENERIC_CONTAINER_USE_CXX11) && !defined(GENERIC_CONTAINER_ON_WINDOWS)
+  extern template class mat_type<int_type> ;
+  extern template class mat_type<long_type> ;
+  extern template class mat_type<real_type> ;
+  extern template class mat_type<complex_type> ;
+  #endif
+
   typedef mat_type<int_type>     mat_int_type ;
   typedef mat_type<long_type>    mat_long_type ;
   typedef mat_type<real_type>    mat_real_type ;
@@ -196,7 +199,7 @@ namespace GenericContainerNamespace {
 
   GENERIC_CONTAINER_API_DLL
   std::ostream & operator << ( std::ostream & s, vec_pointer_type const & v ) ;
-
+  
   GENERIC_CONTAINER_API_DLL
   std::ostream & operator << ( std::ostream & s, vec_bool_type const & v ) ;
 
@@ -368,7 +371,7 @@ namespace GenericContainerNamespace {
 
     //! free memory of the data stored in `GenericContainer`, data type become `NOTYPE`
     GENERIC_CONTAINER_API_DLL void clear() ;
-
+    
     //! \name Initialize simple data
     //@{
     //! Set data to `pointer_type` initialize and return a reference to the data
@@ -401,7 +404,7 @@ namespace GenericContainerNamespace {
 
     //! \name Initialize vector data
     //@{
-    /*! \brief
+    /*! \brief 
         Set data to `vec_pointer_type`, allocate and initialize.
         Return a reference to vector of pointer.
         If `sz` > 0 then the vector is allocated to size `sz`.
@@ -492,7 +495,7 @@ namespace GenericContainerNamespace {
         If `sz` > 0 then the vector is allocated to size `sz`.
      */
     GENERIC_CONTAINER_API_DLL vec_string_type & set_vec_string( unsigned sz = 0 ) ;
-
+    
     /*! \brief
      Set data to `vec_string_type`, allocate and initialize.
      Return a reference to vector of strings.
@@ -581,25 +584,25 @@ namespace GenericContainerNamespace {
 
     //! \name Initialize generic data
     //@{
-    /*! \brief
+    /*! \brief 
         Set data to `vector_type`, allocate an empty generic vector and return a reference to it.
         If `sz` > 0 then the vector is allocated to size `sz`.
      */
     GENERIC_CONTAINER_API_DLL
     vector_type & set_vector( unsigned sz = 0 ) ;
-
+    
     //! Set data to `map_type`, allocate an empty generic map and return a reference to it.
     GENERIC_CONTAINER_API_DLL map_type & set_map() ;
     //@}
-
+    
     //! \name Access to a single element
     //@{
-
+    
     //! Return an integer representing the type of data stored
     /*!
        Integer to data type map
        ------------------------
-
+   
          -   No data stored (return 0)
          1.  `pointer_type`
          2.  `bool_type`
@@ -625,7 +628,7 @@ namespace GenericContainerNamespace {
     */
     GENERIC_CONTAINER_API_DLL
     TypeAllowed get_type() const { return _data_type ; }
-
+    
     //! Return a string pointer representing the type of data stored
     GENERIC_CONTAINER_API_DLL char const * get_type_name() const ;
 
@@ -721,7 +724,7 @@ namespace GenericContainerNamespace {
     GENERIC_CONTAINER_API_DLL vec_pointer_type       & get_vec_pointer( char const msg[] = nullptr ) ;
     GENERIC_CONTAINER_API_DLL vec_pointer_type const & get_vec_pointer( char const msg[] = nullptr ) const ;
     //!< Return reference to a vector of pointer (if fails issue an error).
-
+    
     GENERIC_CONTAINER_API_DLL vec_bool_type       & get_vec_bool( char const msg[] = nullptr ) ;
     GENERIC_CONTAINER_API_DLL vec_bool_type const & get_vec_bool( char const msg[] = nullptr ) const ;
     //!< Return reference to a vector of booleans (if fails issue an error).
@@ -867,13 +870,13 @@ namespace GenericContainerNamespace {
     GENERIC_CONTAINER_API_DLL GenericContainer       & operator [] ( std::string const & s ) ;
     GENERIC_CONTAINER_API_DLL GenericContainer const & operator [] ( std::string const & s ) const ;
     /*! \brief
-       Overload of the `[]` operator to access the `s`-th element of a stored generic map.
+       Overload of the `[]` operator to access the `s`-th element of a stored generic map. 
        If the element do not exists it is created.
     */
-
+    
     GENERIC_CONTAINER_API_DLL GenericContainer       & operator () ( unsigned i, char const msg[] = nullptr ) ;
     GENERIC_CONTAINER_API_DLL GenericContainer const & operator () ( unsigned i, char const msg[] = nullptr ) const ;
-
+    
     /*! \brief
      Overload of the `()` operator to access the `i`-th element of a stored generic vector.
      NO run time bound check.
@@ -1017,6 +1020,22 @@ namespace GenericContainerNamespace {
     GENERIC_CONTAINER_API_DLL
     GenericContainer & operator = ( vec_string_type const & a ) ;
 
+    //! Assign a `vec_int_type` to the generic container.
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer & operator = ( mat_int_type const & a ) ;
+
+    //! Assign a `vec_long_type` to the generic container.
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer & operator = ( mat_long_type const & a ) ;
+
+    //! Assign a `vec_real_type` to the generic container.
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer & operator = ( mat_real_type const & a ) ;
+
+    //! Assign a `vec_complex_type` to the generic container.
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer & operator = ( mat_complex_type const & a ) ;
+
     //! Assign a string to the generic container.
     GENERIC_CONTAINER_API_DLL
     GenericContainer & operator = ( char const a[] )
@@ -1084,66 +1103,75 @@ namespace GenericContainerNamespace {
     //! If data contains vector of someting it is promoted to a vector of `GenericContainer`.
     GENERIC_CONTAINER_API_DLL GenericContainer const & promote_to_vector() ;
 
-    GENERIC_CONTAINER_API_DLL GenericContainer const & promote_to_long_type() ;
-    GENERIC_CONTAINER_API_DLL GenericContainer const & promote_to_real_type() ;
-    GENERIC_CONTAINER_API_DLL GenericContainer const & promote_to_complex_type() ;
-
     //@}
 
     //! \name Initialize data by overloading constructor
     //@{
-
+    
     //! Construct a generic container storing a boolean
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( bool const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( bool const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing an integer
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( uint_type const & a ) : _data_type(GC_NOTYPE) { clear() ; *this = a ; }
+    GenericContainer( uint_type const & a )
+    : _data_type(GC_NOTYPE) { *this = a ; }
+    
+    //! Construct a generic container storing an integer
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer( int_type const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing an integer
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( int_type const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
-
+    GenericContainer( ulong_type const & a )
+    : _data_type(GC_NOTYPE) { *this = a ; }
+    
     //! Construct a generic container storing an integer
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( ulong_type const & a ) : _data_type(GC_NOTYPE) { clear() ; *this = a ; }
-
-    //! Construct a generic container storing an integer
+    GenericContainer( long_type const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
+    
+    //! Construct a generic container storing a floating point number
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( long_type const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( float const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing a floating point number
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( float const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
-
-    //! Construct a generic container storing a floating point number
-    GENERIC_CONTAINER_API_DLL
-    GenericContainer( double const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( double const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing a complex floating point number
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( std::complex<float> const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( std::complex<float> const & a )
+     : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing a complex floating point number
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( std::complex<double> const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( std::complex<double> const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
+    
+    //! Construct a generic container storing a string
+    GENERIC_CONTAINER_API_DLL
+    GenericContainer( char const a[] )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing a string
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( char const a[] ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
-
-    //! Construct a generic container storing a string
-    GENERIC_CONTAINER_API_DLL
-    GenericContainer( std::string const & a ) : _data_type(GC_NOTYPE) { clear() ; this->operator=(a) ; }
+    GenericContainer( std::string const & a )
+    : _data_type(GC_NOTYPE) { this->operator=(a) ; }
 
     //! Construct a generic container storing a pointer
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( pointer_type a ) : _data_type(GC_NOTYPE) { clear() ; this->set_pointer(a) ; }
+    GenericContainer( pointer_type a )
+    : _data_type(GC_NOTYPE) { this->set_pointer(a) ; }
 
     //! Construct a generic container copying container `gc`
     GENERIC_CONTAINER_API_DLL
-    GenericContainer( GenericContainer const & gc ) : _data_type(GC_NOTYPE) { this->load(gc) ; }
+    GenericContainer( GenericContainer const & gc )
+    : _data_type(GC_NOTYPE) { this->load(gc) ; }
     //@}
 
     //! \name Utilities methods
@@ -1189,24 +1217,24 @@ namespace GenericContainerNamespace {
     GENERIC_CONTAINER_API_DLL
     void to_yaml( std::basic_ostream<char> &, std::string const & prefix = "" ) const ;
 
-    /*!
+    /*! 
       \brief write `GenericContainer` as regular formatted data
-
+       
       Write the contents of the `GenericContainer` object to stream.
-
+     
       `GenericContainer` must be a map which contains the fields:
-
+       
       - "headers" this element must be a `vec_string_type` which contains
                   the strings of the headers of the columns of the data
 
       - "data"    this element must be a `vector_type` which contais the
                   vectors which are the columns of the data to be saved.
                   Each column can be of type
-
+                  
                   1. `vec_bool_type`
                   2. `vec_int_type`
                   3. `vec_real_type`
-
+     
                   all the vector must have the same size.
 
        \param stream     stream to write the output
@@ -1216,11 +1244,11 @@ namespace GenericContainerNamespace {
     GenericContainer const &
     writeFormattedData( std::basic_ostream<char> & stream, char const delimiter = '\t' ) const ;
 
-    /*!
+    /*! 
       \brief read regular formatted data from `stream` to `GenericContainer`.
-
+     
       After successful read `GenericContainer` will be a map which contains the fields:
-
+       
       - "headers"  a `vec_string_type` which contains
                    the strings of the headers of the columns of the data
 
@@ -1228,7 +1256,7 @@ namespace GenericContainerNamespace {
                    columns of the data readed of type `vec_real_type`.
 
        \param stream       stream to write the output
-       \param commentChars lines beginnig with one of this chars are treated as comments.
+       \param commentChars lines beginnig with one of this chars are treated as comments. 
                            Default are `#` and `%`
        \param delimiters   caracters used as delimiter for headers
      */
@@ -1288,7 +1316,7 @@ namespace GenericContainerNamespace {
     map_type::iterator map_iterator ;
 
   public:
-
+  
     GENERIC_CONTAINER_API_DLL GenericContainerExplorer() { head.push_back(&data) ; }
     GENERIC_CONTAINER_API_DLL ~GenericContainerExplorer() {}
 
@@ -1378,7 +1406,7 @@ namespace GenericContainerNamespace {
       else
         return nullptr ;
     }
-
+  
     int
     reset() {
       if ( head.empty() ) return GENERIC_CONTAINER_NO_DATA ;

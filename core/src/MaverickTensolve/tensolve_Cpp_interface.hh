@@ -77,7 +77,6 @@ namespace Tensolve {
                    );
 
         // solve the equations
-        // BEFORE TO CALL THIS METHOD YOU MUST either have called 'setForProblemSize',
         // or have used the constructor EquationSolver(Maverick::integer const, Maverick::integer const)
         Maverick::integer solve(Maverick::real const x0[],    // initial guess of the solution (lenght = num_unknowns)
                                 Maverick::real sol[],         // best approximation of the solution (lenght = num_unknowns)
@@ -86,7 +85,7 @@ namespace Tensolve {
                                );
 
         // virtual methods
-        
+
         // method that evaluates at the point x the functions to be solved
         virtual void evalFunctions(Maverick::real const x[], Maverick::real f[], Maverick::integer const num_equations, Maverick::integer const num_unknowns) const = 0;
 
@@ -129,13 +128,13 @@ namespace Tensolve {
 
         // initialize parameters with defualt tensolve values
         void initTensolveDefault();
-        
+
         // initialize the object to the given problem dimensions
         void setForProblemSize();
-        
+
         // set the correct jacobian flag
         void setJacFlag(Maverick::real const x0[]);
-        
+
         bool _has_set_jac_flag = false;
 
     };

@@ -38,7 +38,7 @@ namespace Maverick {
 
         InfoLevel getInfoLevel() const;
 
-        // get maverick2ipopt shared lib instance
+        // get shared lib instances
 
         void * getMaverickToIpSharedLibHandle();
 
@@ -63,9 +63,9 @@ namespace Maverick {
         void closeMavericktoipSharedLibHandle();
 
         void closeMavericktsSharedLibHandle();
-        
+
     private:
-        
+
         MaverickSingleton();
 
     };
