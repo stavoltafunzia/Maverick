@@ -339,6 +339,10 @@ void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
 #endif
     _actual_th_affinity = _th_affinity;
 
+    // now remove the threads that are unused due to the small size of the problem
+    while (_actual_th_affinity.size() > actual_num_threads)
+        _actual_th_affinity.pop_back();
+
     MAVERICK_DEBUG_ASSERT(current_mesh_point==num_mesh_intervals, "MidpointOcp2NlpSinglePhase: not all mesh points are spanned by threads")
     MAVERICK_DEBUG_ASSERT(actual_num_threads==(_thread_mesh_intervals.size()-1), "MidpointOcp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
 }

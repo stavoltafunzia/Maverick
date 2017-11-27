@@ -175,11 +175,6 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     integer const eigen_num_threads = Eigen::nbThreads( );  // save number of threads for eigen
     Eigen::setNbThreads(1); // the function evaluation is already parallel
 
-#ifdef __linux__
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(i, &cpuset);
-#endif
     for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
         threads[i_thread] = new std::thread(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
                                             _thread_mesh_intervals[i_thread], _thread_mesh_intervals[i_thread+1],
@@ -193,7 +188,14 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
                                             &exc_ptrs[i_thread]
                                             );
 #ifdef __linux__
-        pthread_setaffinity_np(threads[i_thread].native_handle(), sizeof(cpu_set_t), &cpuset);
+        auto const & c_aff = _actual_th_affinity[i_thread];
+        if (c_aff.size()>0) {
+            cpu_set_t cpuset;
+            CPU_ZERO(&cpuset);
+            for (u_integer x : c_aff)
+                CPU_SET(x, &cpuset);
+            pthread_setaffinity_np(threads[i_thread]->native_handle(), sizeof(cpu_set_t), &cpuset);
+        }
 #endif
     }
 
