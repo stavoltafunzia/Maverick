@@ -141,7 +141,35 @@ namespace Maverick {
 
         return false;
     }
-
+    
+    bool findVecIntFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, vec_1d_integer & out ) {
+        try {
+            return findVecIntFromGenericContainer( gc(tag), out );
+        } catch (...) {}
+        return false;
+    }
+    
+    bool findVecIntFromGenericContainer( GC::GenericContainer const & gc, vec_1d_integer & out ) {
+        try {
+            out = gc.get_vec_int();
+            return true;
+        } catch ( ... ) {}
+        // long
+        try {
+            GenericContainerNamespace::vec_long_type vec = gc.get_vec_long();
+            out.clear();
+            out.reserve(vec.size());
+            for (integer i=0; i<vec.size(); i++) {
+                if (vec[i] < std::numeric_limits<integer>::max() )
+                    out.push_back((integer) vec[i]);
+                else
+                    throw out_of_range("");
+            }
+            return true;
+        } catch ( ... ) {}
+        return false;
+    }
+    
     bool findVecRealFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, vec_1d_real & out ) {
         try {
             return findVecRealFromGenericContainer( gc(tag), out );

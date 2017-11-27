@@ -106,7 +106,7 @@ namespace Maverick {
 
         MaverickSingleton & _maverick;
 
-        integer _num_threads_to_use = 1;
+        threads_affinity _th_affinity;
 
     };
 }

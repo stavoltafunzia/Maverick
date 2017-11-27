@@ -25,10 +25,12 @@ namespace Maverick {
         MaverickSingleton(MaverickSingleton const &) = delete;
 
         void operator=(MaverickSingleton const &)    = delete;
+        
+        void printInfo() const;
 
         // interface for threads
 
-        integer getHardwareConcurrencyNumThreads() const;
+        u_integer getHardwareConcurrencyNumThreads() const;
 
         //interface for log
 
@@ -43,8 +45,6 @@ namespace Maverick {
         void * getMaverickToIpSharedLibHandle();
 
         void * getMaverickTsSharedLibHandle();
-
-        void printInfo() const;
 
     protected:
 

@@ -44,7 +44,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsBetweenMeshPoints(intege
             multiplyAndCopyVectorTo(p_left_state_control_scaled + _dim_y, ocp_algebraic_state_control, _p_scaling_ay, _dim_ay);
 
 #ifdef MAVERICK_DEBUG
-            if ( _num_threads_to_use == 1 ) {
+            if ( _th_affinity.size() == 1 ) {
                 MAVERICK_DEBUG_ASSERT( p_current_y_scaled == nlp_y + getNlpYPtrIndexForInterval(current_mesh_interval), "Pointer to Y variables exceeds limit.")
 
 
@@ -70,7 +70,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsBetweenMeshPoints(intege
         // END LOOP OVER _p_mesh POINTS, MAIN PART
 
 #ifdef MAVERICK_DEBUG
-        if (_num_threads_to_use==1) {
+        if (_th_affinity.size()==1) {
             MAVERICK_DEBUG_ASSERT( p_current_y_scaled == nlp_y + getNlpParamPtrIndex() - _dim_y, "Not all states have been calculated. Current pointer " << p_current_y_scaled << ". Pointer to last p_mesh points parameter: " << nlp_y + getNlpParamPtrIndex() - _dim_y << "." )
         }
 #endif

@@ -19,9 +19,9 @@ MaverickSingleton & MaverickSingleton::getInstance() {
     return instance;
 }
 
-integer MaverickSingleton::getHardwareConcurrencyNumThreads() const {
+u_integer MaverickSingleton::getHardwareConcurrencyNumThreads() const {
 
-    integer threads_to_use = std::thread::hardware_concurrency();
+    u_integer threads_to_use = std::thread::hardware_concurrency();
     if (threads_to_use == 0)
         threads_to_use = 1;
 

@@ -14,12 +14,12 @@ namespace Maverick {
 
     MeshSolutionRefiner::~MeshSolutionRefiner() {}
 
-    void MeshSolutionRefiner::setNumThreads( integer num_threads ) {
-        if (num_threads <= 0) {
-            MaverickSingleton::getInstance().Log(InfoLevel::info_level_warning, "MeshSolutionRefiner::setNumThreads: cannot set a non positive thread number. Will use 1");
-            _num_threads_to_use = 1;
+    void MeshSolutionRefiner::setThreadsAffinity( threads_affinity const & th_affinity ) {
+        _th_affinity = th_affinity;
+        if (_th_affinity.size() == 0) {
+            MaverickSingleton::getInstance().Log(InfoLevel::info_level_warning, "MeshSolutionRefiner::setThreadsAffinity: cannot set a zero thread number. Will use 1");
+            _th_affinity = {{}};
         }
-        _num_threads_to_use = num_threads;
     }
 
     void MeshSolutionRefiner::setIntegratorType( EquationIntegratorType type ) {

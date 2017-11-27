@@ -18,8 +18,12 @@ using namespace std;
 
 OcpSolver::OcpSolver( MaverickOcp & ocp_problem ) : MaverickSolver(ocp_problem), _maverick(MaverickSingleton::getInstance()) {
     _solver_settings.nlp_guess_ptr = & _nlp_guess;
-
-    _num_threads_to_use = _maverick.getHardwareConcurrencyNumThreads();
+    
+    u_integer num_th = _maverick.getHardwareConcurrencyNumThreads();
+    for (u_integer i=0; i<num_th; i++)
+        _th_affinity.push_back({});
+    if (num_th == 0) _th_affinity = {{}};
+    
 }
 
 OcpSolver::~OcpSolver() {}
@@ -64,9 +68,34 @@ SolverOutput OcpSolver::solve() {
         // Log the number of threads used for function evaluation
         if (_maverick.getInfoLevel() >= InfoLevel::info_level_very_verbose) {
             for (integer i=0; i<_ocp_problem.numberOfPhases(); i++) {
-                _maverick.Log(InfoLevel::info_level_very_verbose, "Threads for evaluations at phase "
-                              + std::to_string(i)
-                              + ": "+  std::to_string(_p_ocp_2_nlp->getActualNumThreadsUsed(i)) + "\n");
+                stringstream message;
+                threads_affinity const & actual_th_aff = _p_ocp_2_nlp->getActualThreadsAffinityUsed(i);
+                message << "Threads for evaluations at phase " << i << ": " <<actual_th_aff.size();
+                bool specific_affinity = false;
+                for (auto const & entry : actual_th_aff) {
+                    if ( entry.size()!=0 ) {
+                        specific_affinity = true;
+                        break;
+                    }
+                }
+                if (specific_affinity) {
+                    for (integer i_t = 0; i_t<actual_th_aff.size(); i_t++) {
+                        auto const & entry = actual_th_aff[i_t];
+                        message << "\n\tthread " << i_t << " core affinity: ";
+                        if (entry.size()>0) {
+                            message << "[";
+                            for (integer i_aff = 0; i_aff<entry.size(); i_aff++) {
+                                message << entry[i_aff];
+                                if (i_aff != (entry.size()-1)) message << ", ";
+                            }
+                            message << "]";
+                        } else {
+                            message << "all";
+                        }
+                    }
+                }
+                message << "\n";
+                _maverick.Log(InfoLevel::info_level_verbose, message.str());
             }
         }
 
@@ -143,7 +172,7 @@ SolverOutput OcpSolver::solve() {
             } else {
 
                 std::unique_ptr<MeshSolutionRefiner> refiner = _p_mesh->getMeshSolutionRefiner(_ocp_problem, _ocp_problem.getScaling() );
-                refiner->setNumThreads(_num_threads_to_use);
+                refiner->setThreadsAffinity(_th_affinity);
 
                 //calculate the errors and get the new mesh
                 real max_mesh_error = 0;
@@ -507,7 +536,7 @@ void OcpSolver::setupOcp2Nlp() {
     _p_ocp_2_nlp = _p_mesh->getDiscretiser( _ocp_problem );
 
     //set min number of threads
-    _p_ocp_2_nlp->setNumberOfThreadsToUse(_num_threads_to_use);
+    _p_ocp_2_nlp->setThreadsAffinity(_th_affinity);
     if (min_nlp_vars_per_thread > 0)
         _p_ocp_2_nlp->setMinNumberOfNlpVarsPerThreads(min_nlp_vars_per_thread);
 
@@ -573,20 +602,40 @@ void OcpSolver::setupSolverOnly( GC::GenericContainer const & gc_solver ) {
 
     //check for the number of threads to use
     {
-        integer num_th;
-        if (findIntFromGenericContainer(gc_solver, "num_threads", num_th)) {
-            if ( num_th < 0 ) {
-                _maverick.Log(InfoLevel::info_level_warning, "Negative number of threads to use is not allowed. Will set to default.\n");
-                num_th = 0;
+        // first check if the user specified the threads_affinity:
+        try {
+            GC::vector_type const & gc_aff = gc_solver("threads_affinity").get_vector();
+            _th_affinity = {};
+            cout << gc_aff[1].get_type_name() << endl;
+            for (integer i = 0; i<gc_aff.size(); i++) {
+                _th_affinity.push_back({});
+                vector<integer> c_aff;
+                if (!findVecIntFromGenericContainer(gc_aff[i], c_aff)) throw runtime_error("");
+                for (int x : c_aff) {
+                    if ( x >= 0 )
+                        _th_affinity[i].push_back( (u_integer) x );
+                    else {
+                        _th_affinity[i] = {};
+                        break;
+                    }
+                }
             }
-            if ( num_th == 0 ) {
-                _num_threads_to_use = _maverick.getHardwareConcurrencyNumThreads();
-            } else {
-                _num_threads_to_use = num_th;
+        } catch (...) {
+            // in this case, the user may have specified the number of threads
+            integer num_th;
+            if (findIntFromGenericContainer(gc_solver, "num_threads", num_th)) {
+                _th_affinity = {};
+                if ( num_th < 0 ) {
+                    _maverick.Log(InfoLevel::info_level_warning, "Negative number of threads to use is not allowed. Will set to default.\n");
+                    num_th = 0;
+                }
+                for (integer i = 0; i<num_th; i++)
+                    _th_affinity.push_back({});
             }
-            if (_p_ocp_2_nlp)
-                _p_ocp_2_nlp -> setNumberOfThreadsToUse(_num_threads_to_use);
         }
+        if (_th_affinity.size() == 0) _th_affinity = {{}};
+        if (_p_ocp_2_nlp)
+            _p_ocp_2_nlp -> setThreadsAffinity(_th_affinity);
     }
 
     //check for the minimum number of nlp vars per thread

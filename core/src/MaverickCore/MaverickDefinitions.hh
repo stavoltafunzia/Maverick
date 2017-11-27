@@ -30,6 +30,8 @@ namespace Maverick {
 
     typedef std::vector<integer>                            vec_1d_integer;
     typedef std::vector<bool>                               vec_1d_bool;
+    
+    typedef std::vector<std::vector<u_integer>>             threads_affinity;
 
     enum InfoLevel {
         info_level_none = 0,

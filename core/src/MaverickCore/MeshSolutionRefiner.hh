@@ -36,7 +36,7 @@ namespace Maverick {
                                                   vec_2d_real & mesh_errors,
                                                   real & max_error) const = 0;
 
-        void setNumThreads( integer num_threads );
+        void setThreadsAffinity( threads_affinity const & th_affinity );
 
         void setIntegratorType( EquationIntegratorType type );
 
@@ -48,7 +48,7 @@ namespace Maverick {
 
         EquationIntegratorType _integrator_type = integrator_tensolve;
 
-        integer _num_threads_to_use;
+        threads_affinity _th_affinity;
 
     };
 }

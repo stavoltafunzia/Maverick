@@ -17,6 +17,7 @@ namespace Tensolve {
 
     // function that evaluates at the point x the functions to be solved
     typedef std::function<void(Maverick::real const x[], Maverick::real f[], Maverick::integer m, Maverick::integer n)> TensolveCppEvalFunc;
+    
     /* funtion that evaluates the jacobian.
      The jacobian matrix, jac, has dimension max_m * n, and it is stored with column-major ordering in a one-dimensional array. The user
      MUST FILL ONLY the m * n upper block, the other part is a working memory area for tensolve. All the components of the upper m * n block

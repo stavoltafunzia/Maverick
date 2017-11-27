@@ -110,9 +110,9 @@ namespace Maverick {
 
         void setIsTargetLagrangeFromGuess( Nlp const & nlp_guess );
 
-        void setNumberOfThreadsToUse( integer const number_threads );
+        void setThreadsAffinity( threads_affinity const & th_affinity );
 
-        integer getActualNumThreadsUsed(integer const i_phase) const;
+        threads_affinity const & getActualThreadsAffinityUsed(integer const i_phase) const;
 
     protected:
 

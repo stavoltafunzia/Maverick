@@ -36,6 +36,10 @@ namespace Maverick {
     bool findRealFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, real & out );
 
     bool findIntFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, integer & out );
+    
+    bool findVecIntFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, vec_1d_integer & out );
+    
+    bool findVecIntFromGenericContainer( GC::GenericContainer const & gc, vec_1d_integer & out );
 
     bool findVecRealFromGenericContainer( GC::GenericContainer const & gc, std::string const & tag, vec_1d_real & out );
 

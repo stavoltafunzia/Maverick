@@ -306,7 +306,7 @@ integer MidpointOcp2NlpSinglePhase::getNlpHessianNnz() const {
 void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
 
     // CALCULATE NUMBER OF THREADS TO USE
-    u_integer const expected_num_threads = _num_threads_to_use;
+    integer const expected_num_threads = (integer) _th_affinity.size();
     integer const min_mesh_intervals_per_thread = ceil( _min_nlp_vars_per_thread / real(_dim_y) );
 
     integer mesh_intervals_per_thread = ceil(_p_mesh->getNumberOfIntervals() / real(expected_num_threads));
@@ -333,13 +333,18 @@ void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
             break;
         }
     }
+#ifndef __linux__
+    for (integer i=0; i<_th_affinity.size(); i++)
+        _th_affinity[i] = {};  // Only in Linux thread affinity is supported
+#endif
+    _actual_th_affinity = _th_affinity;
 
     MAVERICK_DEBUG_ASSERT(current_mesh_point==num_mesh_intervals, "MidpointOcp2NlpSinglePhase: not all mesh points are spanned by threads")
     MAVERICK_DEBUG_ASSERT(actual_num_threads==(_thread_mesh_intervals.size()-1), "MidpointOcp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
 }
 
-void MidpointOcp2NlpSinglePhase::setNumberOfThreadsToUse( integer const number_threads ) {
-    _num_threads_to_use = number_threads;
+void MidpointOcp2NlpSinglePhase::setThreadsAffinity( threads_affinity const & th_affinity ) {
+    _th_affinity = th_affinity;
     calculateWorkForThreads();
 }
 
@@ -560,8 +565,8 @@ void MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds( real lower_bounds[], r
     MAVERICK_DEBUG_ASSERT(current_upper_bounds == upper_bounds + getNlpConstraintsSize(), "MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints upper bounds have been written.")
 }
 
-integer MidpointOcp2NlpSinglePhase::getActualNumThreadsUsed(integer const i_phase) const {
-    return (integer) _thread_mesh_intervals.size()-1;
+threads_affinity const & MidpointOcp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
+    return _actual_th_affinity;
 }
 
 void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess( Nlp const & nlp_guess ) {

@@ -131,16 +131,17 @@ namespace Maverick {
 
     void MidpointMeshSolutionRefiner::getMeshErrorsForSinglePhase (integer const i_phase,  MidpointMesh const & mesh, MidpointOcpSolution const & sol, vec_1d_real & mesh_errors) const {
         integer const num_mesh_points = mesh(i_phase).getNumberOfDiscretisationPoints();
-        integer num_mesh_points_per_thread = ceil(num_mesh_points / real(_num_threads_to_use) );
+        integer const num_threads_to_use = (integer) _th_affinity.size();
+        integer num_mesh_points_per_thread = ceil(num_mesh_points / real(num_threads_to_use) );
 
         // calculate the number of mesh points to be spanned by each thread
         vec_1d_integer thread_mesh_points = {0};
-        thread_mesh_points.reserve(_num_threads_to_use+1);
+        thread_mesh_points.reserve(num_threads_to_use+1);
 
-        for (integer i = 0; i < _num_threads_to_use; i++) {
+        for (integer i = 0; i < num_threads_to_use; i++) {
             thread_mesh_points.push_back( (i+1) * num_mesh_points_per_thread );
         }
-        for (integer i = _num_threads_to_use; i >= 0; i--) {
+        for (integer i = num_threads_to_use; i >= 0; i--) {
             if ( thread_mesh_points[i] >= ( num_mesh_points - 1 )  )
                 thread_mesh_points.pop_back();
         }

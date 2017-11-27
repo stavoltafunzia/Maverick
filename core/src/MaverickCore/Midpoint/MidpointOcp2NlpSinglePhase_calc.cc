@@ -2,6 +2,9 @@
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickPrivateDefs.hh"
 #include <thread>
+#ifdef __linux__
+    #include <pthread.h>
+#endif
 
 using namespace Maverick;
 
@@ -45,7 +48,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 #endif
 
     //CREATE DATA ARRAYS FOR EACH THREAD
-    integer const actual_num_threads = (integer) _thread_mesh_intervals.size() -1;
+    integer const actual_num_threads = (integer) _actual_th_affinity.size();
 
     real const * t_nlp_y[actual_num_threads];
 
@@ -172,6 +175,11 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     integer const eigen_num_threads = Eigen::nbThreads( );  // save number of threads for eigen
     Eigen::setNbThreads(1); // the function evaluation is already parallel
 
+#ifdef __linux__
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(i, &cpuset);
+#endif
     for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
         threads[i_thread] = new std::thread(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
                                             _thread_mesh_intervals[i_thread], _thread_mesh_intervals[i_thread+1],
@@ -184,6 +192,9 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
                                             t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
                                             &exc_ptrs[i_thread]
                                             );
+#ifdef __linux__
+        pthread_setaffinity_np(threads[i_thread].native_handle(), sizeof(cpu_set_t), &cpuset);
+#endif
     }
 
     real const final_zeta = _p_mesh->getZeta(_p_mesh->getNumberOfIntervals());
@@ -264,7 +275,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         p_current_constraint += _dim_bc;
 
 #ifdef MAVERICK_DEBUG
-        if ( _num_threads_to_use == 1 ) {
+        if ( _th_affinity.size() == 1 ) {
             p_current_constraint += _dim_ic;
             MAVERICK_ASSERT( p_current_constraint == constraints_out + getNlpConstraintsSize(), "Wrong final pointer for constraints. Current pointer " << p_current_constraint << ". Pointer to last p_mesh points parameter: " << constraints_out + getNlpConstraintsSize() << "." )
         }
@@ -288,7 +299,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         p_current_constraints_j += nnz ;
 
 #ifdef MAVERICK_DEBUG
-        if ( _num_threads_to_use == 1 ) {
+        if ( _th_affinity.size() == 1 ) {
             MAVERICK_ASSERT(p_current_constraints_j == constraints_jac_out + getNlpConstraintsJacobainPtrIndexForF() ,
                             "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian pointer for matrix F. Current pointer: " << p_current_constraints_j << ", expected: " << constraints_jac_out + getNlpConstraintsJacobainPtrIndexForF() << ".")
         }
@@ -302,7 +313,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 
         p_current_constraints_j += getNlpConstraintsJacobainMatrixFNnz();
 #ifdef MAVERICK_DEBUG
-        if ( _num_threads_to_use == 1 ) {
+        if ( _th_affinity.size() == 1 ) {
             p_current_constraints_j += (_int_constr_j_y_nnz + _int_constr_j_ay_nnz) * _p_mesh->getNumberOfIntervals() + _int_constr_j_y_nnz + _ocp_problem.intConstraintsJacPNnz(_i_phase);
             MAVERICK_ASSERT(p_current_constraints_j == constraints_jac_out + getNlpConstraintsJacobianNnz() ,
                             "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian final pointer.")
@@ -891,7 +902,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
             multiplyAndCopyVectorTo(p_left_state_control_scaled + _dim_y, ocp_algebraic_state_control, _p_scaling_ay, _dim_axu);
 
 #ifdef MAVERICK_DEBUG
-            if ( _num_threads_to_use == 1 ) {
+            if ( _th_affinity.size() == 1 ) {
                 MAVERICK_ASSERT( p_current_y_scaled == nlp_y + getNlpYPtrIndexForInterval(current_mesh_interval), "Pointer to Y variables is not correct.")
 
                 if (constraints_out) {
@@ -1044,7 +1055,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
         // END LOOP OVER _p_mesh POINTS, MAIN PART
 
 #ifdef MAVERICK_DEBUG
-        if (_num_threads_to_use==1) {
+        if (_th_affinity.size()==1) {
             MAVERICK_DEBUG_ASSERT( p_current_y_scaled == nlp_y + getNlpParamPtrIndex() - _dim_y, "Not all states have been calculated. Position difference is " << p_current_y_scaled - ( nlp_y + getNlpParamPtrIndex() - _dim_y ) )
 
             if (lagrange_target_jac_y_out) {
