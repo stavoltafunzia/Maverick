@@ -1193,17 +1193,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern(SparseMatrix const &
             index ++;
         }
     }
-    //    cout << _hess_lower_mat_nnz << "\n";
-    //    cout << _hess_first_lower_mat_nnz << "\n";
-    //    cout << _hess_2_mat_nnz << "\n";
-    //    cout << _hess_35_mat_nnz << "\n";
-    //    cout << _hess_first_35_mat_nnz << "\n";
-    //    cout << _hess_last_35_mat_nnz << "\n";
-    //    cout << _hess_xi_xf_mat_nnz << "\n";
-    //    cout << _hess_p_p_lower_mat_nnz << "\n";
-    //    cout << getNlpHessianFirstColumnBlockNnz() << "\n";
-    //    cout << getNlpHessianMiddleColumnBlockNnz() << "\n";
-    //    cout << getNlpHessianLastColumnBlockNnz() << "\n";
+    
 #ifdef MAVERICK_DEBUG
     MAVERICK_ASSERT( index == getNlpHessianNnz(), "MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern: wrong number of hessian nnz. Counted " << index << ",expected, " << getNlpHessianNnz() << ".\n")
 #endif

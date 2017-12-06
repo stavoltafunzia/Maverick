@@ -1,5 +1,6 @@
 MODULE tensolve
 !USE blas_part
+USE iso_c_binding
 USE unconstrained_min
 
 IMPLICIT NONE
@@ -409,7 +410,7 @@ INTEGER, INTENT(OUT)       :: retcd
 !       TENSOLVE      ...  TSTRUD
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -799,7 +800,7 @@ INTEGER, INTENT(IN)        :: ipr
 INTEGER, INTENT(IN OUT)    :: msg
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -1051,7 +1052,7 @@ REAL (dp) :: mu
 flag = 0
 
 ! initialization
-
+w(m+1:m+n)=0 ! modified by nicola : missing initialisation
 fqq(1:m+n) = zero
 
 w(1:m) = -fcq(1:m)
@@ -1419,8 +1420,8 @@ END SUBROUTINE tsdfcn
 
 
 
-SUBROUTINE tsdflt(m, n, itnlim, jacflg, gradtl, steptl, ftol, method,  &
-                  global, stepmx, dlt, typx, typf, ipr)
+SUBROUTINE tensolve_tsdflt(m, n, itnlim, jacflg, gradtl, steptl, ftol, method,  &
+                  global, stepmx, dlt, typx, typf, ipr) bind(c)
 
 ! N.B. Argument MSG has been removed.
 
@@ -1463,11 +1464,11 @@ typx(1:n) = one
 typf(1:m) = one
 
 RETURN
-END SUBROUTINE tsdflt
+END SUBROUTINE tensolve_tsdflt
 
 
 
-SUBROUTINE tsdumj(x, aja, m, n)
+SUBROUTINE tensolve_tsdumj(x, aja, m, n) bind(c)
 
 REAL (dp), INTENT(IN)   :: x(n)
 REAL (dp), INTENT(OUT)  :: aja(m,n)
@@ -1489,7 +1490,7 @@ INTEGER, INTENT(IN)     :: m, n
 aja(m,n) = x(1)
 
 RETURN
-END SUBROUTINE tsdumj
+END SUBROUTINE tensolve_tsdumj
 
 
 
@@ -1598,7 +1599,7 @@ REAL (dp), INTENT(IN)      :: epsm
 REAL (dp), INTENT(OUT)     :: aja(:,:)
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -1774,7 +1775,7 @@ INTEGER, INTENT(IN)        :: n
 REAL (dp), INTENT(OUT)     :: f(:)
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -2274,7 +2275,7 @@ REAL (dp), INTENT(OUT)     :: fpnorm
 INTEGER, INTENT(OUT)       :: retcd
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -2503,7 +2504,7 @@ INTEGER, INTENT(OUT)       :: retcd
 INTEGER, INTENT(IN OUT)    :: ierr
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -3281,9 +3282,9 @@ END SUBROUTINE tsmslv
 
 
 
-SUBROUTINE tsneci(maxm, maxn, maxp, x0, m, n, typx, typf, itnlim, jacflg, &
+SUBROUTINE tensolve_tsneci(maxm, maxn, maxp, x0, m, n, typx, typf, itnlim, jacflg, &
                   gradtl, steptl, ftol, method, global, stepmx, dlt, ipr, &
-                  fvec, jac, msg, xp, fp, gp, termcd)
+                  fvec, jac, msg, xp, fp, gp, termcd) bind(c)
 
 INTEGER, INTENT(IN)        :: maxm
 INTEGER, INTENT(IN)        :: maxn
@@ -3310,7 +3311,7 @@ REAL (dp), INTENT(OUT)     :: gp(n)
 INTEGER, INTENT(OUT)       :: termcd
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -3318,7 +3319,7 @@ INTERFACE
     INTEGER, INTENT(IN)    :: m, n
   END SUBROUTINE fvec
 
-  SUBROUTINE jac(x, aja, m, n)
+  SUBROUTINE jac(x, aja, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -3356,11 +3357,11 @@ CALL tsnesv(maxm, x0, m, n, typx, typf, itnlim, jacflg,  &
             dfn, dxn, epsm, sqrn, fvec, jac, msg, xp, fp, gp, termcd)
 
 RETURN
-END SUBROUTINE tsneci
+END SUBROUTINE tensolve_tsneci
 
 
 
-SUBROUTINE tsnesi(maxm, maxn, maxp, x0, m, n, fvec, msg, xp, fp, gp, termcd)
+SUBROUTINE tensolve_tsnesi(maxm, maxn, maxp, x0, m, n, fvec, msg, xp, fp, gp, termcd) bind(c)
 
 INTEGER, INTENT(IN)        :: maxm
 INTEGER, INTENT(IN)        :: maxn
@@ -3375,7 +3376,7 @@ REAL (dp), INTENT(IN OUT)  :: gp(n)
 INTEGER, INTENT(OUT)       :: termcd
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -3415,7 +3416,7 @@ REAL (dp) :: epsm
 ! set default values for each variable to the nonlinear equations/
 ! nonlinear least squares solver
 
-CALL tsdflt(m, n, itnlim, jacflg, gradtl, steptl, ftol, method, global,  &
+CALL tensolve_tsdflt(m, n, itnlim, jacflg, gradtl, steptl, ftol, method, global,  &
             stepmx, dlt, typx, typf, ipr)
 
 ! check input parameters
@@ -3426,13 +3427,13 @@ CALL tschki(maxm, maxn, maxp, m, n, gradtl, steptl, ftol, itnlim, jacflg,  &
 IF(msg < 0) RETURN
 
 ! call nonlinear equations/nonlinear least squares solver
-! modified by nicola: made tsnesi call tsdumj instead of jac
+! modified by nicola: made tsnesi call tensolve_tsdumj instead of jac
 CALL tsnesv(maxm, x0, m, n, typx, typf, itnlim, jacflg,  &
             gradtl, steptl, ftol, method, global, stepmx, dlt, ipr,  &
-            dfn, dxn, epsm, sqrn, fvec, tsdumj, msg, xp, fp, gp, termcd)
+            dfn, dxn, epsm, sqrn, fvec, tensolve_tsdumj, msg, xp, fp, gp, termcd)
 
 RETURN
-END SUBROUTINE tsnesi
+END SUBROUTINE tensolve_tsnesi
 
 
 
@@ -3468,7 +3469,7 @@ INTEGER, INTENT(OUT)       :: termcd
 
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -3476,7 +3477,7 @@ INTERFACE
     INTEGER, INTENT(IN)    :: m, n
   END SUBROUTINE fvec
 
-  SUBROUTINE jac(x, aja, m, n)
+  SUBROUTINE jac(x, aja, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -4870,7 +4871,7 @@ INTEGER, INTENT(IN)        :: jacflg
 REAL (dp), INTENT(IN OUT)  :: aja(:,:)
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -4878,7 +4879,7 @@ INTERFACE
     INTEGER, INTENT(IN)    :: m, n
   END SUBROUTINE fvec
 
-  SUBROUTINE jac(x, aja, m, n)
+  SUBROUTINE jac(x, aja, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)
@@ -5513,8 +5514,9 @@ REAL (dp) :: y(n), w(m+n)
 INTEGER   :: zero1, zerotm, i, j
 REAL (dp) :: mu
 
-! perform a QR factorization of AJA
+w(m+1:m+n)=0 ! modified by nicola : missing initialisation
 
+! perform a QR factorization of AJA
 CALL tsqrfc(aja, n, m, 1, n, ierr, epsm, pivot, zero1)
 
 fn(1:m) = -fn(1:m)
@@ -5544,7 +5546,6 @@ IF(ierr == 0) THEN
 ELSE
 
 ! AJA is singular
-
   CALL tsqmuv(aja, fn, w, m, 1, zero1, .false.)
 
 ! solve ( AJA-trans AJA + MU I ) DN = -AJA-trans FN
@@ -5574,7 +5575,6 @@ ELSE
 
 ! factorize the transformed matrix AJA from 1 to n and compute
 ! the standard step DN
-
   CALL tsqrfc(aja, n, m+n, 1, n, ierr, epsm, pbar, zero1)
   CALL tsqmuv(aja, w, fq, m+n, 1, n+1, .false.)
   CALL tsbslv(aja, m+n, n, fq, dn)
@@ -5671,7 +5671,7 @@ REAL (dp), INTENT(OUT)     :: fp(:)
 REAL (dp), INTENT(OUT)     :: fpls
 
 INTERFACE
-  SUBROUTINE fvec(x, f, m, n)
+  SUBROUTINE fvec(x, f, m, n) bind(c)
     IMPLICIT NONE
     INTEGER, PARAMETER     :: dp = SELECTED_REAL_KIND(14, 60)
     REAL (dp), INTENT(IN)  :: x(n)

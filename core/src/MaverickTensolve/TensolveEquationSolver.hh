@@ -8,7 +8,7 @@
 #ifndef TENSOLVE_EQUATION_SOLVER_HH
 #define TENSOLVE_EQUATION_SOLVER_HH
 
-#include "tensolve_Cpp_interface.hh"
+#include "tensolveCppInterface.hh"
 #include "MaverickCore/EquationSolver/EquationSolverInterface.hh"
 
 namespace Maverick {

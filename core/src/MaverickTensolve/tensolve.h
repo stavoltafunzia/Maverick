@@ -33,13 +33,13 @@ typedef void (*TensolveEvalJacobian) (Maverick::real const x[],        // x valu
 // Tensolve package functions
 
 // simple interface for tensolve
-void __tensolve_MOD_tsnesi(Maverick::integer* max_m, Maverick::integer* max_n, Maverick::integer* max_p,
+void tensolve_tsnesi(Maverick::integer* max_m, Maverick::integer* max_n, Maverick::integer* max_p,
                           Maverick::real* x0, Maverick::integer const * m, Maverick::integer const * n,
                           TensolveEvalFunctions,
                           Maverick::integer* msg, Maverick::real* xp, Maverick::real* fp, Maverick::real* gp, Maverick::integer* termcd);
 
 // complex interface for tensolve
-void __tensolve_MOD_tsneci(Maverick::integer* max_m, Maverick::integer* max_n, Maverick::integer* max_p, Maverick::real* x0, Maverick::integer const * m, Maverick::integer const * n,
+void tensolve_tsneci(Maverick::integer* max_m, Maverick::integer* max_n, Maverick::integer* max_p, Maverick::real* x0, Maverick::integer const * m, Maverick::integer const * n,
                            Maverick::real* typ_x, Maverick::real* typ_f, Maverick::integer* it_lim,
                            Maverick::integer* jac_flag, Maverick::real* grad_tl, Maverick::real* step_tl, Maverick::real* f_tol,
                            Maverick::integer* method, Maverick::integer* global, Maverick::real* step_mx, Maverick::real* dlt, Maverick::integer* ipr,
@@ -47,10 +47,10 @@ void __tensolve_MOD_tsneci(Maverick::integer* max_m, Maverick::integer* max_n, M
                            Maverick::real* xp, Maverick::real* fp, Maverick::real* gp, Maverick::integer* termcd);
 
 // dummy jacobian function
-void __tensolve_MOD_tsdumj(Maverick::real const * x, Maverick::real * jac, Maverick::integer const * m, Maverick::integer const * n);
+void tensolve_tsdumj(Maverick::real const * x, Maverick::real * jac, Maverick::integer const * m, Maverick::integer const * n);
 
 // get tensolve default parameters
-void __tensolve_MOD_tsdflt(Maverick::integer const * m, Maverick::integer const * n, Maverick::integer * itnlim, Maverick::integer * jacflg, Maverick::real * gradtl, Maverick::real * steptl,
+void tensolve_tsdflt(Maverick::integer const * m, Maverick::integer const * n, Maverick::integer * itnlim, Maverick::integer * jacflg, Maverick::real * gradtl, Maverick::real * steptl,
                            Maverick::real * ftol, Maverick::integer * method, Maverick::integer * global, Maverick::real * stepmx, Maverick::real * dlt,
                            Maverick::real * typx, Maverick::real * typf, Maverick::integer * ipr);
 
