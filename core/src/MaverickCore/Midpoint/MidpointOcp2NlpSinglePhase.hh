@@ -12,6 +12,8 @@
 #include "MaverickCore/Midpoint/MidpointMeshSinglePhase.hh"
 #include "MaverickCore/Midpoint/MidpointOcpSolutionSinglePhase.hh"
 #include "MaverickCore/MaverickPrivateDefs.hh"
+#include <thread>
+#include <condition_variable>
 
 #define _dim_y _dim_xu
 #define _dim_ay _dim_axu
@@ -112,7 +114,7 @@ namespace Maverick {
 
         void setThreadsAffinity( threads_affinity const & th_affinity );
 
-        threads_affinity const & getActualThreadsAffinityUsed(integer const i_phase) const;
+        threads_affinity getActualThreadsAffinityUsed(integer const i_phase) const;
 
     protected:
 
@@ -471,15 +473,31 @@ namespace Maverick {
                                                      real   constraints_jac_out[], real int_constraints_jac_y_out[], real int_constraints_jac_p_out[], real int_constraints_jac_y_last_out[],
                                                      real   hessian_out[], real hessian_last_column_out[], SparseMatrix * hess_p_p_lower_mat,
                                                      real const lambda[], real const integral_constraint_lambda_scaled[], real const lambda_0,
-                                                     std::exception_ptr * exc_ptr
+                                                     std::exception_ptr & exc_ptr
                                                      ) const;
 
-        //vector ot mesh point for each thread
+        // thread related variables
 
-        std::vector<integer> _thread_mesh_intervals = {};
+        struct ThreadJob {
+            std::thread *th                        = nullptr;
+            mutable std::function<void()> job      = nullptr;
+            std::condition_variable * cond_var     = nullptr;
+            std::mutex * job_mutex                 = nullptr;
+            std::exception_ptr exc_ptr             = nullptr;
+            mutable bool job_todo                  = false;
+            bool kill                              = false;
+            integer start_mesh_interval            = 0;
+            integer end_mesh_interval              = 0;
+            single_thread_affinity affinity        = {};
+        };
+
+        // array of jobs
+        ThreadJob * _thread_jobs    = nullptr;
+        integer _actual_num_threads = 0;
+
+        void clearThreadJobs();
 
         // method to calculate how to span the nlp over multiple threads
-
         void calculateWorkForThreads();
 
     private:

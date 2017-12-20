@@ -18,12 +18,12 @@ using namespace std;
 
 OcpSolver::OcpSolver( MaverickOcp & ocp_problem ) : MaverickSolver(ocp_problem), _maverick(MaverickSingleton::getInstance()) {
     _solver_settings.nlp_guess_ptr = & _nlp_guess;
-    
+
     u_integer num_th = _maverick.getHardwareConcurrencyNumThreads();
     for (u_integer i=0; i<num_th; i++)
         _th_affinity.push_back({});
     if (num_th == 0) _th_affinity = {{}};
-    
+
 }
 
 OcpSolver::~OcpSolver() {}
@@ -59,7 +59,7 @@ SolverOutput OcpSolver::solve() {
     while (true) { // mesh refinement loop
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-        if (_solver_status.must_setup_ocp2nlp)
+        if (_p_ocp_2_nlp == nullptr)
             setupOcp2Nlp();
 
         // depending on the selected start code, set the guess
@@ -492,27 +492,13 @@ void OcpSolver::setup( GC::GenericContainer const & gc_setup ) {
 
 }
 
-//SETUP MESH ONLY
-void OcpSolver::setupMeshOnly( GC::GenericContainer const & gc_mesh ) {
-    _maverick.Log(InfoLevel::info_level_normal, "Setting up mesh ...\n");
-
-    _p_mesh = std::unique_ptr<Mesh> (new MidpointMesh()); // currenty only this mesh type is implemented
-    _p_mesh->setup( gc_mesh );
-
-    _solver_status.has_mesh_changed_since_last_solution = true;
-    _solver_status.must_setup_ocp2nlp = true;
-    _solver_status.has_setup_mesh = true;
-
-    MAVERICK_ASSERT( _p_mesh->getNumberOfPhases() == _ocp_problem.numberOfPhases(), "Maverick solver error: number of mesh phases " << _p_mesh->getNumberOfPhases() << " is different from number of ocp phases " << _ocp_problem.numberOfPhases() << "\n" )
-}
-
 void OcpSolver::setMesh( std::shared_ptr< Mesh > mesh ) {
     _maverick.Log(InfoLevel::info_level_normal, "Setting up mesh ...\n");
 
     _p_mesh = mesh;
+    _p_ocp_2_nlp = nullptr; // invalidate discretiser
 
     _solver_status.has_mesh_changed_since_last_solution = true;
-    _solver_status.must_setup_ocp2nlp = true;
     _solver_status.has_setup_mesh = true;
 
     MAVERICK_ASSERT( _p_mesh->getNumberOfPhases() == _ocp_problem.numberOfPhases(), "Maverick solver error: number of mesh phases " << _p_mesh->getNumberOfPhases() << " is different from number of ocp phases " << _ocp_problem.numberOfPhases() << "\n" )
@@ -520,8 +506,15 @@ void OcpSolver::setMesh( std::shared_ptr< Mesh > mesh ) {
 
 void OcpSolver::setMesh( Mesh const & mesh ) {
     // copy the mesh from outside
-    std::shared_ptr< Mesh> ptr ( mesh.copy() );
+    std::shared_ptr<Mesh> ptr ( mesh.copy() );
     setMesh(ptr);
+}
+
+//SETUP MESH ONLY
+void OcpSolver::setupMeshOnly( GC::GenericContainer const & gc_mesh ) {
+    shared_ptr<Mesh> mesh = shared_ptr<Mesh> (new MidpointMesh()); // currenty only this mesh type is implemented
+    mesh->setup( gc_mesh );
+    setMesh(mesh);
 }
 
 
@@ -532,18 +525,15 @@ void OcpSolver::setupOcp2Nlp() {
     if ( _p_ocp_2_nlp != nullptr ) {
         min_nlp_vars_per_thread = _p_ocp_2_nlp->getMinNumberOfNlpVarsPerThreads();
     }
-
     _p_ocp_2_nlp = _p_mesh->getDiscretiser( _ocp_problem );
+    _p_ocp_2_nlp->setThreadsAffinity(_th_affinity);
 
     //set min number of threads
-    _p_ocp_2_nlp->setThreadsAffinity(_th_affinity);
     if (min_nlp_vars_per_thread > 0)
         _p_ocp_2_nlp->setMinNumberOfNlpVarsPerThreads(min_nlp_vars_per_thread);
 
     if (_p_nlp_solver != nullptr) //if the nlp solver already exist, update its reference to ocp2nlp
         _p_nlp_solver->setOcp2Nlp( _p_ocp_2_nlp );
-
-    _solver_status.must_setup_ocp2nlp = false;
 }
 
 //SETUP THE SOLVER ONLY
@@ -566,7 +556,6 @@ void OcpSolver::setupSolverOnly( GC::GenericContainer const & gc_solver ) {
     if (_p_nlp_solver == nullptr) { // we have to initialise it
         if (requested_nlp_solver_id == NlpSolverId::nlp_id_ipopt ) {
             loadIpoptNlpSolverFromSharedLib();
-            //_p_nlp_solver = unique_ptr<IpoptNlpSolver>( new IpoptNlpSolver(*_p_ocp_2_nlp, _nlp_solution) );
         } else {
             throw runtime_error("Currently only Ipopt can be used as nlp solver.\n");
         }
@@ -606,7 +595,7 @@ void OcpSolver::setupSolverOnly( GC::GenericContainer const & gc_solver ) {
         try {
             GC::vector_type const & gc_aff = gc_solver("threads_affinity").get_vector();
             _th_affinity = {};
-            cout << gc_aff[1].get_type_name() << endl;
+
             for (integer i = 0; i<gc_aff.size(); i++) {
                 _th_affinity.push_back({});
                 vector<integer> c_aff;
@@ -634,8 +623,9 @@ void OcpSolver::setupSolverOnly( GC::GenericContainer const & gc_solver ) {
             }
         }
         if (_th_affinity.size() == 0) _th_affinity = {{}};
-        if (_p_ocp_2_nlp)
+        if (_p_ocp_2_nlp != nullptr)
             _p_ocp_2_nlp -> setThreadsAffinity(_th_affinity);
+
     }
 
     //check for the minimum number of nlp vars per thread
@@ -646,7 +636,7 @@ void OcpSolver::setupSolverOnly( GC::GenericContainer const & gc_solver ) {
                 _maverick.Log(InfoLevel::info_level_warning, "Non positive number of nlp vars per thread is not allowed. Will set to 1.\n");
                 min_nlp_vars_p_t = 1;
             }
-            if (_p_ocp_2_nlp)
+            if (_p_ocp_2_nlp != nullptr)
                 _p_ocp_2_nlp->setMinNumberOfNlpVarsPerThreads(min_nlp_vars_p_t);
         }
     }

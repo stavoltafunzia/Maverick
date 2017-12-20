@@ -107,6 +107,8 @@ The following software is required in order to use Maverick:
 
 - (optional) [MBSymba](http://multibody.net/mbsymba/). MBSymba is a Maple library that allows to easily write the equations of motion for complex multibody systems.
 
+Moreover a C++ and a Fortran compiler are needed.
+
 ## Examples
 Each example is organised in four folders: "data", "maple", "results" and "sources". The "data" folder contains the Lua text files with the problem dataset, or the python files. The "maple" folder contains the Maple worksheet to generate the C++ code of the examples. If you do not have Maple, you can neglect this folder since C++ source codes are already included. The "results" folder contains the solution text files. The "sources" folder contains the C++ source files for the problem.
 
@@ -132,8 +134,8 @@ If someone is interested in this project and would like to help me in carrying o
 
 - **Which operating system is supported?**
 
-Maverick is written entirely in plain C++ and no OS specific api is used: thus it can be used in any OS provided you have a C++ compiler. However, I'v tested and used Maverick only in unix systems (NOT Windows!).
-In theory you can compile Maverick also in Windows, however you cannot use the makefile included. It is not my intention to support Windows since I personally do not want to waste time and moneys using such (not so much)-operating system. If you are using Windows, I suggest to install a virtual machine with Linux; performance shouldn't be affected remarkably.
+Maverick is written entirely in plain C++ and no OS specific api is used: thus it can be used in any OS provided you have a C++ compiler. However, I'v tested and used Maverick only in unix systems (not in Windows).
+In theory you can compile Maverick also in Windows, however you cannot use the makefile included. It is not my intention to support Windows since I personally do not want to waste time and moneys using such (pseudo-quasi) operating system. If you are using Windows, I suggest to install a virtual machine with Linux; performance shouldn't be affected remarkably.
 Ps: if you would like to contribute to the project adding Windows support, please contact me.
 
 - **How should I write Jacobians and Hessians?**

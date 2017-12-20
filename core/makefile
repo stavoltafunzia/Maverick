@@ -58,40 +58,41 @@ ifeq ($(PLATFORM),)
 endif
 
 # define the C compiler to use
-CC := g++
+CXX := g++
 FF := gfortran
 AR := ar
 ARFLAGS := rvs
 
-ifeq ($(BUILD_TARGET),"debug")
-   # -g debug for gdb
-   BUILD_FLAGS:=-DMAVERICK_DEBUG -g -DDEBUG -D_GLIBXX_DEBUG_PEDANTIC
-else
-    #-DNDEBUG speed up eigen
-   BUILD_FLAGS:=-DNDEBUG
-endif
+# END OF CUSTOM SETTINGS ----------------------------------------------------------
 
 ifeq ($(PLATFORM),"x86_64")
     ifeq ($(OS),Darwin)
-        CPPADDFLAG :=-m64 -arch x86_64
+        CPPADDFLAG := -m64 -arch x86_64
     else
-        CPPADDFLAG :=-m64 -fopenmp
+        CPPADDFLAG := -m64 -fopenmp
 	endif
 else #armv7
     CPPADDFLAG := -fopenmp
 endif
 
 ifeq ($(OPTIMISATION),"native")
-    OPTIM_FLAGS :=-O3 -march=native -funroll-loops
+    OPTIM_FLAGS := -O3 -march=native -funroll-loops
 else
     ifeq ($(PLATFORM),"x86_64")
-        OPTIM_FLAGS :=-O3 -msse2 -msse -mmmx -funroll-loops
+        OPTIM_FLAGS := -O3 -msse2 -msse -mmmx -funroll-loops
 	else #armv7
-        OPTIM_FLAGS :=-O3 -funroll-loops
+        OPTIM_FLAGS := -O3 -funroll-loops
 	endif
 endif
 
-# END OF CUSTOM SETTINGS ----------------------------------------------------------
+ifeq ($(BUILD_TARGET),"debug")
+   # -g debug for gdb
+   BUILD_FLAGS := -DMAVERICK_DEBUG -g -DDEBUG -D_GLIBXX_DEBUG_PEDANTIC
+	 OPTIM_FLAGS :=
+else
+    #-DNDEBUG speed up eigen
+   BUILD_FLAGS := -DNDEBUG
+endif
 
 MAVERICK_CORE_PATH = ./src/MaverickCore
 MAVERICK_CORE_SRC_FILES = $(shell find $(MAVERICK_CORE_PATH) -name '*.cc')
@@ -311,7 +312,7 @@ clean_lua:
 
 
 @(MAVERICK_CORE_LIB): @(MAVERICK_CORE) @(LUA)
-	$(CC) $(MAV_LIB_SL_FLAGS)
+	$(CXX) $(MAV_LIB_SL_FLAGS)
 	mv $(LIBNAME).$(SL_EXT) build/
 
 @(MAVERICK_CORE): $(MAVERICK_CORE_OBJS_FILES)
@@ -336,7 +337,7 @@ clean_lua:
 
 @(MAVERICK_TOIPOPT_LIB): @(MAVERICK_TOIPOPT)
 	rm -f build/$(LIBNAMEIP).$(SL_EXT)
-	$(CC) $(MAV_TOIPOPT_LIB_SL_FLAGS)
+	$(CXX) $(MAV_TOIPOPT_LIB_SL_FLAGS)
 	test -d "build" || mkdir -p "build"
 	mv $(LIBNAMEIP).$(SL_EXT) build/
 
@@ -346,7 +347,7 @@ clean_lua:
 
 @(MAVERICK_TENSOLVE_LIB): @(MAVERICK_TENSOLVE)
 	rm -f build/$(LIBNAMETS).$(SL_EXT)
-	$(CC) $(MAV_TENSOLVE_LIB_SL_FLAGS)
+	$(CXX) $(MAV_TENSOLVE_LIB_SL_FLAGS)
 	test -d "build" || mkdir -p "build"
 	mv $(LIBNAMETS).$(SL_EXT) build/
 
@@ -400,19 +401,19 @@ endif
 
 
 $(MAVERICK_TOIPOPT_PATH)/%.o: $(MAVERICK_TOIPOPT_PATH)/%.cc
-	$(CC) $(TOIPOPT_CFLAGS) -c $< -o $@
+	$(CXX) $(TOIPOPT_CFLAGS) -c $< -o $@
 
 $(MAVERICK_TENSOLVE_PATH)/%.o: $(MAVERICK_TENSOLVE_PATH)/%.cc
-	$(CC) $(TENSOLVE_CFLAGS) -c $< -o $@
+	$(CXX) $(TENSOLVE_CFLAGS) -c $< -o $@
 
 $(MAVERICK_GC_PATH)/%.o: $(MAVERICK_GC_PATH)/%.cc
-	$(CC) $(GC_CFLAGS) -c $< -o $@
+	$(CXX) $(GC_CFLAGS) -c $< -o $@
 
 $(MAVERICK_SPLINES_PATH)/%.o: $(MAVERICK_SPLINES_PATH)/%.cc
-	$(CC) $(SPLINES_CFLAGS) -c $< -o $@
+	$(CXX) $(SPLINES_CFLAGS) -c $< -o $@
 
 $(MAVERICK_UTILS_PATH)/%.o: $(MAVERICK_UTILS_PATH)/%.cc
-	$(CC) $(UTILS_CFLAGS) -c $< -o $@
+	$(CXX) $(UTILS_CFLAGS) -c $< -o $@
 
 $(MAVERICK_CORE_PATH)/%.o: $(MAVERICK_CORE_PATH)/%.cc
-	$(CC) $(CORE_CFLAGS) -c $< -o $@
+	$(CXX) $(CORE_CFLAGS) -c $< -o $@

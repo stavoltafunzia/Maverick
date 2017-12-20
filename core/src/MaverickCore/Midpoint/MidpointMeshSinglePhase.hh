@@ -68,7 +68,7 @@ namespace Maverick {
 
         void setDiscretisationPoints( vec_1d_real const & zeta );
 
-        inline integer getNumberOfIntervals( ) const { return getNumberOfDiscretisationPoints()- 1; }
+        inline integer getNumberOfIntervals( ) const { return getNumberOfDiscretisationPoints() - 1; }
 
         real getZeta( integer const mesh_point_index ) const;
 

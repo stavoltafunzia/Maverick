@@ -93,8 +93,8 @@ namespace Maverick {
         virtual void setIsTargetLagrangeFromGuess( Nlp const & nlp_guess ) = 0;
 
         virtual void setThreadsAffinity( threads_affinity const & th_affinity ) = 0;
-        
-        virtual threads_affinity const & getActualThreadsAffinityUsed(integer const i_phase) const = 0;
+
+        virtual threads_affinity getActualThreadsAffinityUsed(integer const i_phase) const = 0;
 
         void setMinNumberOfNlpVarsPerThreads( integer const min_nlp );
 
@@ -112,7 +112,7 @@ namespace Maverick {
 
         Mesh const & _mesh;
 
-        threads_affinity _th_affinity, _actual_th_affinity;
+        threads_affinity _th_affinity;
 
         integer _min_nlp_vars_per_thread = MIN_NLP_VARS_PER_THREAD;
 
@@ -126,11 +126,11 @@ namespace Maverick {
         // Hessian related quantities
         integer * _p_nlp_hessian_rows  = nullptr ;
         integer * _p_nlp_hessian_cols  = nullptr ;
-        
+
         virtual void calculateWorkForThreads() = 0;
 
         void deleteAllDataPointers();
-        
+
         void deleteAllThreadsPointers();
 
     };

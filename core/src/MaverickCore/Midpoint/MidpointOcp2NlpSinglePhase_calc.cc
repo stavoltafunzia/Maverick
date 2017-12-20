@@ -2,11 +2,13 @@
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickPrivateDefs.hh"
 #include <thread>
+#include <mutex>
 #ifdef __linux__
     #include <pthread.h>
 #endif
 
 using namespace Maverick;
+using namespace std;
 
 integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], integer const n_y, real const lambda[], real const lambda_0,
                                                       real * target_out,
@@ -48,12 +50,10 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 #endif
 
     //CREATE DATA ARRAYS FOR EACH THREAD
-    integer const actual_num_threads = (integer) _actual_th_affinity.size();
+    real const * t_nlp_y[_actual_num_threads];
 
-    real const * t_nlp_y[actual_num_threads];
-
-    for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-        integer current_mesh_interval = _thread_mesh_intervals[i_thread];
+    for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+        integer current_mesh_interval = _thread_jobs[i_thread].start_mesh_interval;
         t_nlp_y[i_thread] = nlp_y + getNlpYPtrIndexForInterval(current_mesh_interval);
     }
 
@@ -62,25 +62,25 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     real const * t_ocp_params = ocp_params;
 
     //target
-    real * t_target_out[actual_num_threads];
+    real * t_target_out[_actual_num_threads];
     if (evaluate_target) {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++)
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++)
             t_target_out[i_thread] = new real(0);
     } else {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++)
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++)
             t_target_out[i_thread] = nullptr;
     }
 
     //target jacobian
-    real * t_lagrange_target_jac_out[actual_num_threads];
-    real * t_lagrange_target_j_r_out[actual_num_threads];
-    real * t_lagrange_target_j_y_last_out[actual_num_threads];
+    real * t_lagrange_target_jac_out[_actual_num_threads];
+    real * t_lagrange_target_j_r_out[_actual_num_threads];
+    real * t_lagrange_target_j_y_last_out[_actual_num_threads];
     integer lagrange_jac_p_nnz = 0;
     if (evaluate_target_j) {
         lagrange_jac_p_nnz = _ocp_problem.lagrangeJacPNnz(_i_phase);
 
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-            integer current_mesh_interval = _thread_mesh_intervals[i_thread];
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+            integer current_mesh_interval = _thread_jobs[i_thread].start_mesh_interval;
             t_lagrange_target_jac_out[i_thread] = target_jac_out + getNlpTargetJacobianPtrIndexForInterval(current_mesh_interval);
             writeRealToVector(t_lagrange_target_jac_out[i_thread], 0, _lagrange_target_j_y_nnz); //write zero only on first elements is necessary
             t_lagrange_target_j_r_out[i_thread] = new real[lagrange_jac_p_nnz] ;
@@ -88,7 +88,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
             t_lagrange_target_j_y_last_out[i_thread] = new real[_lagrange_target_j_y_nnz];
         }
     } else {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             t_lagrange_target_jac_out[i_thread] = nullptr;
             t_lagrange_target_j_r_out[i_thread] = nullptr;
             t_lagrange_target_j_y_last_out[i_thread] = nullptr;
@@ -96,31 +96,31 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     }
 
     //constraints
-    real * t_constraints_out[actual_num_threads];
-    real * t_int_constraints_out[actual_num_threads];
+    real * t_constraints_out[_actual_num_threads];
+    real * t_int_constraints_out[_actual_num_threads];
     if (evaluate_constraints) {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-            integer current_mesh_interval = _thread_mesh_intervals[i_thread];
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+            integer current_mesh_interval = _thread_jobs[i_thread].start_mesh_interval;
             t_constraints_out[i_thread] = constraints_out + getNlpConstraintsPtrIndexForInterval(current_mesh_interval);
             t_int_constraints_out[i_thread] = new real[_dim_ic];
             writeRealToVector(t_int_constraints_out[i_thread], 0, _dim_ic );
         }
     } else {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             t_constraints_out[i_thread] = nullptr;
             t_int_constraints_out[i_thread] = nullptr;
         }
     }
 
     //constraints jacobian
-    real * t_constraints_jac_out[actual_num_threads];
-    real * t_int_constraints_jac_y_out[actual_num_threads];
-    real * t_int_constraints_jac_p_out[actual_num_threads];
-    real * t_int_constraints_jac_y_last_out[actual_num_threads];
+    real * t_constraints_jac_out[_actual_num_threads];
+    real * t_int_constraints_jac_y_out[_actual_num_threads];
+    real * t_int_constraints_jac_p_out[_actual_num_threads];
+    real * t_int_constraints_jac_y_last_out[_actual_num_threads];
     integer int_constr_j_p = 0;
     if (evaluate_constraints_j) {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-            integer current_mesh_interval = _thread_mesh_intervals[i_thread];
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+            integer current_mesh_interval = _thread_jobs[i_thread].start_mesh_interval;
             t_constraints_jac_out[i_thread] = constraints_jac_out + getNlpConstraintsJacobainPtrIndexForInterval(current_mesh_interval);
             t_int_constraints_jac_y_out[i_thread] = constraints_jac_out + getNlpConstraintsJacobainPtrIndexForIntConstr(current_mesh_interval);
             writeRealToVector(t_int_constraints_jac_y_out[i_thread], 0, _int_constr_j_y_nnz );
@@ -130,7 +130,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
             t_int_constraints_jac_y_last_out[i_thread] = new real[_int_constr_j_y_nnz];
         }
     } else {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             t_constraints_jac_out[i_thread] = nullptr;
             t_int_constraints_jac_y_out[i_thread] = nullptr;
             t_int_constraints_jac_p_out[i_thread] = nullptr;
@@ -139,17 +139,17 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     }
 
     //hessian
-    real * t_hessian_out[actual_num_threads];
-    real * t_hessian_last_column_out[actual_num_threads];
-    SparseMatrix * t_hess_p_p_lower_mat[actual_num_threads];
-    real const * t_lambda[actual_num_threads];
+    real * t_hessian_out[_actual_num_threads];
+    real * t_hessian_last_column_out[_actual_num_threads];
+    SparseMatrix * t_hess_p_p_lower_mat[_actual_num_threads];
+    real const * t_lambda[_actual_num_threads];
     real * integral_constraint_lambda_scaled;
     if (evaluate_hessian) {
         integral_constraint_lambda_scaled = new real[_dim_ic];
         multiplyAndCopyVectorTo(lambda + getNlpConstraintsPtrIndexForIntConstr(), integral_constraint_lambda_scaled, _p_inv_scaling_int_constr, _dim_ic);
 
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-            integer current_mesh_interval = _thread_mesh_intervals[i_thread];
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+            integer current_mesh_interval = _thread_jobs[i_thread].start_mesh_interval;
             t_hessian_out[i_thread] = hessian_out + getNlpHessianPtrIndexForLeftBlock(current_mesh_interval);
             writeRealToVector(t_hessian_out[i_thread], 0, getNlpHessianLeftColumnBlockNnz() );
             t_hessian_last_column_out[i_thread] = new real[getNlpHessianRightColumnBlockNnz() ];
@@ -161,7 +161,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
             t_lambda[i_thread] = lambda + _dim_q * current_mesh_interval;
         }
     } else {
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             t_hessian_out[i_thread] = nullptr;
             t_hessian_last_column_out[i_thread] = nullptr;
             t_hess_p_p_lower_mat[i_thread] = nullptr;
@@ -170,33 +170,39 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     }
 
     //    now run over the entire _p_mesh intervals
-    std::thread * threads[actual_num_threads];
-    std::vector<std::exception_ptr> exc_ptrs(actual_num_threads);
     integer const eigen_num_threads = Eigen::nbThreads( );  // save number of threads for eigen
     Eigen::setNbThreads(1); // the function evaluation is already parallel
 
-    for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-        threads[i_thread] = new std::thread(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
-                                            _thread_mesh_intervals[i_thread], _thread_mesh_intervals[i_thread+1],
-                                            t_nlp_y[i_thread], t_ocp_params,
-                                            t_target_out[i_thread],
-                                            t_lagrange_target_jac_out[i_thread], t_lagrange_target_j_r_out[i_thread],  t_lagrange_target_j_y_last_out[i_thread],
-                                            t_constraints_out[i_thread], t_int_constraints_out[i_thread],
-                                            t_constraints_jac_out[i_thread], t_int_constraints_jac_y_out[i_thread], t_int_constraints_jac_p_out[i_thread], t_int_constraints_jac_y_last_out[i_thread],
-                                            t_hessian_out[i_thread], t_hessian_last_column_out[i_thread], t_hess_p_p_lower_mat[i_thread],
-                                            t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
-                                            &exc_ptrs[i_thread]
-                                            );
-#ifdef __linux__
-        auto const & c_aff = _actual_th_affinity[i_thread];
-        if (c_aff.size()>0) {
-            cpu_set_t cpuset;
-            CPU_ZERO(&cpuset);
-            for (u_integer x : c_aff)
-                CPU_SET(x, &cpuset);
-            pthread_setaffinity_np(threads[i_thread]->native_handle(), sizeof(cpu_set_t), &cpuset);
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        ThreadJob const & th_job = _thread_jobs[i_thread];
+        th_job.job = std::bind(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
+                               th_job.start_mesh_interval, th_job.end_mesh_interval,
+                               t_nlp_y[i_thread], t_ocp_params,
+                               t_target_out[i_thread],
+                               t_lagrange_target_jac_out[i_thread], t_lagrange_target_j_r_out[i_thread],  t_lagrange_target_j_y_last_out[i_thread],
+                               t_constraints_out[i_thread], t_int_constraints_out[i_thread],
+                               t_constraints_jac_out[i_thread], t_int_constraints_jac_y_out[i_thread], t_int_constraints_jac_p_out[i_thread], t_int_constraints_jac_y_last_out[i_thread],
+                               t_hessian_out[i_thread], t_hessian_last_column_out[i_thread], t_hess_p_p_lower_mat[i_thread],
+                               t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
+                               th_job.exc_ptr
+                               );
+                               //nullptr);
+        // threads[i_thread] = new std::thread(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
+        //                                     _thread_mesh_intervals[i_thread], _thread_mesh_intervals[i_thread+1],
+        //                                     t_nlp_y[i_thread], t_ocp_params,
+        //                                     t_target_out[i_thread],
+        //                                     t_lagrange_target_jac_out[i_thread], t_lagrange_target_j_r_out[i_thread],  t_lagrange_target_j_y_last_out[i_thread],
+        //                                     t_constraints_out[i_thread], t_int_constraints_out[i_thread],
+        //                                     t_constraints_jac_out[i_thread], t_int_constraints_jac_y_out[i_thread], t_int_constraints_jac_p_out[i_thread], t_int_constraints_jac_y_last_out[i_thread],
+        //                                     t_hessian_out[i_thread], t_hessian_last_column_out[i_thread], t_hess_p_p_lower_mat[i_thread],
+        //                                     t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
+        //                                     &exc_ptrs[i_thread]
+        //                                     );
+        {
+            unique_lock<mutex> lock(*(th_job.job_mutex));
+            th_job.job_todo = true;
         }
-#endif
+        th_job.cond_var->notify_one();
     }
 
     real const final_zeta = _p_mesh->getZeta(_p_mesh->getNumberOfIntervals());
@@ -466,13 +472,18 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     }
 
     // wait for threads to finish calculus
-    for (integer i=0; i<actual_num_threads; i++)
-        threads[i]->join();
-    for (integer i=0; i<actual_num_threads; i++)
-        delete threads[i];
-    for (std::vector<std::exception_ptr>::iterator it = exc_ptrs.begin(); it != exc_ptrs.end(); it++) {
-        if (*it)
-            std::rethrow_exception(*it);
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        ThreadJob & th_job = _thread_jobs[i_thread];
+        // wait for the thread to finish
+        {
+            auto check_pred = [&th_job]()-> bool { return !(th_job.job_todo); };
+            unique_lock<mutex> lock(*(th_job.job_mutex));
+            th_job.cond_var->wait(lock, check_pred);
+        }
+
+        // rethrow exception if needed
+        if (th_job.exc_ptr)
+            std::rethrow_exception(th_job.exc_ptr);
     }
     Eigen::setNbThreads(eigen_num_threads); // restore eigen parallel
 
@@ -484,7 +495,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         *target_out = *p_mayer_target  ;
         delete p_mayer_target;
 
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             *target_out += *t_target_out[i_thread];
             delete t_target_out[i_thread];
         }
@@ -505,9 +516,9 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         writeRealToVector(lagrange_jac_p, 0, lagrange_jac_p_nnz);
 
         // first sum the lagrange target from all the threads
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
 
-            integer current_mesh_interval_end = _thread_mesh_intervals[i_thread+1];
+            integer current_mesh_interval_end = _thread_jobs[i_thread].end_mesh_interval;
             real * lagrange_target_j_y_end = target_jac_out + getNlpTargetJacobianPtrIndexForInterval(current_mesh_interval_end);
             sumVectorTo(t_lagrange_target_j_y_last_out[i_thread], lagrange_target_j_y_end, _lagrange_target_j_y_nnz);
             delete [] t_lagrange_target_j_y_last_out[i_thread];
@@ -526,12 +537,6 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         } else {
             copyVectorTo(lagrange_jac_p, p_target_j_r_out, lagrange_jac_p_nnz);
         }
-
-        //        cout << "lag tgt grad: ";
-        //        for (integer i=0; i<getNlpTargetGradientNnz()  ; i++) {
-        //            cout << target_jac_out[i] << "\t";
-        //        }
-        //        cout << "\n";
 
         integer mayer_j_xu_init_nnz = _ocp_problem.mayerJacXuInitNnz(_i_phase);
         integer mayer_j_xu_fin_nnz = _ocp_problem.mayerJacXuFinNnz(_i_phase);
@@ -634,7 +639,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         real * const p_int_constraints_out = constraints_out + getNlpConstraintsPtrIndexForIntConstr();
         writeRealToVector(p_int_constraints_out, 0, _dim_ic);
 
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
             sumVectorTo(t_int_constraints_out[i_thread], p_int_constraints_out, _dim_ic);
             delete [] t_int_constraints_out[i_thread];
         }
@@ -653,8 +658,8 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
             writeRealToVector(int_constraints_jac_y_last_out, 0, _int_constr_j_y_nnz);
         }
 
-        for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-            integer current_mesh_interval_end = _thread_mesh_intervals[i_thread+1];
+        for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+            integer current_mesh_interval_end = _thread_jobs[i_thread].end_mesh_interval;
             real * current_int_constraints_jac_y_end = constraints_jac_out + getNlpConstraintsJacobainPtrIndexForIntConstr(current_mesh_interval_end);
 
             sumVectorTo(t_int_constraints_jac_y_last_out[i_thread], current_int_constraints_jac_y_end, _int_constr_j_y_nnz);
@@ -683,8 +688,8 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         //        cout << "\n\n";
         {
             //first glue the hessian written by all threads
-            for (integer i_thread=0; i_thread<actual_num_threads; i_thread++) {
-                integer current_mesh_interval_end = _thread_mesh_intervals[i_thread+1];
+            for (integer i_thread=0; i_thread<_actual_num_threads; i_thread++) {
+                integer current_mesh_interval_end = _thread_jobs[i_thread].end_mesh_interval;;
 
                 // first add the y_y block
                 real * current_hessian_middle_column_end = hessian_out + getNlpHessianPtrIndexForLeftBlock(current_mesh_interval_end);
@@ -692,7 +697,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 
                 // now add the y_p block
                 current_hessian_middle_column_end += _hess_y_y_lower_mat_nnz;
-                if ( i_thread != (actual_num_threads-1) ) {
+                if ( i_thread != (_actual_num_threads-1) ) {
                     current_hessian_middle_column_end += _hess_y_ay_mat_nnz + _hess_yleft_yright_mat_nnz;
                 }
                 sumVectorTo(t_hessian_last_column_out[i_thread]+_hess_y_y_lower_mat_nnz, current_hessian_middle_column_end, _hess_y_p_mat_nnz);
@@ -853,7 +858,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
                                                                     real   constraints_jac_out[], real int_constraints_jac_y_out[], real int_constraints_jac_p_out[], real int_constraints_jac_y_last_out[],
                                                                     real   hessian_out[], real hessian_last_column_out[], SparseMatrix * hess_p_p_lower_mat,
                                                                     real const lambda[], real const integral_constraint_lambda_scaled[], real const lambda_0,
-                                                                    std::exception_ptr * exc_ptr
+                                                                    std::exception_ptr & exc_ptr
                                                                     ) const {
     try {
         //    lagrange_target_jac_y_out=nullptr;
@@ -1068,6 +1073,6 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
         }
 #endif
     } catch ( ... ) {
-        *exc_ptr = std::current_exception();
+        exc_ptr = std::current_exception();
     }
 }

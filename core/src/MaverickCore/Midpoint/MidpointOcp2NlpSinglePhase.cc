@@ -5,6 +5,7 @@
 #include "MaverickCore/Midpoint/MidpointOcpSolution.hh"
 #include "MaverickUtils/GenericFunction/GF1ASpline.hh"
 #include "MaverickCore/MaverickSingleton.hh"
+#include <mutex>
 
 using namespace Maverick;
 using namespace std;
@@ -153,7 +154,8 @@ MidpointOcp2NlpSinglePhase::MidpointOcp2NlpSinglePhase( MaverickOcp const & ocp_
 
 
 MidpointOcp2NlpSinglePhase::~MidpointOcp2NlpSinglePhase() {
-    //deleteAllDataPointers(); //already done in super class
+    // pointers already deleted in super class
+    clearThreadJobs();
 }
 
 void MidpointOcp2NlpSinglePhase::setup() {
@@ -303,7 +305,26 @@ integer MidpointOcp2NlpSinglePhase::getNlpHessianNnz() const {
     return getNlpHessianFirstColumnBlockNnz() + getNlpHessianLeftColumnBlockNnz() * (_p_mesh->getNumberOfIntervals() - 1 )  + getNlpHessianLastColumnBlockNnz() + _p_mesh->getNumberOfIntervals() * getNlpHessianCentreColumnBlockNnz() +  _hess_p_p_lower_mat_nnz;
 };
 
+void MidpointOcp2NlpSinglePhase::clearThreadJobs() {
+    // stop threads and detach them
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        ThreadJob & th_job = _thread_jobs[i_thread];
+        {
+            unique_lock<mutex> lock(*(th_job.job_mutex));
+            th_job.kill = true;
+        }
+        th_job.cond_var->notify_one();
+        th_job.th->join();
+        delete th_job.th;
+        delete th_job.cond_var;
+        delete th_job.job_mutex;
+    }
+    delete[] _thread_jobs;
+    _thread_jobs = nullptr;
+}
 void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
+    // clear previous thread jobs
+    clearThreadJobs();
 
     // CALCULATE NUMBER OF THREADS TO USE
     integer const expected_num_threads = (integer) _th_affinity.size();
@@ -314,37 +335,86 @@ void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
     if (mesh_intervals_per_thread < min_mesh_intervals_per_thread)
         mesh_intervals_per_thread = min_mesh_intervals_per_thread;
 
-    integer actual_num_threads = 0;
-    _thread_mesh_intervals = {0};
-    _thread_mesh_intervals.reserve(expected_num_threads+1);
+    _actual_num_threads = 0;
+    vector<integer> thread_mesh_intervals = {0}; // array containing the mesh point extrema for each thread job
+    thread_mesh_intervals.reserve(expected_num_threads+1);
 
     integer current_mesh_point = 0;
     integer const num_mesh_intervals = _p_mesh->getNumberOfIntervals();
 
     for (u_integer i_thread = 0; i_thread < expected_num_threads; i_thread++) {
+        _actual_num_threads ++;
         if ((current_mesh_point + mesh_intervals_per_thread) < num_mesh_intervals ) {
             current_mesh_point += mesh_intervals_per_thread;
-            _thread_mesh_intervals.push_back(current_mesh_point);
-            actual_num_threads ++;
+            thread_mesh_intervals.push_back(current_mesh_point);
         } else {
             current_mesh_point = num_mesh_intervals;
-            _thread_mesh_intervals.push_back(current_mesh_point);
-            actual_num_threads ++;
+            thread_mesh_intervals.push_back(current_mesh_point);
             break;
         }
     }
-#ifndef __linux__
-    for (integer i=0; i<_th_affinity.size(); i++)
-        _th_affinity[i] = {};  // Only in Linux thread affinity is supported
-#endif
-    _actual_th_affinity = _th_affinity;
 
-    // now remove the threads that are unused due to the small size of the problem
-    while (_actual_th_affinity.size() > actual_num_threads)
-        _actual_th_affinity.pop_back();
+    // now build the thread jobs
+    _thread_jobs = new ThreadJob[_actual_num_threads];
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        ThreadJob & th_job = _thread_jobs[i_thread];
+
+        // init pointers
+        th_job.cond_var  = new condition_variable();
+        th_job.job_mutex = new mutex();
+
+        // set the mesh extrema
+        th_job.start_mesh_interval = thread_mesh_intervals[i_thread];
+        th_job.end_mesh_interval = thread_mesh_intervals[i_thread+1];
+        th_job.affinity = _th_affinity[i_thread];
+
+        // set the actual thread
+        th_job.th = (new thread( //unique_ptr<thread>
+            [& th_job](){
+                auto check_predicate = [& th_job]() { return th_job.job_todo || th_job.kill; };
+                while (true) {
+                    {
+                        unique_lock<mutex> lock(*(th_job.job_mutex));
+                        th_job.cond_var->wait(lock, check_predicate);
+                    }
+                    if (th_job.kill) return; //exit from thread
+                    //perform the job
+                    th_job.job();
+                    { // notify the job is done
+                        unique_lock<mutex> lock(*(th_job.job_mutex));
+                        th_job.job_todo = false;
+                    }
+                    th_job.cond_var->notify_one(); // notify
+                }
+            }
+        ));
+    }
+
+#ifndef __linux__
+    for (u_integer i=0; i<_th_affinity.size(); i++)
+        _th_affinity[i] = {};  // Only in Linux thread affinity is supported
+
+    for (ThreadJob & th_job : _thread_jobs)
+        th_job.affinity = {};
+#endif
+
+    // now actually set the affinity of the threads
+#ifdef __linux__
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        ThreadJob & th_job = _thread_jobs[i_thread];
+        auto const & c_aff = th_job.affinity;
+        if (c_aff.size()>0) {
+            cpu_set_t cpuset;
+            CPU_ZERO(&cpuset);
+            for (u_integer x : c_aff)
+                CPU_SET(x, &cpuset);
+            pthread_setaffinity_np(th_job.th->native_handle(), sizeof(cpu_set_t), &cpuset);
+        }
+    }
+#endif
 
     MAVERICK_DEBUG_ASSERT(current_mesh_point==num_mesh_intervals, "MidpointOcp2NlpSinglePhase: not all mesh points are spanned by threads")
-    MAVERICK_DEBUG_ASSERT(actual_num_threads==(_thread_mesh_intervals.size()-1), "MidpointOcp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
+    MAVERICK_DEBUG_ASSERT(_actual_num_threads==(thread_mesh_intervals.size()-1), "MidpointOcp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
 }
 
 void MidpointOcp2NlpSinglePhase::setThreadsAffinity( threads_affinity const & th_affinity ) {
@@ -569,8 +639,12 @@ void MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds( real lower_bounds[], r
     MAVERICK_DEBUG_ASSERT(current_upper_bounds == upper_bounds + getNlpConstraintsSize(), "MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints upper bounds have been written.")
 }
 
-threads_affinity const & MidpointOcp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
-    return _actual_th_affinity;
+threads_affinity MidpointOcp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
+    threads_affinity out = {};
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+        out.push_back(_thread_jobs[i_thread].affinity);
+    }
+    return out;
 }
 
 void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess( Nlp const & nlp_guess ) {

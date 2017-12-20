@@ -5,9 +5,8 @@
 using namespace Maverick;
 
 Ocp2Nlp::Ocp2Nlp( MaverickOcp const & ocp_problem, Mesh const & mesh ) : _ocp_problem(ocp_problem), _mesh(mesh) {
-    
+
     _th_affinity = {{}};
-    _actual_th_affinity = _th_affinity;
 
     _int_vec_pointers = {
         // target gradient related

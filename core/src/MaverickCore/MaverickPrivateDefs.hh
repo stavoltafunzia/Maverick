@@ -94,7 +94,6 @@ namespace Maverick {
         bool is_one_solution_computed = false;
         bool has_setup_mesh = false;
         bool has_setup_solver = false;
-        bool must_setup_ocp2nlp = true;
         ExternalGuessType ext_guess_type = ext_guess_none;
     };
 

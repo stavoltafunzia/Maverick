@@ -1052,7 +1052,7 @@ REAL (dp) :: mu
 flag = 0
 
 ! initialization
-w(m+1:m+n)=0 ! modified by nicola : missing initialisation
+w(m+1:m+n) = zero ! modified by nicola : missing initialisation
 fqq(1:m+n) = zero
 
 w(1:m) = -fcq(1:m)
@@ -4336,7 +4336,7 @@ k = 1
 
 ! loop to get TAU = <U,J-TH COL OF QL>
 
-        tau = DOT_PRODUCT( ql(1:m-k+1,k), ql(1:m-k+1,j) ) - tau/ql(m+1,k)
+        tau = (DOT_PRODUCT( ql(1:m-k+1,k), ql(1:m-k+1,j) ) )/ql(m+1,k)  ! modified by nicola
 
 ! loop to get (I-2U*UT/<U,U>)*j-th col of QL
 
