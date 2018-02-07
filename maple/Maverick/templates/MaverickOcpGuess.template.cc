@@ -32,6 +32,9 @@ void _MAVERICK_ENTER_CLASS_NAME::evalAtMesh(integer const i_phase,
     if (__states_controls) {
 _MAVERICK_ENTER_GUESS_EVAL_AT_MESH_BODY
     }
+    if (__algebraic_states_controls) {
+_MAVERICK_ENTER_GUESS_EVAL_AT_MESH_ALGEBRAIC_BODY
+    }
 }
 
 void _MAVERICK_ENTER_CLASS_NAME::eval(integer const i_phase,

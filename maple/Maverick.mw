@@ -2818,12 +2818,13 @@ end:
 </Font>   replaceInTemplateCC(&quot;_MAVERICK_ENTER_NUM_PHASES&quot;, convert(__num_phases,string) );
 end:
 </Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeGuess := proc()
-local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tmp_code, guess_hh_str, guess_cc_str, should_write_guess, guess_code_at_mesh, guess_code, states, controls, algebraic_states, algebraic_controls:
+local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tmp_code, guess_hh_str, guess_cc_str, should_write_guess, guess_code_at_mesh, guess_code_at_mesh_alg, guess_code, states, controls, algebraic_states, algebraic_controls, ocp_guess_mesh_dependent_alg:
 
    should_write_guess := false:
    for P from 1 to __num_phases do
 
       ocp_guess_mesh_dependent := []:
+      ocp_guess_mesh_dependent_alg := []:
       ocp_guess_mesh_independent := []:
 
       guess := __OCP[P][&quot;guess&quot;]:
@@ -2834,11 +2835,14 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
 
       for i from 1 to nops(guess) do 
         tmp := lhs(guess[i]):
-        if ( has(states, tmp) or has(controls, tmp) or has(algebraic_states, tmp) or has(algebraic_controls, tmp) ) then
+        if ( has(states, tmp) or has(controls, tmp) ) then
             ocp_guess_mesh_dependent := [op(ocp_guess_mesh_dependent), guess[i]]:
+        elif ( has(algebraic_states, tmp) or has(algebraic_controls, tmp) ) then
+            ocp_guess_mesh_dependent_alg := [op(ocp_guess_mesh_dependent), guess[i]]:
         else
             ocp_guess_mesh_independent := [op(ocp_guess_mesh_independent), guess[i]]:            
         end:
+
       end do:
       
       guess_cc_str := &quot;&quot;:
@@ -2847,6 +2851,9 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
          should_write_guess := true:
          tmp := ocp2nlp(P, ocp_guess_mesh_dependent):
          guess_code_at_mesh[P] := _generateCode(tmp,&quot;states_controls&quot;);
+
+         tmp := ocp2nlp(P, ocp_guess_mesh_dependent_alg):
+         guess_code_at_mesh_alg[P] := _generateCode(tmp,&quot;algebraic_states_controls&quot;);
     
          tmp := ocp2nlp(P, ocp_guess_mesh_independent):
          guess_code[P] := generateCode(tmp, &quot;parameters&quot;);
@@ -2854,6 +2861,7 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
       else
          guess_code[P] := &quot;&quot;:
          guess_code_at_mesh[P] := &quot;&quot;:
+         guess_code_at_mesh_alg[P] := &quot;&quot;:
       end if:
 
     end do: <Font style="Text">loop phases</Font>
@@ -2870,6 +2878,7 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
         replaceAllInGuessTemplateCC(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;,_class_name):
         replaceInGuessTemplateCC(&quot;_MAVERICK_ENTER_GUESS_EVAL_BODY&quot;,getCodeForPhases(guess_code) ):
         replaceInGuessTemplateCC(&quot;_MAVERICK_ENTER_GUESS_EVAL_AT_MESH_BODY&quot;,getCodeForPhases(guess_code_at_mesh)):
+        replaceInGuessTemplateCC(&quot;_MAVERICK_ENTER_GUESS_EVAL_AT_MESH_ALGEBRAIC_BODY&quot;,getCodeForPhases(guess_code_at_mesh_alg)):
 
         for i from 1 to ArrayTools[NumElems](__output_guess_array_cc) do
              guess_cc_str := cat(guess_cc_str, <Font encoding="UTF-8">__output_guess_array_cc[i], &quot;\134n&quot;):
@@ -3238,7 +3247,7 @@ end:
              error(cat(&quot;Right hand side of guess at index &quot;, convert(i,string), &quot; contains a state, control or parameter&quot;)); 
          end:
 
-         <Font mathvariant="normal" mathbackground="[255,255,255]" mathsize="11" fontfamily="Monospaced" style="Text" mathcolor="[0,128,0]">check algebraic vars</Font>
+         <Font style="Text">check algebraic vars</Font>
          for j from 1 to nops(algebraic_states) do
               if (has(tmp,diff(algebraic_states[j][1],zeta))) then error(cat(&quot;guess contains algebraic state derivatives&quot;) ): end:
           end:
