@@ -1,139 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Worksheet>
-<Version major="2015" minor="1"/>
+<Version major="2016" minor="1"/>
 <Label-Scheme value="2" prefix=""/>
 <View-Properties presentation="false" autoexpanding_sections="true" UserProfileName="Maple Default Profile" NumericFormat-ApplyInteger="true" NumericFormat-ApplyRational="true" NumericFormat-ApplyExponent="false">
 </View-Properties>
-<MapleNet-Properties elisiondigitsbefore="100" labelling="true" indentamount="4" elisiontermsthreshold="10000" ansi="false" errorbreak="1" useclientjvm="true" echo="1" imaginaryunit="I" labelwidth="20" unitattributes="&quot;fontweight&quot; = &quot;bold&quot;" contextmenusize="automatic" plotdriver="opengl" elisiondigitsafter="100" plotoutput="terminal" helpbrowser="standard" rtablesize="10" elisiontermsbefore="100" elisiondigitsthreshold="10000" typesetting="standard" plotdevice="inline" verboseproc="1" showassumed="1" quiet="false" errorcursor="false" longdelim="true" plotoptions="" elisiontermsafter="100" screenwidth="79" preplot="" prettyprint="3" displayprecision="-1" screenpixelheight="800" warnlevel="3" screenheight="25" latexwidth="8.0" postplot="" prompt="&gt; " ShowLabels="true"/>
+<MapleNet-Properties prettyprint="3" warnlevel="3" preplot="" helpbrowser="standard" contextmenusize="automatic" displayprecision="-1" echo="1" unitattributes="&quot;fontweight&quot; = &quot;bold&quot;" imaginaryunit="I" longdelim="true" elisiontermsthreshold="10000" elisiondigitsafter="100" elisiondigitsbefore="100" plotdevice="inline" errorbreak="1" plotoptions="" plotdriver="opengl" quiet="false" elisiontermsbefore="100" elisiontermsafter="100" screenwidth="79" indentamount="4" plotoutput="terminal" screenpixelheight="1200" rtablesize="10" useclientjvm="true" labelwidth="20" postplot="" typesetting="standard" ansi="false" elisiondigitsthreshold="10000" showassumed="1" errorcursor="false" labelling="true" screenheight="25" prompt="&gt; " verboseproc="1" latexwidth="8.0" ShowLabels="true"/>
 <Styles>
-<Font name="Annotation Text" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 1" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Variable" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Left Justified Maple Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 4" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="true" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 2" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text Output6" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Heading 3" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Ordered List 1" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text Output" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,128]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Ordered List 2" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Ordered List 3" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Ordered List 4" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Ordered List 5" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Maple Name" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[104,64,92]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Bold" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Menus" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Annotation Title" background="[255,255,255]" bold="false" executable="false" family="Baskerville" foreground="[41,111,169]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Fixed Width" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Text Output" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,128]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Normal257" background="[255,255,255]" bold="true" executable="false" family="Arial" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Normal" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Plot Text" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="8" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Nonterminal" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Heading" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Variable" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Italic Bold" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Default" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Underlined Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Dash Item" background="[255,255,255]" bold="false" executable="false" family="Geneva" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Maple Output12" background="[255,255,255]" bold="false" executable="false" family="Verdana" foreground="[51,51,153]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Maple Input" background="[255,255,255]" bold="true" executable="true" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="HyperlinkError" background="[255,255,255]" bold="false" executable="false" family="Courier New" foreground="[255,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="2D Math Bold Small" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="sub-Title" background="[255,255,255]" bold="false" executable="false" family="Baskerville" foreground="[15,115,169]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Small" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Page Number" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Output Labels" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="8" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Bullet Item" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Plot Title" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Emphasized" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Symbol 2" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Maple Comment" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Author" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[128,128,128]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Warning" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[47,66,152]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Caption Reference" background="[255,255,255]" bold="true" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Italic Small204" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Maple Input Placeholder" background="[255,255,255]" bold="true" executable="true" family="Monospaced" foreground="[200,0,200]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Code" background="[255,255,255]" bold="false" executable="false" family="Courier New" foreground="[255,102,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Maple Plot" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Line Printed Output" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[51,155,255]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Text Output6" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Diagnostic" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[40,120,40]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Inert Output" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math Italic Small" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Normal" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Comment" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Help Underlined Bold" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Ordered List 5" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="sub-Title" background="[255,255,255]" bold="false" executable="false" family="Baskerville" foreground="[15,115,169]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Copyright" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Hyperlink" background="[255,255,255]" bold="false" executable="false" family="Arial" foreground="[18,93,153]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Help Underlined" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Maple Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Prompt" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Math" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="2D Input" background="[255,255,255]" bold="true" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Header and Footer" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="R3 Font 0" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Title" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="24" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Error" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[255,0,0]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Heading 1" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Section" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[6,137,223]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Text" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,128,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Bold" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Help Notes" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Equation Label" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Heading 4" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="true" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="LaTeX" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Heading 3" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="HyperlinkWarning" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Heading 2" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Output12" background="[255,255,255]" bold="false" executable="false" family="Verdana" foreground="[51,51,153]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Comment" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Popup" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,128,128]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
 <Font name="Atomic Variable" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[175,0,175]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="HyperlinkWarning" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
 <Font name="Dictionary Hyperlink" background="[255,255,255]" bold="false" executable="false" family="Serif" foreground="[147,0,15]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
-<Font name="Caption Text" background="[255,255,255]" bold="true" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Plot Text" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="8" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="aa" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[255,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
-<Font name="Left Justified Maple Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="List Item" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Dash Item" background="[255,255,255]" bold="false" executable="false" family="Geneva" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Input" background="[255,255,255]" bold="true" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Code" background="[255,255,255]" bold="false" executable="false" family="Courier New" foreground="[255,102,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Small" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Author" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[128,128,128]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Bold Small" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Bold" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Menus" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Heading" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="14" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Warning" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[47,66,152]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Fixed Width" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Line Printed Output" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[51,155,255]" italic="false" opaque="false" readonly="true" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Output" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Inert Output" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Normal" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Diagnostic" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[40,120,40]" italic="false" opaque="false" readonly="true" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Input" background="[255,255,255]" bold="true" executable="true" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Page Number" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="R3 Font 0" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Annotation Title" background="[255,255,255]" bold="false" executable="false" family="Baskerville" foreground="[41,111,169]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Header and Footer" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="9" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Italic Small204" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
 <Font name="Help Fixed" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Output Labels" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="8" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="HyperlinkError" background="[255,255,255]" bold="false" executable="false" family="Courier New" foreground="[255,0,255]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Help Notes" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Underlined" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="2D Math Italic Small" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="1" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Symbol 2" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math" background="[255,255,255]" bold="false" executable="true" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Nonterminal" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Bullet Item" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Maple Plot" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Annotation Text" background="[255,255,255]" bold="false" executable="false" family="Georgia" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Maple Name" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[104,64,92]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Normal257" background="[255,255,255]" bold="true" executable="false" family="Arial" foreground="[0,0,255]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Error" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[255,0,0]" italic="false" opaque="false" readonly="true" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Title" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[42,114,163]" italic="false" opaque="false" readonly="false" size="24" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Text" background="[255,255,255]" bold="false" executable="false" family="Monospaced" foreground="[0,128,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Plot Title" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Underlined Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Normal" background="[255,255,255]" bold="false" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Caption Reference" background="[255,255,255]" bold="true" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="11" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Italic Bold" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Default" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Section" background="[255,255,255]" bold="true" executable="false" family="Baskerville" foreground="[6,137,223]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Maple Input Placeholder" background="[255,255,255]" bold="true" executable="true" family="Monospaced" foreground="[200,0,200]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="LaTeX" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Emphasized" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Equation Label" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Help Italic" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="true" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Comment" background="[255,255,255]" bold="false" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Prompt" background="[255,255,255]" bold="true" executable="false" family="Monospaced" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="2D Math Bold" background="[255,255,255]" bold="true" executable="false" family="Times New Roman" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="12" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Font name="Hyperlink" background="[255,255,255]" bold="false" executable="false" family="Arial" foreground="[18,93,153]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="true" placeholder="false"/>
+<Font name="Caption Text" background="[255,255,255]" bold="true" executable="false" family="Helvetica Neue" foreground="[0,0,0]" italic="false" opaque="false" readonly="false" size="10" subscript="false" superscript="false" underline="false" placeholder="false"/>
+<Layout name="Heading 1" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Warning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Fixed Width" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Left Justified Maple Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Help" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 4" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Line Printed Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 2" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="10" spacebelow="4" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Maple Output" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.3" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Text Output6" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Heading 3" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="10" spacebelow="4" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Diagnostic" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Ordered List 1" alignment="left" bullet="numeric" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix=""/>
+<Layout name="Text Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="newline" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Ordered List 2" alignment="left" bullet="alphabetic" firstindent="0" leftmargin="36" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix=""/>
 <Layout name="Ordered List 3" alignment="left" bullet="roman" firstindent="0" leftmargin="72" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix=""/>
+<Layout name="R3 Font 0" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Ordered List 4" alignment="left" bullet="ALPHABETIC" firstindent="0" leftmargin="108" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix=""/>
 <Layout name="Ordered List 5" alignment="left" bullet="ROMAN" firstindent="0" leftmargin="144" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="-1" bulletsuffix=""/>
-<Layout name="Author" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="6" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Warning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Annotation Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="6" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Fixed Width" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Maple Plot" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Line Printed Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Text Output6" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Help" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Normal257" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Text Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="newline" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Diagnostic" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="any" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Normal" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.2" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Maple Output" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.3" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Dash Item" alignment="left" bullet="dash" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="sub-Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Maple Output12" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="HyperlinkError" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="sub-Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="R3 Font 0" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="HyperlinkWarning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Bullet Item" alignment="left" bullet="dot" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Maple Plot" alignment="centred" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="List Item" alignment="left" bullet="indent" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Normal257" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Dash Item" alignment="left" bullet="dash" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Error" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Title" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="12" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Heading 1" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
+<Layout name="Normal" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.2" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Layout name="Section" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="12" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Bullet Item" alignment="left" bullet="dot" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Heading 4" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Heading 3" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="10" spacebelow="4" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Heading 2" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="10" spacebelow="4" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="HyperlinkWarning" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="Left Justified Maple Output" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="0" spacebelow="0" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Layout name="List Item" alignment="left" bullet="indent" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="3" spacebelow="3" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
-<Pencil-style name="Pencil 5" pen-color="[255,0,0]" pen-height="5.0" pen-width="5.0" pen-opacity="1.0"/>
-<Pencil-style name="Pencil 4" pen-color="[0,0,255]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
-<Pencil-style name="Pencil 3" pen-color="[0,0,0]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
-<Pencil-style name="Pencil 2" pen-color="[0,0,255]" pen-height="1.0" pen-width="1.0" pen-opacity="1.0"/>
+<Layout name="Author" alignment="left" bullet="none" firstindent="0" leftmargin="0" rightmargin="0" linespacing="0.0" spaceabove="6" spacebelow="6" linebreak="space" pagebreak-before="false" initial="0" bulletsuffix=""/>
 <Pencil-style name="Pencil 1" pen-color="[0,0,0]" pen-height="1.0" pen-width="1.0" pen-opacity="1.0"/>
-<Highlighter-style name="Highlighter 2" pen-color="[255,204,0]" pen-height="14.0" pen-width="14.0" pen-opacity="0.8"/>
-<Highlighter-style name="Highlighter 1" pen-color="[255,153,255]" pen-height="12.0" pen-width="8.0" pen-opacity="0.8"/>
-<Highlighter-style name="Highlighter 4" pen-color="[0,255,255]" pen-height="32.0" pen-width="32.0" pen-opacity="0.8"/>
-<Highlighter-style name="Highlighter 3" pen-color="[51,255,0]" pen-height="24.0" pen-width="24.0" pen-opacity="0.8"/>
+<Pencil-style name="Pencil 2" pen-color="[0,0,255]" pen-height="1.0" pen-width="1.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 3" pen-color="[0,0,0]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 4" pen-color="[0,0,255]" pen-height="3.0" pen-width="3.0" pen-opacity="1.0"/>
+<Pencil-style name="Pencil 5" pen-color="[255,0,0]" pen-height="5.0" pen-width="5.0" pen-opacity="1.0"/>
 <Highlighter-style name="Highlighter 5" pen-color="[255,255,0]" pen-height="48.0" pen-width="48.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 3" pen-color="[51,255,0]" pen-height="24.0" pen-width="24.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 4" pen-color="[0,255,255]" pen-height="32.0" pen-width="32.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 1" pen-color="[255,153,255]" pen-height="12.0" pen-width="8.0" pen-opacity="0.8"/>
+<Highlighter-style name="Highlighter 2" pen-color="[255,204,0]" pen-height="14.0" pen-width="14.0" pen-opacity="0.8"/>
 </Styles>
 <Startup-Code startupcode=""/>
 <Task-table>
@@ -141,45 +141,30 @@
 </Task-table>
 <Task/>
 <Group hide-input="false" hide-output="false" labelreference="L1" drawlabel="true" applyint="true" applyrational="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">restart;</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">mylib :=cat(currentdir(),&quot;/Maverick/lib/Maverick.mla&quot;);</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">restart;</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">mylib :=cat(currentdir(),&quot;/Maverick/lib/Maverick.mla&quot;);</Text-field>
 </Input>
-<Output>
-<Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUklbXJvd0c2Iy9JK21vZHVsZW5hbWVHNiJJLFR5cGVzZXR0aW5nR0koX3N5c2xpYkdGJzYoLUkjbWlHRiQ2JVEmbXlsaWJGJy8lJ2l0YWxpY0dRJXRydWVGJy8lLG1hdGh2YXJpYW50R1EnaXRhbGljRictSSNtb0dGJDYtUSM6PUYnL0YzUSdub3JtYWxGJy8lJmZlbmNlR1EmZmFsc2VGJy8lKnNlcGFyYXRvckdGPS8lKXN0cmV0Y2h5R0Y9LyUqc3ltbWV0cmljR0Y9LyUobGFyZ2VvcEdGPS8lLm1vdmFibGVsaW1pdHNHRj0vJSdhY2NlbnRHRj0vJSdsc3BhY2VHUSwwLjI3Nzc3NzhlbUYnLyUncnNwYWNlR0ZMLUkjbXNHRiQ2I1Fbby9Vc2Vycy9uaWNvbGEvd29ya3NwYWNlL21hdmVyaWNrL21hcGxlL01hdmVyaWNrL2xpYi9NYXZlcmljay5tbGFGJy8lK2ZvcmVncm91bmRHUShbMCwwLDBdRicvJSlyZWFkb25seUdGPUY5">UVtvL1VzZXJzL25pY29sYS93b3Jrc3BhY2UvbWF2ZXJpY2svbWFwbGUvTWF2ZXJpY2svbGliL01hdmVyaWNrLm1sYTYi</Equation></Text-field>
+<Output><Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUklbXJvd0c2Iy9JK21vZHVsZW5hbWVHNiJJLFR5cGVzZXR0aW5nR0koX3N5c2xpYkdGJzYoLUkjbWlHRiQ2JVEmbXlsaWJGJy8lJ2l0YWxpY0dRJXRydWVGJy8lLG1hdGh2YXJpYW50R1EnaXRhbGljRictSSNtb0dGJDYtUSp+JiM4Nzg4O35GJy9GM1Enbm9ybWFsRicvJSZmZW5jZUdRJmZhbHNlRicvJSpzZXBhcmF0b3JHRj0vJSlzdHJldGNoeUdGPS8lKnN5bW1ldHJpY0dGPS8lKGxhcmdlb3BHRj0vJS5tb3ZhYmxlbGltaXRzR0Y9LyUnYWNjZW50R0Y9LyUnbHNwYWNlR1EmMC4wZW1GJy8lJ3JzcGFjZUdGTC1JI21zR0YkNiNRYW8vaG9tZS9uaWNvbGEvd29ya3NwYWNlL21hdmVyaWNrX2dpdGh1Yi9tYXBsZS9NYXZlcmljay9saWIvTWF2ZXJpY2subWxhRicvJStmb3JlZ3JvdW5kR1EoWzAsMCwwXUYnLyUpcmVhZG9ubHlHRj1GOQ==">UWFvL2hvbWUvbmljb2xhL3dvcmtzcGFjZS9tYXZlcmlja19naXRodWIvbWFwbGUvTWF2ZXJpY2svbGliL01hdmVyaWNrLm1sYTYi</Equation></Text-field>
 </Output>
 </Group>
 <Group hide-output="false" labelreference="L543" drawlabel="true" applyint="true" applyrational="true">
-<Input>
-<Text-field style="Normal" layout="Normal"><Font style="Text">remove any outdated file</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">FileTools[Remove](mylib);</Text-field>
+<Input><Text-field style="Normal" layout="Normal"><Font style="Text">remove any outdated file</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">FileTools[Remove](mylib);</Text-field>
 </Input>
-<Input>
-<Text-field style="Normal" layout="Normal"><Font style="Text">create the repository</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">march( 'create', mylib, 100 );  <Font style="Text">create a private repositoty (only the first time)</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">libname := libname, mylib:
+<Input><Text-field style="Normal" layout="Normal"><Font style="Text">create the repository</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">march( 'create', mylib, 100 );  <Font style="Text">create a private repositoty (only the first time)</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">libname := libname, mylib:
 savelibname := mylib:</Text-field>
 </Input>
 </Group>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 1" layout="Heading 1">Code generation subroutines</Text-field></Title>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Maverick utility procedures</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Code generation subroutines</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Maverick utility procedures</Text-field></Title>
 <Group hide-output="false" labelreference="L546" drawlabel="true" applyint="true" applyrational="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickUtils := module()</Text-field>
-<Text-field style="Normal" layout="Normal"> <Font style="Maple Input">    description &quot;asd&quot;;
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Module options</Font>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickUtils := module()</Text-field><Text-field style="Normal" layout="Normal"> <Font style="Maple Input">    description &quot;asd&quot;;
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Module options</Font>
 option package,
        load = init;   <Font style="Text">all exported names are automatically protected
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global  __output_array_cc, __output_guess_array_cc, __output_array_hh, __output_guess_array_hh,
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global  __output_array_cc, __output_guess_array_cc, __output_array_hh, __output_guess_array_hh,
           __original_array_cc, __original_guess_array_cc, __original_array_hh, __original_guess_array_hh,
           __output_array_main_cc,
           __num_phases, __tabs, __debug:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local     _getGradient,
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local     _getGradient,
           _getGradientNamed,
           _getJacobianAndStructure,
           _getHessianAndStructure,
@@ -199,8 +184,7 @@ option package,
           _getCodeForPhases,
           _xoapifj,
           noLicenseMessage:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export getGradient,
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export getGradient,
           getGradientNamed,
           getJacobianAndStructure,
           getHessianAndStructure,
@@ -220,16 +204,12 @@ option package,
           getCodeForPhases:
 
 
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">noLicenseMessage := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">noLicenseMessage := proc()
     error(&quot;You do not hold a valid Maverick license&quot;):
 end:
 </Text-field>
 </Input>
-<Input>
-<Text-field style="Text" layout="Normal">Return an array which is the gradient of the expression with respect to X</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">getGradient := proc(expr::list, X::list) _getGradient(expr, X): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getGradient := proc(expr::list, X::list)
+<Input><Text-field style="Text" layout="Normal">Return an array which is the gradient of the expression with respect to X</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">getGradient := proc(expr::list, X::list) _getGradient(expr, X): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getGradient := proc(expr::list, X::list)
 local i, gradient, j;
 
    gradient := Array(1..nops(expr),1..nops(X)):  
@@ -243,14 +223,11 @@ local i, gradient, j;
 end proc;
 </Text-field>
 </Input>
-<Input>
-<Text-field style="Text" layout="Normal">Return an array in the form gradient_name[i] = gradient of expr w.r.t. X[i]</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">getGradientNamed := proc(expr::list, X::list, gradient_name::symbol) _getGradientNamed(expr, X, gradient_name::symbol): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getGradientNamed := proc(expr, X, gradient_name::symbol)
+<Input><Text-field style="Text" layout="Normal">Return an array in the form gradient_name[i] = gradient of expr w.r.t. X[i]</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">getGradientNamed := proc(expr::list, X::list, gradient_name::symbol) _getGradientNamed(expr, X, gradient_name::symbol): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getGradientNamed := proc(expr, X, gradient_name::symbol)
 local i, gradient;
 
    gradient := getGradient(expr, X):
-   for i from 1 to ArrayTools[NumElems]<Font font_style_name="Halfline" superscript="false" placeholder="false" executable="true" selection-placeholder="false" italic="false" size="12" bold="true" style="Halfline" subscript="false" family="Monospaced" opaque="false" underline="false" background="[255,255,255]" readonly="false" foreground="[0,0,0]"> (gradient)</Font> do
+   for i from 1 to ArrayTools[NumElems]<Font opaque="false" subscript="false" underline="false" superscript="false" bold="true" foreground="[0,0,0]" italic="false" executable="true" selection-placeholder="false" size="12" readonly="false" background="[255,255,255]" style="Halfline" placeholder="false" family="Monospaced" font_style_name="Halfline"> (gradient)</Font> do
       gradient[i] := gradient_name[i] = gradient[i]:
    end do:
 
@@ -258,9 +235,7 @@ local i, gradient;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">getJacobianAndStructure := proc(expr::list, X::list, name) _getJacobianAndStructure(expr, X, name): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getJacobianAndStructure := proc(expr, X, name)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">getJacobianAndStructure := proc(expr::list, X::list, name) _getJacobianAndStructure(expr, X, name): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getJacobianAndStructure := proc(expr, X, name)
 local jacobian, nnz, ix, iy, C_iCols, C_iRows, linearJacobianNamed, i;
 
    _xoapifj():
@@ -293,9 +268,7 @@ local jacobian, nnz, ix, iy, C_iCols, C_iRows, linearJacobianNamed, i;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">getHessianAndStructure := proc(expr::algebraic, difRows::list, difCols::list, name) _getHessianAndStructure(expr, difRows, difCols, name) end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getHessianAndStructure := proc(expr, difRows, difCols, name)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">getHessianAndStructure := proc(expr::algebraic, difRows::list, difCols::list, name) _getHessianAndStructure(expr, difRows, difCols, name) end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getHessianAndStructure := proc(expr, difRows, difCols, name)
 local hessian, nnz, ix, iy, C_iCols, C_iRows, linearHessianNamed, i;
 
    _xoapifj():
@@ -326,9 +299,7 @@ local hessian, nnz, ix, iy, C_iCols, C_iRows, linearHessianNamed, i;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">findIndexOfInArray := proc(what::string, template::Array) _findIndexOfInArray(what, template): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_findIndexOfInArray := proc(what::string, template::Array)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">findIndexOfInArray := proc(what::string, template::Array) _findIndexOfInArray(what, template): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_findIndexOfInArray := proc(what::string, template::Array)
 local index, i:
 
    index := 0;
@@ -342,9 +313,7 @@ local index, i:
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInArray := proc(what::string, with::string, template::Array) _replaceInArray(what, with, template): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInArray := proc(what::string, with::string, template::Array)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInArray := proc(what::string, with::string, template::Array) _replaceInArray(what, with, template): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInArray := proc(what::string, with::string, template::Array)
 local i, index;
 
    index := findIndexOfInArray(what, template):
@@ -352,9 +321,7 @@ local i, index;
    
    template, index;
 end proc:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInArray := proc(what::string, with::string, template::Array) _replaceAllInArray(what, with, template): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInArray := proc(what::string, with::string, template::Array)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInArray := proc(what::string, with::string, template::Array) _replaceAllInArray(what, with, template): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInArray := proc(what::string, with::string, template::Array)
 local i:
 
    for i from 1 to ArrayTools[NumElems](template) do
@@ -368,9 +335,7 @@ local i:
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInTemplateCC := proc(what::string, with::string) _replaceInTemplateCC(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInTemplateCC := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInTemplateCC := proc(what::string, with::string) _replaceInTemplateCC(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInTemplateCC := proc(what::string, with::string)
 local i, index;
 global __output_array_cc;
 
@@ -380,9 +345,7 @@ global __output_array_cc;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInTemplateHH := proc(what::string, with::string) _replaceInTemplateHH(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInTemplateHH := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInTemplateHH := proc(what::string, with::string) _replaceInTemplateHH(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInTemplateHH := proc(what::string, with::string)
 local i, index;
 global __output_array_hh;
 
@@ -392,9 +355,7 @@ global __output_array_hh;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInGuessTemplateCC := proc(what::string, with::string) _replaceInGuessTemplateCC(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInGuessTemplateCC := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceInGuessTemplateCC := proc(what::string, with::string) _replaceInGuessTemplateCC(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceInGuessTemplateCC := proc(what::string, with::string)
 local i, index;
 global __output_guess_array_cc;
 
@@ -405,17 +366,13 @@ global __output_guess_array_cc;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInTemplateCC := proc(what::string, with::string) _replaceAllInTemplateCC(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInTemplateCC := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInTemplateCC := proc(what::string, with::string) _replaceAllInTemplateCC(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInTemplateCC := proc(what::string, with::string)
 local i:
 global __output_array_cc;
 
    __output_array_cc := replaceAllInArray(what, with, __output_array_cc):
 end proc:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInGuessTemplateCC := proc(what::string, with::string) _replaceAllInGuessTemplateCC(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInGuessTemplateCC := proc(what::string, with::string)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInGuessTemplateCC := proc(what::string, with::string) _replaceAllInGuessTemplateCC(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInGuessTemplateCC := proc(what::string, with::string)
 local i:
 global __output_guess_array_cc;
 
@@ -423,9 +380,7 @@ global __output_guess_array_cc;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInTemplateHH := proc(what::string, with::string) _replaceAllInTemplateHH(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInTemplateHH := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInTemplateHH := proc(what::string, with::string) _replaceAllInTemplateHH(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInTemplateHH := proc(what::string, with::string)
 local i:
 global __output_array_hh;
 
@@ -433,17 +388,13 @@ global __output_array_hh;
 end proc:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInGuessTemplateHH := proc(what::string, with::string) _replaceAllInGuessTemplateHH(what, with): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInGuessTemplateHH := proc(what::string, with::string)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">replaceAllInGuessTemplateHH := proc(what::string, with::string) _replaceAllInGuessTemplateHH(what, with): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_replaceAllInGuessTemplateHH := proc(what::string, with::string)
 local i:
 global __output_guess_array_hh;
 
    __output_guess_array_hh := replaceAllInArray(what, with, __output_guess_array_hh):
 end proc:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">getCodeForPhases := proc(input, append_code::string:= &quot;&quot;) _getCodeForPhases(input,append_code): end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getCodeForPhases := proc(input,append_code)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">getCodeForPhases := proc(input, append_code::string:= &quot;&quot;) _getCodeForPhases(input,append_code): end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_getCodeForPhases := proc(input,append_code)
     local P, out_code;
     if (__num_phases&gt;1) then
      <Font encoding="UTF-8">    out_code := &quot;switch(i_phase) {\134n&quot;:
@@ -464,9 +415,7 @@ end proc:
 end:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">diF := proc(expr, symb) _diF(expr, symb) end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_diF := proc(expr, symb)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">diF := proc(expr, symb) _diF(expr, symb) end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_diF := proc(expr, symb)
 local tmp;
    tmp := eval(subs(symb = _MAVERICK_TMP_DIF, expr)):
    tmp := diff(tmp, _MAVERICK_TMP_DIF):
@@ -476,31 +425,20 @@ end proc:
 
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">module maverick utils</Font></Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">module maverick utils</Font></Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'MaverickUtils' );</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'MaverickUtils' );</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Constructor module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Constructor module</Text-field></Title>
 <Group hide-output="false" labelreference="L552" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenConstructor := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _fillConstructor;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export fillConstructor;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">fillConstructor := proc() _fillConstructor() end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_fillConstructor := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenConstructor := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _fillConstructor;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export fillConstructor;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">fillConstructor := proc() _fillConstructor() end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_fillConstructor := proc()
 local tmp_str, tmp_str_short, i_s, P:
 
 <Font style="Text">states
@@ -736,28 +674,18 @@ replaceInTemplateCC(&quot;_MAVERICK_ENTER_INTEGRAL_POST_PROC_NAMES&quot;,tmp_str
 
 end:</Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenConstructor');</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenConstructor');</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Bounds module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Bounds module</Text-field></Title>
 <Group hide-output="false" labelreference="L555" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenBounds := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _fillBounds, generateMultiPhaseVector;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export fillBounds;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateMultiPhaseVector := proc(input, dim:=__num_phases)
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenBounds := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _fillBounds, generateMultiPhaseVector;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export fillBounds;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateMultiPhaseVector := proc(input, dim:=__num_phases)
     local P, out:
     out := &quot;{ &quot;:
     for P from 1 to dim do
@@ -767,9 +695,7 @@ end:</Text-field>
     out := cat(out, &quot; };&quot;):
     out:
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">fillBounds := proc() _fillBounds() end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_fillBounds := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">fillBounds := proc() _fillBounds() end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_fillBounds := proc()
     local tmp_str, tmp_str_short, i_s, P, lower_values, upper_values, tmp_code_lower, tmp_code_upper, tmp_lower, tmp_upper, tmp, nx:
     
     <Font style="Text">states and controls</Font>
@@ -965,32 +891,21 @@ end:
 end:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenBounds');</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenBounds');</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Mayer and lagrange target module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Mayer and lagrange target module</Text-field></Title>
 <Group hide-output="false" labelreference="L562" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenTarget := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _writeTarget,
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenTarget := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _writeTarget,
        writeMayer,
        writeLagrange;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeTarget;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeTarget := proc() writeMayer(): writeLagrange(): end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeMayer := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeTarget;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeTarget := proc() writeMayer(): writeLagrange(): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeMayer := proc()
     local P, nlp_may_tgt, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, may_j_xu_i, may_j_xu_f, may_j_p, may_jac,
           tmp_code_rows, tmp_code_cols, may_hess, hessian, may_hess_xu_init_xu_init, may_hess_xu_init_xu_fin, may_hess_xu_init_p,
           may_hess_xu_fin_xu_fin, may_hess_xu_fin_p, may_hess_p_p:
@@ -1129,8 +1044,7 @@ end:
 
 
 end: <Font style="Text">end write mayer</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeLagrange := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeLagrange := proc()
     local P, nlp_lag_tgt, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, lag_j_xu, lag_j_dxu, lag_j_axu, lag_j_p, lag_jac,
           tmp_code_rows, tmp_code_cols, lag_hess, hessian, lag_hess_xu_xu, lag_hess_xu_dxu, lag_hess_xu_axu, lag_hess_xu_p,
           lag_hess_dxu_dxu, lag_hess_dxu_axu, lag_hess_dxu_p,
@@ -1338,30 +1252,19 @@ end: <Font style="Text">end write mayer</Font>
 end: <Font style="Text">end write lagrange
 </Font></Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenTarget');</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenTarget');</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">First order equation module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">First order equation module</Text-field></Title>
 <Group hide-output="false" labelreference="L571" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenFoEqns := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _writeFoEqns;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs,__debug;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeFoEqns;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeFoEqns := proc() _writeFoEqns(): end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_writeFoEqns := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenFoEqns := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _writeFoEqns;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs,__debug;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeFoEqns;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeFoEqns := proc() _writeFoEqns(): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_writeFoEqns := proc()
     local P, i, nlp_fo_eqns, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, foeqns_j_xu, foeqns_j_dxu, foeqns_j_axu, foeqns_j_p, foeqns_jac,
           tmp_code_rows, tmp_code_cols, foeqns_hess, hessian, 
           foeqns_hess_xu_xu, foeqns_hess_xu_dxu, foeqns_hess_xu_axu, foeqns_hess_xu_p,
@@ -1600,30 +1503,19 @@ end: <Font style="Text">end write lagrange
 end: <Font style="Text">end write diff_constr
 </Font></Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenFoEqns');</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenFoEqns');</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Constraints module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Constraints module</Text-field></Title>
 <Group hide-output="false" labelreference="L575" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenConstraints := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writePointConstrants, writeDiffConstrants, writeIntConstrants;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeConstraints;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeConstraints := proc() writePointConstrants(): writeDiffConstrants(): writeIntConstrants(): end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePointConstrants := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenConstraints := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writePointConstrants, writeDiffConstrants, writeIntConstrants;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeConstraints;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeConstraints := proc() writePointConstrants(): writeDiffConstrants(): writeIntConstrants(): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePointConstrants := proc()
     local P, i, nlp_point_constr, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, point_constr_j_xu, point_constr_j_dxu, point_constr_j_p, point_constr_jac,
           tmp_code_rows, tmp_code_cols, hessian, point_constr_hess_xu_xu, point_constr_hess_xu_dxu, point_constr_hess_xu_p,
           point_constr_hess_dxu_dxu, point_constr_hess_dxu_p, point_constr_hess_p_p, nlp_point_constr_expr, point_constr_hess:
@@ -1730,8 +1622,7 @@ end: <Font style="Text">end write diff_constr
     replaceInTemplateCC(&quot;_MAVERICK_ENTER_STATE_CONSTRAINTS_H_BODY&quot;, getCodeForPhases(tmp_code) ):
 
 end: <Font style="Text">end write point constr</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeDiffConstrants := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeDiffConstrants := proc()
     local P, i, nlp_diff_constr, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, diff_constr_j_xu, diff_constr_j_dxu, diff_constr_j_axu, diff_constr_j_p, diff_constr_jac,
           tmp_code_rows, tmp_code_cols, hessian, 
           diff_constr_hess_xu_xu, diff_constr_hess_xu_dxu, diff_constr_hess_xu_axu, diff_constr_hess_xu_p,
@@ -1962,8 +1853,7 @@ end: <Font style="Text">end write point constr</Font>
 
 
 end: <Font style="Text">end write diff_constr
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeIntConstrants := proc()
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeIntConstrants := proc()
     local P, i, nlp_int_constr, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, int_constr_j_xu, int_constr_j_dxu, int_constr_j_axu, int_constr_j_p, int_constr_jac,
           tmp_code_rows, tmp_code_cols, hessian, 
           int_constr_hess_xu_xu, int_constr_hess_xu_dxu, int_constr_hess_xu_axu, int_constr_hess_xu_p,
@@ -2196,30 +2086,19 @@ end: <Font style="Text">end write diff_constr
 end: <Font style="Text">end write int_constr</Font>
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenConstraints');</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end module:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenConstraints');</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Bcs and event constraints module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Bcs and event constraints module</Text-field></Title>
 <Group hide-output="false" labelreference="L578" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenBcs := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writeBcs, writeEventConstrants;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeBcsAndEventConstraints;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeBcsAndEventConstraints := proc() writeBcs(): writeEventConstrants(): end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeBcs := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenBcs := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writeBcs, writeEventConstrants;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writeBcsAndEventConstraints;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeBcsAndEventConstraints := proc() writeBcs(): writeEventConstrants(): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeBcs := proc()
     local P, i, nlp_bcs, tmp_code, tmp_nnz, jacobian, nnz, C_iRows, C_iCols, bcs_j_xu_init, bcs_j_xu_fin, bcs_j_p, bcs_jac,
           tmp_code_rows, tmp_code_cols, hessian, bcs_hess_xu_init_xu_init, bcs_hess_xu_init_xu_fin, bcs_hess_xu_init_p,
           bcs_hess_xu_fin_xu_fin, bcs_hess_xu_fin_p, bcs_hess_p_p, nlp_bcs_expr, bcs_hess:
@@ -2378,30 +2257,19 @@ end: <Font style="Text">end write int_constr</Font>
     replaceInTemplateCC(&quot;_MAVERICK_ENTER_BOUNDARY_CONDITIONS_H_BODY&quot;, getCodeForPhases(tmp_code) ):
 
 
-end: <Font style="Text">end write bcs</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">end module bcs and event constraints</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenBcs'):</Text-field>
+end: <Font style="Text">end write bcs</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">end module bcs and event constraints</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenBcs'):</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 2" layout="Heading 2">Post processing module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 2" layout="Heading 2">Post processing module</Text-field></Title>
 <Group hide-output="false" labelreference="L579" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenPostProc := module()</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writePP, writeDiffPP, writeIntPP;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writePostProcessing;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePostProcessing := proc() writePP(): writeDiffPP(), writeIntPP(): end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePP := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegenPostProc := module()</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local writePP, writeDiffPP, writeIntPP;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __tabs, __debug;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export writePostProcessing;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePostProcessing := proc() writePP(): writeDiffPP(), writeIntPP(): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writePP := proc()
     local P, i, nlp_post_proc, tmp_code, nlp_post_proc_expr:
 
     tmp_code := 'tmp_code':
@@ -2419,8 +2287,7 @@ end: <Font style="Text">end write bcs</Font></Text-field>
      end: <Font style="Text">loop over phases
 </Font>     replaceInTemplateCC(&quot;_MAVERICK_ENTER_POST_PROC_BODY&quot;, getCodeForPhases(tmp_code) ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeDiffPP := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeDiffPP := proc()
     local P, i, nlp_post_proc, tmp_code,nlp_post_proc_expr:
 
     for P from 1 to __num_phases do
@@ -2437,8 +2304,7 @@ end:
      end: <Font style="Text">loop over phases
 </Font>     replaceInTemplateCC(&quot;_MAVERICK_ENTER_DIFFERENTIAL_POST_PROC_BODY&quot;, getCodeForPhases(tmp_code) ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeIntPP := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeIntPP := proc()
     local P, i, nlp_post_proc, tmp_code,nlp_post_proc_expr:
 
     for P from 1 to __num_phases do
@@ -2455,33 +2321,25 @@ end:
      end: <Font style="Text">loop over phases
 </Font>     replaceInTemplateCC(&quot;_MAVERICK_ENTER_INTEGRAL_POST_PROC_BODY&quot;, getCodeForPhases(tmp_code) ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">module pp</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenPostProc'):</Text-field>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">module pp</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib('MaverickCodegenPostProc'):</Text-field>
 </Input>
 </Group>
 </Section>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 1" layout="Heading 1">Maverick code generation module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Maverick code generation module</Text-field></Title>
 <Group hide-output="false" labelreference="L550" drawlabel="true" applyint="true" applyrational="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegen := module()
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MaverickCodegen := module()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">uses MaverickUtils;
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">option package:  <Font style="Text">all exported names are automatically protected
 
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __mapped_maverick_objects, __mapped_objects, __mav_tmp_folder,
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __OCP, __num_phases, __mapped_maverick_objects, __mapped_objects, __mav_tmp_folder,
       __output_array_cc, __output_guess_array_cc, __output_array_hh, __output_guess_array_hh,
       __original_array_cc, __original_guess_array_cc, __original_array_hh, __original_guess_array_hh,
       __output_array_main_cc, __output_array_compile,
       __output_array_lib_hh, __output_array_lib_cc,
       __model_params_names_str, __model_params_index_defines, __model_params_convert, __num_model_params,
       __tabs,__debug:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _maverick_ext_obj_includes_str,
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local _maverick_ext_obj_includes_str,
       _maverick_ext_obj_def_strs,
       _maverick_ext_obj_namespace_strs,
       _maverick_ext_obj_setup_str,
@@ -2510,8 +2368,7 @@ end:
 
       writeLibrary,
       writeCompile:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export  
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export  
        clearCode, 
        initCode, 
        setConversion,
@@ -2521,14 +2378,12 @@ end:
 
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">initCode := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">initCode := proc()
     #__mav_tmp_folder := (currentdir(), &quot;/mav_tmp&quot;):
 end:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">clearCode := proc() _clearCode(): end:
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">clearCode := proc() _clearCode(): end:
 _clearCode := proc() 
 
     _maverick_ext_obj_includes_str := &quot;&quot;:
@@ -2540,8 +2395,7 @@ _clearCode := proc()
     _ext_object_language_defs := []:
 
 end:
-   </Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">setConversion := proc(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv)  _setConversion(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv): end:
+   </Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">setConversion := proc(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv)  _setConversion(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv): end:
 _setConversion := proc(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv) 
     __ocp_to_nlp_conv1 := ocp_to_nlp_conv1:
     __ocp_to_nlp_conv2 := ocp_to_nlp_conv2:
@@ -2550,20 +2404,17 @@ _setConversion := proc(ocp_to_nlp_conv1, ocp_to_nlp_conv2, ocp_to_nlp_at_bc_conv
 end:
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">ocp2nlp := proc( P::integer ) _ocp2nlp(P, seq(_passed[i],i=2.._npassed) ): end:
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">ocp2nlp := proc( P::integer ) _ocp2nlp(P, seq(_passed[i],i=2.._npassed) ): end:
 _ocp2nlp := proc( P::integer )
    seq(subs(op(__ocp_to_nlp_conv2[P]), op(__ocp_to_nlp_at_bc_conv[P]), subs(op(__ocp_to_nlp_conv1[P]), _passed[i])), i=2.._npassed);
 
 end proc:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">loadTemplates := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">loadTemplates := proc()
 local filename, fid, line, template_cc, template_hh, template_guess_cc, template_guess_hh, mav_path:   
 
   mav_path := cat(kernelopts(mapledir),&quot;/toolbox/Maverick/templates/&quot;):</Text-field>
 </Input>
-<Input>
-<Text-field style="Text" layout="Normal">    .CC template
+<Input><Text-field style="Text" layout="Normal">    .CC template
     <Font style="Maple Input">filename := cat(mav_path,&quot;MaverickOcp.template.cc&quot;);
 </Font>    <Font style="Maple Input">fid := fopen(filename, READ);
 </Font>    <Font style="Maple Input">line := readline(fid):
@@ -2665,8 +2516,7 @@ local filename, fid, line, template_cc, template_hh, template_guess_cc, template
 end:</Font>
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">processMappedObjects := proc()
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">processMappedObjects := proc()
     local objType, objCName, objCommonName, tmp, i_func, num_args, func_name, ext_func_name, i_arg, i_second_arg, obj, header, namespace, functions,first_part:
 
 <Font style="Text">process maverick objects</Font>
@@ -2817,8 +2667,7 @@ if (_maverick_ext_obj_print_str &lt;&gt; &quot;&quot;) then
 end:
 0;   
 end: <Font style="Text">end procedure
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">procedure to add declaration to unknown C variables</Font>
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">procedure to add declaration to unknown C variables</Font>
 addVariableDeclaration := proc(code_sequence::Array, var_type::string, returnname::string)
 local known_var_numbers, i, tmp, output:
 
@@ -2842,13 +2691,11 @@ local known_var_numbers, i, tmp, output:
 
    output;
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">convertParamsAndFunctions := proc(expr)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">convertParamsAndFunctions := proc(expr)
     <Font style="Text">Substitute model parameters and derivatives</Font>
     subs( _ext_obj_convert,  subs(__model_params_convert, convert(expr,D)) ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateCode := proc(expr, returnname::string) _generateCode(expr, returnname): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateCode := proc(expr, returnname::string) _generateCode(expr, returnname): end:
 _generateCode := proc(expr, returnname::string)
 local tmp, i, output, code_sequence:
     if (returnname=&quot;zeta&quot;) then error(&quot;Return name must be different from zeta&quot;): end: <Font style="Text">check the return name</Font>
@@ -2879,8 +2726,7 @@ local tmp, i, output, code_sequence:
 
     output:
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">initLanguageModule := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">initLanguageModule := proc()
 
  <Font style="Text">module of language translation</Font>
 maverick_language_module := proc() module()
@@ -2905,8 +2751,7 @@ maverick_language_module := proc() module()
 end module: end proc:
 
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateOcpCode := proc(problem_name::string, output_directory::string)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">generateOcpCode := proc(problem_name::string, output_directory::string)
    _class_name := problem_name:
    
    clearCode():
@@ -2964,8 +2809,7 @@ end:
    writeSourceFiles(problem_name, output_directory);
 
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeFirst := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeFirst := proc()
    <Font style="Text">write class name</Font>
    replaceAllInTemplateHH(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;, _class_name ): 
    replaceAllInTemplateCC(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;, _class_name ):
@@ -2973,9 +2817,8 @@ end:
    <Font style="Text">write number of phases
 </Font>   replaceInTemplateCC(&quot;_MAVERICK_ENTER_NUM_PHASES&quot;, convert(__num_phases,string) );
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeGuess := proc()
-local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tmp_code, guess_hh_str, guess_cc_str, should_write_guess, guess_code_at_mesh, guess_code, states, controls:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeGuess := proc()
+local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tmp_code, guess_hh_str, guess_cc_str, should_write_guess, guess_code_at_mesh, guess_code, states, controls, algebraic_states, algebraic_controls:
 
    should_write_guess := false:
    for P from 1 to __num_phases do
@@ -2986,10 +2829,12 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
       guess := __OCP[P][&quot;guess&quot;]:
       states := __OCP[P][&quot;states&quot;]:
       controls := __OCP[P][&quot;controls&quot;]:
+      algebraic_states := __OCP[P][&quot;algebraic_states&quot;]:
+      algebraic_controls := __OCP[P][&quot;algebraic_controls&quot;]:
 
       for i from 1 to nops(guess) do 
         tmp := lhs(guess[i]):
-        if ( has(states, tmp) or has(controls, tmp) ) then
+        if ( has(states, tmp) or has(controls, tmp) or has(algebraic_states, tmp) or has(algebraic_controls, tmp) ) then
             ocp_guess_mesh_dependent := [op(ocp_guess_mesh_dependent), guess[i]]:
         else
             ocp_guess_mesh_independent := [op(ocp_guess_mesh_independent), guess[i]]:            
@@ -3035,8 +2880,7 @@ local ocp_guess_mesh_dependent, ocp_guess_mesh_independent, guess, P, i, tmp, tm
         replaceInTemplateCC(&quot;_MAVERICK_ENTER_GUESS&quot;,&quot;&quot;):
     end if:
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeParameters := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeParameters := proc()
    replaceAllInTemplateHH(&quot;_MAVERICK_ENTER_NUM_MODEL_PARAMS&quot;, convert(__num_model_params,string) ):
    replaceAllInTemplateCC(&quot;_MAVERICK_ENTER_PARAMS_NAMES&quot;, __model_params_names_str ):
    replaceAllInTemplateHH(&quot;_MAVERICK_ENTER_PARAMS_INDEX_DEFINES&quot;, __model_params_index_defines ):
@@ -3047,21 +2891,17 @@ end:
    replaceInTemplateCC(&quot;_MAVERICK_ENTER_EXT_OBJECTS_SETUP&quot;, _maverick_ext_obj_setup_str):
    replaceInTemplateCC(&quot;_MAVERICK_ENTER_DERIVED_INFO&quot;, _maverick_ext_obj_print_str):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeMain := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeMain := proc()
    replaceAllInArray(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;, _class_name, __output_array_main_cc ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeLibrary := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeLibrary := proc()
    replaceAllInArray(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;, _class_name, __output_array_lib_cc ):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeCompile := proc()
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeCompile := proc()
    replaceAllInArray(&quot;_MAVERICK_ENTER_CLASS_NAME&quot;, _class_name, __output_array_compile ):
 end:
 
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeSourceFiles := proc(files_name::string, output_directory::string)
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">writeSourceFiles := proc(files_name::string, output_directory::string)
 local filename, fid, i, out_dir:
     out_dir := output_directory:
     if (out_dir=&quot;&quot;) then out_dir:=&quot;.&quot;: end:
@@ -3123,32 +2963,23 @@ local filename, fid, i, out_dir:
 end: <Font style="Text">write source files</Font>
 </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">end module</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'MaverickCodegen' );</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">end: <Font style="Text">end module</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'MaverickCodegen' );</Text-field>
 </Input>
 </Group>
 </Section>
-<Section collapsed="false" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title>
-<Text-field style="Heading 1" layout="Heading 1">Maverick interface module</Text-field></Title>
+<Section collapsed="false" isCollapsible="true" drawButton="true" MultipleChoiceAnswerIndex="-1" MultipleChoiceRandomizeChoices="false" TrueFalseAnswerIndex="-1" EssayAnswerRows="5" EssayAnswerColumns="60"><Title><Text-field style="Heading 1" layout="Heading 1">Maverick interface module</Text-field></Title>
 <Group hide-output="false" labelreference="L502" drawlabel="true">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">Maverick := module()</Text-field>
-<Text-field style="Normal" layout="Normal"> <Font style="Maple Input">    description &quot;Code generation package for Maverick Optimal Control software&quot;;
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">#uses MaverickCodegen;</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Module options</Font>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">Maverick := module()</Text-field><Text-field style="Normal" layout="Normal"> <Font style="Maple Input">    description &quot;Code generation package for Maverick Optimal Control software&quot;;
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">#uses MaverickCodegen;</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Module options</Font>
 option package,   <Font style="Text">all exported names are automatically protected</Font>
           load = init; <Font style="Text">this procedure is invoked when loading the module
 
 
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __mapped_maverick_objects, __mapped_objects, __num_phases, __OCP, __NLP,__model_params,
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">global __mapped_maverick_objects, __mapped_objects, __num_phases, __OCP, __NLP,__model_params,
          __model_params_names_str, __model_params_index_defines, __model_params_convert, __num_model_params, 
          __states_controls, __state_control_derivatives, __algebraic_states_controls, __parameters, __initial_state_control, __final_state_control,
          __tabs, __debug:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">local  state_control, state_control_derivative, algebraic_state_control, parameters, initial_state_control, final_state_control,
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">local  state_control, state_control_derivative, algebraic_state_control, parameters, initial_state_control, final_state_control,
        
       __phase_declared,
       __has_init,
@@ -3163,24 +2994,13 @@ option package,   <Font style="Text">all exported names are automatically protec
       containsOneArrayElem,
       containsExactlyOneArrayElem:
 
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">export NewOcpProblem,
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">export NewOcpProblem,
        GenerateCode,
        SetPhase,
        MapFunctionToCustomObject,
        MapFunctionToMaverickObject:<Font style="Text">
 
-</Font></Text-field>
-<Text-field style="Text" layout="Normal">@===================================================================@</Text-field>
-<Text-field style="Text" layout="Normal">#                             _           _                         #</Text-field>
-<Text-field style="Text" layout="Normal">#   _____  ___ __   ___  _ __| |_ ___  __| |  _ __  _ __ ___   ___  #</Text-field>
-<Text-field style="Text" layout="Normal"><Font encoding="UTF-8">#  / _ \134 \134/ / '_ \134 / _ \134| '__| __/ _ \134/ _` | | '_ \134| '__/ _ \134 / __| #</Font></Text-field>
-<Text-field style="Text" layout="Normal"># |  __/&gt;  &lt;| |_) | (_) | |  | ||  __/ (_| | | |_) | | | (_) | (__  #</Text-field>
-<Text-field style="Text" layout="Normal"><Font encoding="UTF-8">#  \134___/_/\134_\134 .__/ \134___/|_|   \134__\134___|\134__,_| | .__/|_|  \134___/ \134___| #</Font></Text-field>
-<Text-field style="Text" layout="Normal">#           |_|                              |_|                    #</Text-field>
-<Text-field style="Text" layout="Normal">@===================================================================@</Text-field>
-<Text-field style="Text" layout="Normal"></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">NewOcpProblem := proc( num_p::integer )
+</Font></Text-field><Text-field style="Text" layout="Normal">@===================================================================@</Text-field><Text-field style="Text" layout="Normal">#                             _           _                         #</Text-field><Text-field style="Text" layout="Normal">#   _____  ___ __   ___  _ __| |_ ___  __| |  _ __  _ __ ___   ___  #</Text-field><Text-field style="Text" layout="Normal"><Font encoding="UTF-8">#  / _ \134 \134/ / '_ \134 / _ \134| '__| __/ _ \134/ _` | | '_ \134| '__/ _ \134 / __| #</Font></Text-field><Text-field style="Text" layout="Normal"># |  __/&gt;  &lt;| |_) | (_) | |  | ||  __/ (_| | | |_) | | | (_) | (__  #</Text-field><Text-field style="Text" layout="Normal"><Font encoding="UTF-8">#  \134___/_/\134_\134 .__/ \134___/|_|   \134__\134___|\134__,_| | .__/|_|  \134___/ \134___| #</Font></Text-field><Text-field style="Text" layout="Normal">#           |_|                              |_|                    #</Text-field><Text-field style="Text" layout="Normal">@===================================================================@</Text-field><Text-field style="Text" layout="Normal"></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">NewOcpProblem := proc( num_p::integer )
     if (num_p&lt;1) then
         error(&quot;Number of phases must be greater than zero&quot;):
     end:
@@ -3190,8 +3010,7 @@ option package,   <Font style="Text">all exported names are automatically protec
     __num_phases:
     __has_init := 1199;
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">SetPhase := proc( {phase::integer:=0, 
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">SetPhase := proc( {phase::integer:=0, 
                    states::list([scalar,scalar..scalar]):=[], 
                    controls::list([scalar,scalar..scalar]):=[],
                    algebraic_states::list([scalar,scalar..scalar]):=[], 
@@ -3410,13 +3229,21 @@ end:
          if not(type(tmp,equation)) then error(cat(&quot;Guess at index &quot;, convert(i,string), &quot; is not an equation of the form: 'state/control/parameter = something'&quot;)); end:
 
          <Font style="Text">check lhs</Font>
-         if not( containsExactlyOneArrayElem(lhs(tmp), tmp_state_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_control_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_param_list) ) then 
+         if not( containsExactlyOneArrayElem(lhs(tmp), tmp_state_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_algebraic_state_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_control_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_algebraic_control_list) or containsExactlyOneArrayElem(lhs(tmp), tmp_param_list) ) then 
              error(cat(&quot;Left hand side of guess at index &quot;, convert(i,string), &quot; is not a state, control or parameter&quot;)); 
          end:
 
          <Font style="Text">check rhs</Font>
-         if ( containsOneArrayElem(rhs(tmp), tmp_state_list) or containsOneArrayElem(rhs(tmp), tmp_control_list) or containsOneArrayElem(rhs(tmp), tmp_param_list) ) then 
+         if ( containsExactlyOneArrayElem(rhs(tmp), tmp_state_list) or containsExactlyOneArrayElem(rhs(tmp), tmp_algebraic_state_list) or containsExactlyOneArrayElem(rhs(tmp), tmp_control_list) or containsExactlyOneArrayElem(rhs(tmp), tmp_algebraic_control_list) or containsExactlyOneArrayElem(rhs(tmp), tmp_param_list) ) then 
              error(cat(&quot;Right hand side of guess at index &quot;, convert(i,string), &quot; contains a state, control or parameter&quot;)); 
+         end:
+
+         <Font mathvariant="normal" mathbackground="[255,255,255]" mathsize="11" fontfamily="Monospaced" style="Text" mathcolor="[0,128,0]">check algebraic vars</Font>
+         for j from 1 to nops(algebraic_states) do
+              if (has(tmp,diff(algebraic_states[j][1],zeta))) then error(cat(&quot;guess contains algebraic state derivatives&quot;) ): end:
+          end:
+         for j from 1 to nops(algebraic_controls) do
+              if (has(tmp,diff(algebraic_controls[j][1],zeta))) then error(cat(&quot;guess contains algebraic control derivatives&quot;) ): end:
          end:
 
      end do: <Font style="Text">end guess</Font>
@@ -3430,11 +3257,11 @@ end:
          </Font>end:<Font style="Text">
 
          </Font>for j from 1 to nops(algebraic_states) do
-              if ( (has(tmp[1],algebraic_states[j][1])) or (has(tmp[1],diff(algebraic_states[j][1],zeta))) ) then error(cat(&quot;post processing at index &quot;,convert(i,string),&quot; contains algebraic states or their derivatives. <Font encoding="UTF-8">Use \134'differential_post_processing instead\134'.</Font>&quot;) ): end:
-          end:
-          for j from 1 to nops(algebraic_controls) do
-              if ((has(tmp[1],algebraic_controls[j][1])) or (has(tmp[1],diff(algebraic_controls[j][1],zeta))) ) then error(cat(&quot;post processing at index &quot;,convert(i,string),&quot; contains algebraic controls or their derivatives. <Font encoding="UTF-8">Use \134'differential_post_processing instead\134'.</Font>&quot;) ): end:
-          end:<Font style="Text">
+              if ( (has(tmp[1],algebraic_states[j][1])) ) then error(cat(&quot;post processing at index &quot;,convert(i,string),&quot; contains algebraic states. <Font encoding="UTF-8">Use \134'differential_post_processing instead\134'.</Font>&quot;) ): end:
+        end:
+        for j from 1 to nops(algebraic_controls) do
+              if ((has(tmp[1],algebraic_controls[j][1])) ) then error(cat(&quot;post processing at index &quot;,convert(i,string),&quot; contains algebraic controls. <Font encoding="UTF-8">Use \134'differential_post_processing instead\134'.</Font>&quot;) ): end:
+        end:<Font style="Text">
 
      </Font>end:<Font style="Text">
      end check post processing
@@ -3475,8 +3302,7 @@ end:
       writeline(default, cat(&quot;number of guess: &quot;, convert(nops(guess),string))):
       
 end: <Font style="Text">end proc setPhase
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MapFunctionToCustomObject := proc( functions::list([function = function]), object_name::string, class_name::string, {instance_name::string:=&quot;&quot;, namespace::string:=&quot;&quot;}) _mapFunctionToCustomObject(functions, object_name, class_name, instance_name, namespace): end:
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MapFunctionToCustomObject := proc( functions::list([function = function]), object_name::string, class_name::string, {instance_name::string:=&quot;&quot;, namespace::string:=&quot;&quot;}) _mapFunctionToCustomObject(functions, object_name, class_name, instance_name, namespace): end:
 _mapFunctionToCustomObject := proc( functions::list([function = function]), object_name::string, class_name::string, instance_name::string:=&quot;&quot;, namespace::string:=&quot;&quot;)
     local tmp, _instance_name, mess:
 
@@ -3501,8 +3327,7 @@ _mapFunctionToCustomObject := proc( functions::list([function = function]), obje
     mess := cat( mess, &quot; for object &quot;, object_name, &quot; of type &quot;, class_name):
     writeline(default,mess);
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">MapFunctionToMaverickObject := proc( functions::{list(function = function), function = function}, object_name::string, class_name::string, {instance_name::string:=&quot;&quot;} ) _mapFunctionToMaverickObject(functions, object_name, class_name, instance_name): end:
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">MapFunctionToMaverickObject := proc( functions::{list(function = function), function = function}, object_name::string, class_name::string, {instance_name::string:=&quot;&quot;} ) _mapFunctionToMaverickObject(functions, object_name, class_name, instance_name): end:
 _mapFunctionToMaverickObject := proc( functions::{list(function = function), function = function}, object_name::string, class_name::string, {instance_name::string:=&quot;&quot;} )
     local tmp, _instance_name, mess:
 
@@ -3527,8 +3352,7 @@ _mapFunctionToMaverickObject := proc( functions::{list(function = function), fun
     mess := cat( mess, &quot; for object &quot;, object_name, &quot; of type &quot;, class_name):
     writeline(default,mess);
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">GenerateCode := proc( problem_name::string, { model_parameters::list(symbol):=[], output_directory::string := &quot;&quot; } )
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">GenerateCode := proc( problem_name::string, { model_parameters::list(symbol):=[], output_directory::string := &quot;&quot; } )
     _generateCode(problem_name, model_parameters, output_directory):
 end:
 _generateCode := proc( problem_name::string, model_parameters::list(symbol):=[], output_directory::string := &quot;&quot; )
@@ -3552,25 +3376,14 @@ _generateCode := proc( problem_name::string, model_parameters::list(symbol):=[],
 
      writeline(default, &quot;CODE GENERATION COMPLETE&quot;);
 end:
-</Text-field>
-<Text-field style="Text" layout="Normal">@=============================================================@</Text-field>
-<Text-field style="Text" layout="Normal">#  _       _                        _                         #</Text-field>
-<Text-field style="Text" layout="Normal"># (_)_ __ | |_ ___ _ __ _ __   __ _| |  _ __  _ __ ___   ___  #</Text-field>
-<Text-field style="Text" layout="Normal"><Font encoding="UTF-8"># | | '_ \134| __/ _ \134 '__| '_ \134 / _` | | | '_ \134| '__/ _ \134 / __| #</Font></Text-field>
-<Text-field style="Text" layout="Normal"># | | | | | ||  __/ |  | | | | (_| | | | |_) | | | (_) | (__  #</Text-field>
-<Text-field style="Text" layout="Normal"><Font encoding="UTF-8"># |_|_| |_|\134__\134___|_|  |_| |_|\134__,_|_| | .__/|_|  \134___/ \134___| #</Font></Text-field>
-<Text-field style="Text" layout="Normal">#                                      |_|                    #</Text-field>
-<Text-field style="Text" layout="Normal">@=============================================================@</Text-field>
-<Text-field style="Text" layout="Normal"></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Initialization procedure</Font>
+</Text-field><Text-field style="Text" layout="Normal">@=============================================================@</Text-field><Text-field style="Text" layout="Normal">#  _       _                        _                         #</Text-field><Text-field style="Text" layout="Normal"># (_)_ __ | |_ ___ _ __ _ __   __ _| |  _ __  _ __ ___   ___  #</Text-field><Text-field style="Text" layout="Normal"><Font encoding="UTF-8"># | | '_ \134| __/ _ \134 '__| '_ \134 / _` | | | '_ \134| '__/ _ \134 / __| #</Font></Text-field><Text-field style="Text" layout="Normal"># | | | | | ||  __/ |  | | | | (_| | | | |_) | | | (_) | (__  #</Text-field><Text-field style="Text" layout="Normal"><Font encoding="UTF-8"># |_|_| |_|\134__\134___|_|  |_| |_|\134__,_|_| | .__/|_|  \134___/ \134___| #</Font></Text-field><Text-field style="Text" layout="Normal">#                                      |_|                    #</Text-field><Text-field style="Text" layout="Normal">@=============================================================@</Text-field><Text-field style="Text" layout="Normal"></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">Initialization procedure</Font>
 init := proc(printheader::boolean:=false)
     __num_phases = 0; <Font style="Text">number of phases of the ocp problem</Font>
     __tabs := &quot;    &quot;:
     clear():
     MaverickCodegen:-initCode():
 end: <Font style="Text">end init procedure
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">clear := proc()
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">clear := proc()
     __OCP := '__OCP':
     __NLP := '__NLP':
     __model_params:=[]:      
@@ -3581,16 +3394,14 @@ end: <Font style="Text">end init procedure
 
     MaverickCodegen:-clearCode():
 end: <Font style="Text">clear proc
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">initialize the data list to empty list for all the phases</Font>
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">initialize the data list to empty list for all the phases</Font>
 prepareForPhases := proc()
     local i;
     for i from 1 to __num_phases do
        __phase_declared:=[op(__phase_declared), false]:
     end:
 end: <Font style="Text">prepare for phases procedure
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">check_has_init := proc(throw_error :: boolean)
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">check_has_init := proc(throw_error :: boolean)
 local returned_value:
      if (__has_init = 1199) then
         returned_value := true;
@@ -3602,8 +3413,7 @@ local returned_value:
      end:
      returned_value;
 end: <Font style="Text">check has init proc
-</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">containsOneArrayElem := proc(expr, arr::Array)
+</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">containsOneArrayElem := proc(expr, arr::Array)
    local contains, tmp:
    for tmp in arr do
        if (has(expr, tmp)) then return true; end if;
@@ -3611,8 +3421,7 @@ end: <Font style="Text">check has init proc
 
    return false:
 
-end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">containsExactlyOneArrayElem := proc(expr, arr::Array)
+end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">containsExactlyOneArrayElem := proc(expr, arr::Array)
    local contains, tmp:
    for tmp in arr do
        if ( expr = tmp ) then return true; end if;
@@ -3620,8 +3429,7 @@ end:</Text-field>
 
    return false:
 
-end:</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">procedure to process the parameters and create the conversion from params to C-params</Font>
+end:</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">procedure to process the parameters and create the conversion from params to C-params</Font>
 setupParameters := proc(model_params::list(symbol):=[])
 local tmp, i_s:
     __model_params_names_str := &quot;&quot;:
@@ -3641,8 +3449,7 @@ local tmp, i_s:
    #writeline(default,cat(&quot;number of parameters &quot;, convert(nops(model_params),string)));
    __num_model_params := nops(model_params):
 end:
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">create the conversion strings from ocp to nlp</Font>
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal"><Font style="Text">create the conversion strings from ocp to nlp</Font>
 createConversion := proc()
 local P, _nx, _nu, _nxu, _nax, _nau, _naxu, _np, __ocp_to_nlp_conv1, __ocp_to_nlp_conv2, __ocp_to_nlp_at_bc_conv:
 
@@ -3661,26 +3468,22 @@ local P, _nx, _nu, _nxu, _nax, _nau, _naxu, _np, __ocp_to_nlp_conv1, __ocp_to_nl
 
          </Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_conv1[P]  := [seq( diff(__OCP[P][&quot;states&quot;][i],zeta) = __NLP[P][&quot;diff_vars&quot;][i], i=1.._nx),
-                                       seq( diff(__OCP[P][&quot;controls&quot;][i],zeta) = __NLP[P][&quot;diff_vars&quot;][_nx+i], i=1.._nu)];</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_conv2[P]  := [seq( __OCP[P][&quot;states&quot;][i] = __NLP[P][&quot;vars&quot;][i], i=1.._nx),
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_conv1[P]  := [seq( diff(__OCP[P][&quot;states&quot;][i],zeta) = __NLP[P][&quot;diff_vars&quot;][i], i=1.._nx),
+                                       seq( diff(__OCP[P][&quot;controls&quot;][i],zeta) = __NLP[P][&quot;diff_vars&quot;][_nx+i], i=1.._nu)];</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_conv2[P]  := [seq( __OCP[P][&quot;states&quot;][i] = __NLP[P][&quot;vars&quot;][i], i=1.._nx),
                                        seq( __OCP[P][&quot;controls&quot;][i] = __NLP[P][&quot;vars&quot;][_nx+i], i=1.._nu),
                                     seq( __OCP[P][&quot;algebraic_states&quot;][i] = __NLP[P][&quot;alg_vars&quot;][i], i=1.._nax),
                                        seq( __OCP[P][&quot;algebraic_controls&quot;][i] = __NLP[P][&quot;alg_vars&quot;][_nax+i], i=1.._nau),
                                        seq( __OCP[P][&quot;params&quot;][i] = __NLP[P][&quot;params&quot;][i], i=1.._np),
                                        zeta = __zeta];</Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_at_bc_conv[P]  := [seq( op(0,__OCP[P][&quot;states&quot;][i])(zeta_i) = __NLP[P][&quot;i_vars&quot;][i], i=1.._nx),
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">         __ocp_to_nlp_at_bc_conv[P]  := [seq( op(0,__OCP[P][&quot;states&quot;][i])(zeta_i) = __NLP[P][&quot;i_vars&quot;][i], i=1.._nx),
                                             seq( op(0,__OCP[P][&quot;states&quot;][i])(zeta_f) = __NLP[P][&quot;f_vars&quot;][i], i=1.._nx),
                                             seq( op(0,__OCP[P][&quot;controls&quot;][i])(zeta_i) = __NLP[P][&quot;i_vars&quot;][_nx+i], i=1.._nu),
                                             seq( op(0,__OCP[P][&quot;controls&quot;][i])(zeta_f) = __NLP[P][&quot;f_vars&quot;][_nx+i], i=1.._nu),
                                             seq( __OCP[P][&quot;params&quot;][i] = __NLP[P][&quot;params&quot;][i], i=1.._np),
                                             zeta_i = __zeta_i, zeta_f = __zeta_f];</Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">
 
      end do:
 
@@ -3688,8 +3491,7 @@ local P, _nx, _nu, _nxu, _nax, _nau, _naxu, _np, __ocp_to_nlp_conv1, __ocp_to_nl
 
 end: <Font style="Text">createConversion procedure</Font>
 
-</Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">_setPhase := proc( phase::integer, 
+</Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">_setPhase := proc( phase::integer, 
                    states::list([algebraic,algebraic..algebraic]), 
                    controls::list([algebraic,algebraic..algebraic]),
                    algebraic_states::list([algebraic,algebraic..algebraic]), 
@@ -3824,14 +3626,11 @@ end: <Font style="Text">createConversion procedure</Font>
 
 end:</Text-field>
 </Input>
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" alignment="left" firstindent="0" spacebelow="0" leftmargin="0" linespacing="0.0" initial="0" linebreak="space" rightmargin="0" bulletsuffix="" spaceabove="0" bullet="none" pagebreak-before="false">end: <Font style="Text">end of maverick main module</Font></Text-field>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'Maverick' );</Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" spaceabove="0" linebreak="space" rightmargin="0" linespacing="0.0" initial="0" firstindent="0" leftmargin="0" bulletsuffix="" alignment="left" bullet="none" spacebelow="0" pagebreak-before="false">end: <Font style="Text">end of maverick main module</Font></Text-field><Text-field prompt="&gt; " style="Maple Input" layout="Normal">savelib( 'Maverick' );</Text-field>
 </Input>
 </Group>
 <Group labelreference="L586" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
-<Input>
-<Text-field prompt="&gt; " style="Maple Input" layout="Normal"></Text-field>
+<Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal"></Text-field>
 </Input>
 </Group>
 </Section>
