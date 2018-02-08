@@ -137,8 +137,6 @@ ifeq ($(OS),Darwin) # OsX
 	FORTRAN_LIB := -L/usr/local/gfortran/lib -lgfortran
 	SL_EXT := dylib
 
-	CPP_FLAGS := -std=c++11 $(OPTIM_FLAGS) $(CPPADDFLAG)
-
 	LINKER_LOAD_ALL_LIB := -Wl,-all_load
 	LINKER_NO_LOAD_ALL_LIB := -Wl,-noall_load
 	MAKE_SHARED := -dynamiclib -undefined dynamic_lookup
@@ -156,8 +154,6 @@ else ifeq ($(OS),Linux)
 	FORTRAN_LIB := -lgfortran
 	SL_EXT := so
 
-	CPP_FLAGS := -std=c++11 $(OPTIM_FLAGS) $(CPPADDFLAG)
-
 	LINKER_LOAD_ALL_LIB := -Wl,--whole-archive
 	LINKER_NO_LOAD_ALL_LIB := -Wl,--no-whole-archive
 	MAKE_SHARED := -shared
@@ -168,14 +164,16 @@ else ifeq ($(OS),Linux)
 	ADD_SLLIB_COMMANDS := -pthread -fopenmp
 endif
 
+CPP_FLAGS := -std=c++11 -fPIC $(OPTIM_FLAGS) $(CPPADDFLAG)
+
 CORE_INCLUDES = -Isrc -I/usr/include -I/usr/local/include
-CORE_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES) $(IPOPT_INCLUDE)
-TOIPOPT_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES) $(IPOPT_INCLUDE)
-TENSOLVE_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES)
-TENSOLVE_FFLAGS = $(OPTIM_FLAGS) -fPIC $(BUILD_FLAGS)
-GC_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES) $(LUA_INCLUDE)
-SPLINES_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES)
-UTILS_CFLAGS = $(CPP_FLAGS) $(CPPADDFLAG) -fPIC $(BUILD_FLAGS) $(CORE_INCLUDES)
+CORE_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES) $(IPOPT_INCLUDE)
+TOIPOPT_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES) $(IPOPT_INCLUDE)
+TENSOLVE_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES)
+TENSOLVE_FFLAGS = $(OPTIM_FLAGS) $(BUILD_FLAGS)
+GC_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES) $(LUA_INCLUDE)
+SPLINES_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES)
+UTILS_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES)
 
 SL_FLAGS = $(MAKE_SHARED)
 ifeq ($(THISLUA),true)
@@ -240,7 +238,7 @@ install_python:
 
 ### CLEANS
 
-clean:
+clean: clean_core clean_ipopt clean_tensolve clean_gc clean_splines clean_utils clean_python clean_lua
 	rm -f $(MAVERICK_CORE_OBJS_FILES)
 	rm -f $(MAVERICK_TOIPOPT_OBJS_FILES)
 	rm -f $(MAVERICK_TENSOLVE_PATH)/*.o
@@ -273,6 +271,7 @@ clean_ipopt:
 
 clean_tensolve:
 	rm -f $(MAVERICK_TENSOLVE_PATH)/*.o
+	rm -f $(MAVERICK_TENSOLVE_PATH)/*.mod
 	rm -f build/$(LIBNAMETS).*
 
 clean_gc:

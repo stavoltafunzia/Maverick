@@ -20,6 +20,8 @@ namespace Maverick {
     public:
 
         MidpointOcpSolution();
+      
+        static std::unique_ptr<MidpointOcpSolution> getFromGuessTablesForOcpProblem(std::vector<real_table> const & guess_table, MaverickOcp const & ocp_problem, std::vector<std::vector<std::string>> & found_variables);
 
         // copy constructor
         MidpointOcpSolution( MidpointOcpSolution const & ocp_solution );

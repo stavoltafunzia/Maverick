@@ -19,7 +19,7 @@
 using namespace std;
 
 namespace Maverick {
-
+    
     MidpointOcpSolutionSinglePhase::MidpointOcpSolutionSinglePhase() {}
 
     MidpointOcpSolutionSinglePhase::MidpointOcpSolutionSinglePhase( MidpointOcpSolutionSinglePhase const & ocp_solution ) {
@@ -339,65 +339,59 @@ namespace Maverick {
 
         size_t point_size = _zeta.size();
         size_t interval_size = point_size - 1;
-        if (point_size==0)
+        if (point_size == 0)
             interval_size = 0;
 
-        vector<size_t> size_diff;
-        size_diff = { point_size - _cumulative_target.size(),
-                      interval_size - _integrand_target.size() };
+        if (point_size - _cumulative_target.size() != 0) return false;
+        if (interval_size - _integrand_target.size() != 0) return false;
 
         for (integer i=0; i< _states_controls.size(); i++)
-            size_diff.push_back( point_size - _states_controls[i].size() );
+            if ( point_size - _states_controls[i].size() != 0 ) return false;
 
         for (integer i=0; i< _algebraic_states_controls.size(); i++)
-            size_diff.push_back( interval_size - _algebraic_states_controls[i].size() );
+            if ( interval_size - _algebraic_states_controls[i].size() != 0 ) return false;
 
         for (integer i=0; i< _point_constraints.size(); i++)
-            size_diff.push_back( point_size - _point_constraints[i].size() );
+            if ( point_size - _point_constraints[i].size() != 0 ) return false;
 
         for (integer i=0; i< _path_constr.size(); i++)
-            size_diff.push_back( interval_size - _path_constr[i].size() );
+            if ( interval_size - _path_constr[i].size() != 0 ) return false;
 
         for (integer i=0; i< _int_constr.size(); i++)
-            size_diff.push_back( point_size - _int_constr[i].size() );
+            if ( point_size - _int_constr[i].size() != 0 ) return false;
 
         for (integer i=0; i< _fo_eqns.size(); i++)
-            size_diff.push_back( interval_size - _fo_eqns[i].size() );
+            if ( interval_size - _fo_eqns[i].size() != 0 ) return false;
 
         for (integer i=0; i< _post_processing.size(); i++)
-            size_diff.push_back( point_size - _post_processing[i].size() );
+            if ( point_size - _post_processing[i].size() != 0 ) return false;
 
         for (integer i=0; i< _differential_post_processing.size(); i++)
-            size_diff.push_back( interval_size - _differential_post_processing[i].size() );
+            if ( interval_size - _differential_post_processing[i].size() != 0 ) return false;
 
         for (integer i=0; i< _integral_post_processing.size(); i++)
-            size_diff.push_back( point_size - _integral_post_processing[i].size() );
+            if ( point_size - _integral_post_processing[i].size() != 0 ) return false;
 
         for (size i=0; i< _states_controls_upper_bounds_multipliers.size(); i++)
-            size_diff.push_back( point_size - _states_controls_upper_bounds_multipliers[i].size() );
+            if ( point_size - _states_controls_upper_bounds_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _states_controls_lower_bounds_multipliers.size(); i++)
-            size_diff.push_back( point_size - _states_controls_lower_bounds_multipliers[i].size() );
+            if ( point_size - _states_controls_lower_bounds_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _algebraic_states_controls_upper_bounds_multipliers.size(); i++)
-            size_diff.push_back( interval_size - _algebraic_states_controls_upper_bounds_multipliers[i].size() );
+            if ( interval_size - _algebraic_states_controls_upper_bounds_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _algebraic_states_controls_lower_bounds_multipliers.size(); i++)
-            size_diff.push_back( interval_size - _algebraic_states_controls_lower_bounds_multipliers[i].size() );
+            if ( interval_size - _algebraic_states_controls_lower_bounds_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _point_constraints_multipliers.size(); i++)
-            size_diff.push_back( point_size - _point_constraints_multipliers[i].size() );
+            if ( point_size - _point_constraints_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _path_constr_multipliers.size(); i++)
-            size_diff.push_back( interval_size - _path_constr_multipliers[i].size() );
+            if ( interval_size - _path_constr_multipliers[i].size() != 0 ) return false;
 
         for (size i=0; i< _fo_eqns_multipliers.size(); i++)
-            size_diff.push_back( interval_size - _fo_eqns_multipliers[i].size() );
-
-        //check all is zero
-        for (size i=0; i< size_diff.size(); i++)
-            if ( size_diff[i] != 0 )
-                return false;
+            if ( interval_size - _fo_eqns_multipliers[i].size() != 0 ) return false;
 
         return true;
     }
@@ -1333,5 +1327,92 @@ namespace Maverick {
                 out_gc["integral_post_processing"][i].set_vec_real(_integral_post_processing[i]);
             }
         }
+    }
+    
+    static std::vector<real> resampleVariableAtDifferentMesh(std::vector<real> const & given_mesh, std::vector<real> const & variable, std::vector<real> const & new_mesh) {
+        MaverickUtils::GF1ASpline gf1a;
+        gf1a.setup("Linear", given_mesh, variable, MaverickUtils::GF1ASpline::ExtendRange::keep_derivative); // "Akima", "Linear"
+        
+        std::vector<real> out;
+        for (real x : new_mesh)
+            out.push_back(gf1a.funcEval(x));
+        
+        return out;
+    }
+    
+    std::unique_ptr<MidpointOcpSolutionSinglePhase> MidpointOcpSolutionSinglePhase::convertFromRealTable(real_table const & table, MaverickOcp const & ocp_problem, integer const i_phase, std::vector<std::string> & found_variables) {
+        
+        MidpointOcpSolutionSinglePhase * sol = new MidpointOcpSolutionSinglePhase();
+        
+        vec_1d_real const & zeta = table.at("zeta");
+        vec_1d_real zeta_center;
+        for (vec_1d_real::const_iterator it = zeta.begin(); it!=zeta.end()-1; it++) {
+            zeta_center.push_back(  ( (*it) + (*(it+1)) )/2  );
+        }
+        // zeta_center.push_back( zeta_center.back() ); // copy last element
+        
+        vec_1d_real zeros_zeta_1d = vec_1d_real(zeta.size(), 0);
+        vec_1d_real zeros_zeta_center_1d = vec_1d_real(zeta_center.size(), 0);
+        
+        vec_2d_real point_constr = vec_2d_real( ocp_problem.numberOfPointConstraints(i_phase),  zeros_zeta_1d  );
+        vec_2d_real path_constr = vec_2d_real( ocp_problem.numberOfPathConstraints(i_phase),  zeros_zeta_center_1d  );
+        vec_2d_real int_constr = vec_2d_real( ocp_problem.numberOfIntConstraints(i_phase),  zeros_zeta_1d  );
+        vec_2d_real fo_eqns = vec_2d_real( ocp_problem.numberOfStates(i_phase),  zeros_zeta_center_1d  );
+        vec_1d_real boundary_conditions = vec_1d_real( ocp_problem.numberOfBoundaryConditions(i_phase), 0);
+        vec_2d_real post_processing = vec_2d_real( ocp_problem.numberOfPostProcessing(i_phase),  zeros_zeta_1d  );
+        vec_2d_real differential_post_processing = vec_2d_real( ocp_problem.numberOfDifferentialPostProcessing(i_phase),  zeros_zeta_center_1d  );
+        vec_2d_real integral_post_processing = vec_2d_real( ocp_problem.numberOfIntegralPostProcessing(i_phase),  zeros_zeta_1d  );
+        
+        vec_2d_real states_controls = vec_2d_real( ocp_problem.numberOfStates(i_phase)+ocp_problem.numberOfControls(i_phase),  zeros_zeta_center_1d  );
+        vec_2d_real algebraic_states_controls = vec_2d_real( ocp_problem.numberOfAlgebraicStates(i_phase)+ocp_problem.numberOfAlgebraicControls(i_phase),  zeros_zeta_1d  );
+        vec_1d_real params = vec_1d_real( ocp_problem.numberOfParameters(i_phase), 0);
+        
+        // now check for states or controls declared in the table
+        integer i_s;
+        for (i_s = 0; i_s < ocp_problem.numberOfStates(i_phase); i_s++) {
+            try {
+                string name = ocp_problem.stateName(i_phase, i_s);
+                vec_1d_real const & vec = table.at(name);
+                states_controls[ i_s ] = vec;
+                found_variables.push_back(name);
+            } catch (...) {}
+        }
+        for (integer i_c = 0; i_c < ocp_problem.numberOfControls(i_phase); i_c++) {
+            try {
+                string name = ocp_problem.controlName(i_phase, i_c);
+                vec_1d_real const & vec = table.at(name);
+                states_controls[ i_c + i_s ] = vec;
+                found_variables.push_back(name);
+            } catch (...) {}
+        }
+        
+        for (i_s = 0; i_s < ocp_problem.numberOfAlgebraicStates(i_phase); i_s++) {
+            try {
+                string name = ocp_problem.algebraicStateName(i_phase, i_s);
+                vec_1d_real const & vec = table.at(name);
+                algebraic_states_controls[ i_s ] = resampleVariableAtDifferentMesh(zeta, vec, zeta_center);
+                found_variables.push_back(name);
+            } catch (...) {}
+        }
+        for (integer i_c = 0; i_c < ocp_problem.numberOfAlgebraicControls(i_phase); i_c++) {
+            try {
+                string name = ocp_problem.algebraicControlName(i_phase, i_c);
+                vec_1d_real const & vec = table.at(name);
+                algebraic_states_controls[ i_c + i_s ] = resampleVariableAtDifferentMesh(zeta, vec, zeta_center);
+                found_variables.push_back(name);
+            } catch (...) {}
+        }
+        
+        //TODO: find multiplier in guess
+        
+        sol->setSolution(0, //target
+                         zeta,
+                         zeros_zeta_1d, zeros_zeta_center_1d, //cumulative and integrand target
+                         states_controls, algebraic_states_controls, params,
+                         point_constr, path_constr, int_constr, fo_eqns,
+                         boundary_conditions,
+                         post_processing, differential_post_processing, integral_post_processing);
+        
+        return std::unique_ptr<MidpointOcpSolutionSinglePhase>(sol);
     }
 }

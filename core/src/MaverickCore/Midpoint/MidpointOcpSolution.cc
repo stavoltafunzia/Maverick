@@ -191,4 +191,18 @@ namespace Maverick {
             _solutions[i].writeContentToGC(out_gc["Phase"+std::to_string(i)], p_ocp, i);
         }
     }
+  
+    std::unique_ptr<MidpointOcpSolution> MidpointOcpSolution::getFromGuessTablesForOcpProblem(std::vector<real_table> const & guess_table, MaverickOcp const & ocp_problem, std::vector<std::vector<std::string>> & found_variables) {
+        
+        found_variables = {};
+        MidpointOcpSolution * solution = new MidpointOcpSolution();
+        for (integer i=0; i<guess_table.size(); i++) {
+            std::vector<string> tmp_found;
+            std::unique_ptr<MidpointOcpSolutionSinglePhase> c_sol = MidpointOcpSolutionSinglePhase::convertFromRealTable(guess_table[i], ocp_problem, i, tmp_found);
+            solution->operator<<( *(c_sol.get()) );
+            found_variables.push_back(tmp_found);
+        }
+        return std::unique_ptr<MidpointOcpSolution>(solution);
+    }
+  
 }

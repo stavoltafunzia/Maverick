@@ -47,10 +47,6 @@ namespace Maverick {
 
     void chechForAllPhasesDeclarationInGc( GC::GenericContainer const & gc, integer const num_phases, bool & are_all_phases_declared, bool & is_one_phase_declared, std::vector<integer> & missing_phases );
 
-    std::unique_ptr<OcpSolutionSinglePhase> convertGuessTable2OcpSolutionSinglePhase( real_table const & table, MaverickOcp const & ocp_problem, integer const i_phase, std::vector<std::string> & found_variables );
-
-    std::unique_ptr<OcpSolution> convertGuessTable2OcpSolution( std::vector<real_table> const & tables, MaverickOcp const & ocp_problem, std::vector<std::vector<std::string>> & found_variables );
-
     integer extractRealTableFromMapType( GC::map_type const & mappa, real_table & table, std::string & error_key );
 
     // concatenate two vectors: append right vector to left one

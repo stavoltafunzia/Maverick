@@ -20,6 +20,8 @@ namespace Maverick {
     public:
 
         MidpointOcpSolutionSinglePhase();
+        
+        static std::unique_ptr<MidpointOcpSolutionSinglePhase> convertFromRealTable(real_table const & table, MaverickOcp const & ocp_problem, integer const i_phase, std::vector<std::string> & found_variables);
 
         // copy constructor
         MidpointOcpSolutionSinglePhase( MidpointOcpSolutionSinglePhase const & ocp_solution );

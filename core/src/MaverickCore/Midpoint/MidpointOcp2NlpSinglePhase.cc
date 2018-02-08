@@ -394,8 +394,8 @@ void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
     for (u_integer i=0; i<_th_affinity.size(); i++)
         _th_affinity[i] = {};  // Only in Linux thread affinity is supported
 
-    for (ThreadJob & th_job : _thread_jobs)
-        th_job.affinity = {};
+    for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++)
+        _thread_jobs[i_thread].affinity = {};
 #endif
 
     // now actually set the affinity of the threads

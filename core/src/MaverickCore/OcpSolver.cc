@@ -3,6 +3,7 @@
 #include "MaverickFunctions.hh"
 #include "MaverickCore/Midpoint/MidpointOcp2NlpSinglePhase.hh"
 #include "MaverickCore/Midpoint/MidpointMeshSolutionRefiner.hh"
+#include "MaverickCore/Midpoint/MidpointOcpSolution.hh"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -782,7 +783,7 @@ void OcpSolver::setupGuessTablesOnly( GC::GenericContainer const &gc_guess_table
         // now convert the tables to an ocp guess
 
         vector<vector<string>> found_vars_vec;
-        std::unique_ptr<OcpSolution> solution = convertGuessTable2OcpSolution(tables, _ocp_problem, found_vars_vec);
+        std::unique_ptr<OcpSolution> solution = MidpointOcpSolution::getFromGuessTablesForOcpProblem(tables, _ocp_problem, found_vars_vec);
         stringstream found_vars;
         for (integer i=0; i<found_vars_vec.size(); i++) {
             vector<string> const & vars = found_vars_vec[i];
