@@ -19,7 +19,7 @@ endif
 
 #release or debug version
 ifeq ($(MAVERICK_DEBUG),true)
-	BUILD_TARGET="debug"
+	BUILD_TARGET:="debug"
 else
 	BUILD_TARGET:="release"
 endif
@@ -35,10 +35,10 @@ endif
 #default lua
 ifeq ($(LUA_LIB),)
 	THISLUA=true
-	LUA_LIB := -Lsrc/Lua/src -llua_$(PLATFORM_SUFFIX)
 endif
 ifeq ($(THISLUA),true)
 	LUA_INCLUDE := -Isrc/Lua/src
+	LUA_LIB := -Lsrc/Lua/src -llua_$(PLATFORM_SUFFIX)
 endif
 
 #default python command: python3
@@ -230,7 +230,6 @@ install:
 	@echo Maverick lib succesfully installed
 
 install_python:
-#copy python
 	rm -R -f "$(INSTALL_PATH)/python"
 	test -d "$(INSTALL_PATH)/python" || mkdir -p "$(INSTALL_PATH)/python"
 	cp ./build/$(PYTHONLIBNAME).so $(INSTALL_PATH)/python/
@@ -239,24 +238,6 @@ install_python:
 ### CLEANS
 
 clean: clean_core clean_ipopt clean_tensolve clean_gc clean_splines clean_utils clean_python clean_lua
-	rm -f $(MAVERICK_CORE_OBJS_FILES)
-	rm -f $(MAVERICK_TOIPOPT_OBJS_FILES)
-	rm -f $(MAVERICK_TENSOLVE_PATH)/*.o
-	rm -f $(MAVERICK_GC_OBJS_FILES)
-	rm -f $(MAVERICK_SPLINES_OBJS_FILES)
-	rm -f $(MAVERICK_UTILS_OBJS_FILES)
-	rm -R -f build/*
-	rm -R -f include/MaverickCore/
-	rm -R -f include/MaverickGC/
-	rm -R -f include/MaverickUtils/
-	rm -f $(MAVERICK_PYTHON_PATH)/*.so
-	rm -f $(MAVERICK_PYTHON_PATH)/*.o
-	rm -f build/$(PYTHONLIBNAME).so
-	rm -f -R $(MAVERICK_PYTHON_PATH)/build
-	rm -f src/Lua/src/*.o
-	rm -f src/Lua/src/liblua_$(PLATFORM_SUFFIX).a
-	rm -f src/Lua/src/luac
-	rm -f src/Lua/src/lua
 
 clean_core:
 	rm -f $(MAVERICK_CORE_OBJS_FILES)

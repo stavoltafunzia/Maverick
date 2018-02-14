@@ -135,7 +135,7 @@ If someone is interested in this project and would like to help me in carrying o
 - **Which operating system is supported?**
 
 Maverick is written entirely in plain C++ and no OS specific api is used: thus it can be used in any OS provided you have a C++ compiler. However, I'v tested and used Maverick only in unix systems (not in Windows).
-In theory you can compile Maverick also in Windows, however you cannot use the makefile included. It is not my intention to support Windows since I personally do not want to waste time and moneys using such (pseudo-quasi) operating system. If you are using Windows, I suggest to install a virtual machine with Linux; performance shouldn't be affected remarkably.
+In theory you can compile Maverick also in Windows, however you cannot use the makefile included. It is not my intention to support Windows since I personally do not want to waste time using such (quasi-pseudo) operating system. If you are using Windows, you can install a virtual machine with Linux; performance shouldn't be affected remarkably.
 Ps: if you would like to contribute to the project adding Windows support, please contact me.
 
 - **How should I write Jacobians and Hessians?**
