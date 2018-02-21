@@ -1,0 +1,34 @@
+fo_eqns := [diff(x(t),t) = v_z(t)*sin(psi(t))*cos(mu(t))*sin(phi(t))-v_x(t)*
+sin(psi(t))*sin(phi(t))*sin(mu(t))+v_z(t)*cos(psi(t))*sin(mu(t))+v_x(t)*cos(
+psi(t))*cos(mu(t))-v_y(t)*sin(psi(t))*cos(phi(t)), diff(y(t),t) = -v_z(t)*cos(
+psi(t))*cos(mu(t))*sin(phi(t))+v_x(t)*cos(psi(t))*sin(phi(t))*sin(mu(t))+v_z(t
+)*sin(psi(t))*sin(mu(t))+v_x(t)*sin(psi(t))*cos(mu(t))+v_y(t)*cos(psi(t))*cos(
+phi(t)), diff(z(t),t) = v_z(t)*cos(mu(t))*cos(phi(t))-v_x(t)*cos(phi(t))*sin(
+mu(t))+v_y(t)*sin(phi(t)), -(cos(phi(t))*cos(mu(t))*diff(psi(t),t)+diff(phi(t)
+,t)*sin(mu(t)))*m*v_y(t)+(diff(mu(t),t)+sin(phi(t))*diff(psi(t),t))*m*v_z(t)+m
+*diff(v_x(t),t)-sin(mu(t))*cos(phi(t))*g*m+.5*rho_aria*CxA*v_x(t)*absReg(v_x(t
+)/V0)*V0, (cos(phi(t))*cos(mu(t))*diff(psi(t),t)+diff(phi(t),t)*sin(mu(t)))*m*
+v_x(t)-(-diff(psi(t),t)*cos(phi(t))*sin(mu(t))+diff(phi(t),t)*cos(mu(t)))*m*
+v_z(t)+m*diff(v_y(t),t)+sin(phi(t))*g*m+.5*rho_aria*CyA*v_y(t)*absReg(v_y(t)/
+V0)*V0, -(diff(mu(t),t)+sin(phi(t))*diff(psi(t),t))*m*v_x(t)+(-diff(psi(t),t)*
+cos(phi(t))*sin(mu(t))+diff(phi(t),t)*cos(mu(t)))*m*v_y(t)+m*diff(v_z(t),t)+
+cos(mu(t))*cos(phi(t))*g*m+.5*rho_aria*CzA*v_z(t)*absReg(v_z(t)/V0)*V0-thrust(
+t)*thrust_factor(z(t)), phi_dot(t) = diff(phi(t),t), mu_dot(t) = diff(mu(t),t)
+, psi_dot(t) = diff(psi(t),t), thrust_dot(t) = diff(thrust(t),t)];
+fo_vars := [x(t), y(t), z(t), v_x(t), v_y(t), v_z(t), phi(t), mu(t), psi(t), 
+thrust(t)];
+uvars := [phi_dot(t), mu_dot(t), psi_dot(t), thrust_dot(t)];
+qc_omega_expr := [omega_x(t) = -diff(psi(t),t)*cos(phi(t))*sin(mu(t))+diff(phi
+(t),t)*cos(mu(t)), omega_y(t) = diff(mu(t),t)+sin(phi(t))*diff(psi(t),t), 
+omega_z(t) = cos(phi(t))*cos(mu(t))*diff(psi(t),t)+diff(phi(t),t)*sin(mu(t))]
+;
+force_expr := [Dx = -.5*rho_aria*CxA*v_x(t)*absReg(v_x(t)/V0)*V0, Dy = -.5*
+rho_aria*CyA*v_y(t)*absReg(v_y(t)/V0)*V0, Dz = -.5*rho_aria*CzA*v_z(t)*absReg(
+v_z(t)/V0)*V0];
+ground_speeds := [vxg = v_z(t)*sin(psi(t))*cos(mu(t))*sin(phi(t))-v_x(t)*sin(
+psi(t))*sin(phi(t))*sin(mu(t))+v_z(t)*cos(psi(t))*sin(mu(t))+v_x(t)*cos(psi(t)
+)*cos(mu(t))-v_y(t)*sin(psi(t))*cos(phi(t)), vyg = -v_z(t)*cos(psi(t))*cos(mu(
+t))*sin(phi(t))+v_x(t)*cos(psi(t))*sin(phi(t))*sin(mu(t))+v_z(t)*sin(psi(t))*
+sin(mu(t))+v_x(t)*sin(psi(t))*cos(mu(t))+v_y(t)*cos(psi(t))*cos(phi(t)), vzg =
+v_z(t)*cos(mu(t))*cos(phi(t))-v_x(t)*cos(phi(t))*sin(mu(t))+v_y(t)*sin(phi(t))
+];
