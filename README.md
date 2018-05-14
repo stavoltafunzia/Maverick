@@ -143,7 +143,7 @@ Ps: if you would like to contribute to the project adding Windows support, pleas
 The Jacobian matrix (of a vector function F of a vector variable X) at the i-th row and j-th column has the derivative of the i-th function component F_i taken with respect to the j-th variable component X_j.
 The Hessian matrix (of a scalar function f of a vector variable X) at the i-th row and j-th column has the second order derivative of the function f taken with respect to the i-th variable component X_i and the j-th variable component X_j.
 You must write the Jacobian and Hessian matrices in a plain 1-dimensional array using column-major ordering. Only the nonzero entries (see note below) of such matrices must be written, i.e. if a matrix as N nonzero entries, then the 1-dimensional array must have length N. The matrix position (pattern) of each array element must be returned in the "pattern" MaverickOCP methods.
-NOTE: the nonzero matrix elements are those elements that CAN be nonzero for some values of the vector variable X. Therefore is an entry is zero only at a given point X, it is still considered a nonzero entry.
+NOTE: the nonzero matrix elements are those elements that CAN be nonzero for some values of the vector variable X.
 
 - **I do not want to provide Jacobians and Hessians. How can I do?**
 
