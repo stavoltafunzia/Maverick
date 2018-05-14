@@ -21,13 +21,13 @@ The integration scheme currently implemented is based on a midpoint quadrature r
 More information about Maverick implementation can be found in chapter 6 of my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaRbqr6nL95mYgHeorzxms3aqXzwQ1D_pApaAMN2cm0).
 
 ## How to compile and install
-In order to compile the core C++ library, first install the third party software (see paragraph below). Then simply go into the "core" folder and type
+In order to compile the core C++ library, first install the third party software (see paragraph below). Then simply go into the "lib" folder and type
   > make
 
 to compile, and
   > make install
 
-to install the library in `/usr/local/maverick/`. When compiling the core library, you may need to specify some dependency libraries (ipopt and blas) with the command
+to install the library in `/usr/local/maverick/`. When compiling the C++ library, you may need to specify some dependency libraries (ipopt and blas) with the command
   >make IPOPT_INCLUDE=\<compiler_flag_to_use_ipopt_headers> IPOPT_LIB=\<compiler_flag_to_link_to_ipopt_library> BLAS=\<compiler_flag_to_link_to_blas_library>
 
 By default ipopt is sought in /usr/local/ipopt, and the blas library used is ATLAS.
@@ -61,7 +61,7 @@ programming" (J. T. Betts), or in my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaR
       >MyOcpProblem ocp_problem;
 
     * takes a reference (managed pointer) to an instance of the solver class;
-      >unique_ptr\<Maverick::MaverickSolver> solver = Maverick::getMaverickSolver(ocp);
+      >unique_ptr\<Maverick::MaverickOcpSolver> solver = Maverick::getMaverickOcpSolver(ocp);
 
     * tells the solver to solve the problem;
       >solver->solve(gc);

@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
 
         QuadcopterNamespace::Quadcopter ocp;
 
-        unique_ptr<Maverick::MaverickSolver> solver = Maverick::getMaverickSolver(ocp);
+        unique_ptr<Maverick::MaverickOcpSolver> solver = Maverick::getMaverickOcpSolver(ocp);
 
         solver->solve(gc);
 

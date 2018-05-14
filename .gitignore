@@ -33,13 +33,16 @@ syntax: glob
 *.unix
 
 #core
-core/build/*
-core/src/MaverickPython/build/*
-core/src/MaverickPython/*.so
-core/src/MaverickPython/*.c
-core/include/
-core/src/Lua/src/lua
-core/src/Lua/src/luac
+lib/build/*
+lib/src/MaverickPython/build/*
+lib/src/MaverickPython/*.so
+lib/src/MaverickPython/*.c
+lib/include/
+lib/src/Lua/src/lua
+lib/src/Lua/src/luac
+lib/.idea
+lib/cmake-*
+lib/CMake*
 
 #examples
 **/out.txt

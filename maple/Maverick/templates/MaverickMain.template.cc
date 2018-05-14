@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
 
         _MAVERICK_ENTER_CLASS_NAMENamespace::_MAVERICK_ENTER_CLASS_NAME ocp;
 
-        unique_ptr<Maverick::MaverickSolver> solver = Maverick::getMaverickSolver(ocp);
+        unique_ptr<Maverick::MaverickOcpSolver> solver = Maverick::getMaverickOcpSolver(ocp);
 
         solver->solve(gc);
 
