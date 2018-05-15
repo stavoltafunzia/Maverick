@@ -9,7 +9,7 @@ The solver workflow and the numeric dataset can be controlled/specified using Lu
 ## Features
 
 Some of the features of Maverick are the following:
-- it allows to use a very general optimal control problem formulation. The formulation accepted by Maverick can be found in formula 6.5 of my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaRbqr6nL95mYgHeorzxms3aqXzwQ1D_pApaAMN2cm0);
+- it allows to use a very general optimal control problem formulation. The formulation accepted by Maverick can be found in formula 6.5 of my [PhD thesis](https://mega.nz/#!SEsgUQBY!LCkDl2tpEZwcOyrnsStIc796IUP8KubZKAKd5B0j6zI);
 - it allows to use implicit first order differential-algebraic equations;
 - it allows to use both differential or algebraic states and controls; Derivatives of differential controls can be used in the problem formulation;
 - it allows to define general path constraints and integral constraints;
@@ -18,7 +18,7 @@ Some of the features of Maverick are the following:
 - it exposes user-friendly scaling options to scale the optimal control problem.
 
 The integration scheme currently implemented is based on a midpoint quadrature rule, even if other integration scheme are planned to be implemented in the future.
-More information about Maverick implementation can be found in chapter 6 of my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaRbqr6nL95mYgHeorzxms3aqXzwQ1D_pApaAMN2cm0).
+More information about Maverick implementation can be found in chapter 6 of my [PhD thesis](https://mega.nz/#!SEsgUQBY!LCkDl2tpEZwcOyrnsStIc796IUP8KubZKAKd5B0j6zI).
 
 ## How to compile and install
 In order to compile the core C++ library, first install the third party software (see paragraph below). Then simply go into the "lib" folder and type
@@ -46,7 +46,7 @@ If you want to use the Maple library, copy the content of the `maple/Maverick` f
 In order to solve an optimal control problem problem, the user must (1) define the OCP problem (2) specify the dataset and (3) run the problem.
 
 1) An optimal control problem is defined by a C++ class inheriting from the abstract "MaverickOCP" class. All the pure virtual methods must be implemented. These pure virtual methods give information about the problem, such as: states, controls, equations, path constraints, Lagrange and Mayer target, post processing, Jacobians and Hessians. If your are not familiar with this terminology you can find it explained in classic textbooks such as "Dynamic optimization" (A. E. Bryson), "Practical methods for optimal control and estimation using nonlinear
-programming" (J. T. Betts), or in my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaRbqr6nL95mYgHeorzxms3aqXzwQ1D_pApaAMN2cm0).
+programming" (J. T. Betts), or in my [PhD thesis](https://mega.nz/#!SEsgUQBY!LCkDl2tpEZwcOyrnsStIc796IUP8KubZKAKd5B0j6zI).
 
 2) The problem dataset, including numeric values for the optimal control problem parameters, the desired mesh and the solver settings, can be specified in a Lua text files or through the Python interface.
 
@@ -156,7 +156,7 @@ Please have a look at the examples. Everything can be understood by looking at t
 
 - **The difference between states (or controls) and algebraic states (or controls) is not completely clear to me**
 
-States (or controls), also named differential states (or controls), are those states (or controls) whose derivatives take part in the OCP definition, e.g. their derivative appear in the equations of motion or in the Lagrange target. Algebraic states (or controls) are those states (or controls) whose derivatives do not appear in the problem. This distinction is required for numerical reasons, as described in my [PhD thesis](https://mega.nz/#!gwsCTYhZ!RaRbqr6nL95mYgHeorzxms3aqXzwQ1D_pApaAMN2cm0).
+States (or controls), also named differential states (or controls), are those states (or controls) whose derivatives take part in the OCP definition, e.g. their derivative appear in the equations of motion or in the Lagrange target. Algebraic states (or controls) are those states (or controls) whose derivatives do not appear in the problem. This distinction is required for numerical reasons, as described in my [PhD thesis](https://mega.nz/#!SEsgUQBY!LCkDl2tpEZwcOyrnsStIc796IUP8KubZKAKd5B0j6zI).
 
 - **The NLP solver does not manage to find the solution**
 
