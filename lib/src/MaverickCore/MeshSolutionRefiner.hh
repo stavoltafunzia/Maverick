@@ -31,7 +31,7 @@ namespace Maverick {
 
     MeshSolutionRefiner(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling);
 
-    ~MeshSolutionRefiner();
+    virtual ~MeshSolutionRefiner();
 
     virtual std::unique_ptr<Mesh> calculateMeshErrors(real const mesh_error_threshold,
                                                       bool const calculate_new_mesh,
