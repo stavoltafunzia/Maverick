@@ -382,14 +382,14 @@ void MaverickOcp::translateSolutionHeader(std::stringstream const &input_header,
   //replace the generic point constraints multiplier name
   for (integer i = 0; i < numberOfPointConstraints(i_phase); i++) {
     stringstream ss;
-    ss << "lambda_states_constraints" << i;
+    ss << "lambda_point_constraints" << i;
     stringReplace(header, ss.str(), "lambda_" + pointConstraintName(i_phase, i));
   }
 
   //replace the generic path constraints multiplier name
   for (integer i = 0; i < numberOfPathConstraints(i_phase); i++) {
     stringstream ss;
-    ss << "lambda_differental_constraints" << i;
+    ss << "lambda_path_constraints" << i;
     stringReplace(header, ss.str(), "lambda_" + pathConstraintName(i_phase, i));
   }
 
@@ -403,21 +403,21 @@ void MaverickOcp::translateSolutionHeader(std::stringstream const &input_header,
   //replace the generic post processing names with the problem one
   for (integer i = 0; i < numberOfPostProcessing(i_phase); i++) {
     stringstream ss;
-    ss << "post_proc" << i;
+    ss << "post_processing" << i;
     stringReplace(header, ss.str(), postProcessingName(i_phase, i));
   }
 
   //replace the generic differential post processing names with the problem one
   for (integer i = 0; i < numberOfDifferentialPostProcessing(i_phase); i++) {
     stringstream ss;
-    ss << "diff_post_proc" << i;
+    ss << "differential_post_processing" << i;
     stringReplace(header, ss.str(), differentialPostProcessingName(i_phase, i));
   }
 
   //replace the generic integral post processing names with the problem one
   for (integer i = 0; i < numberOfIntegralPostProcessing(i_phase); i++) {
     stringstream ss;
-    ss << "int_post_proc" << i;
+    ss << "integral_post_processing" << i;
     stringReplace(header, ss.str(), integralPostProcessingName(i_phase, i));
   }
 

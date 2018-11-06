@@ -5,6 +5,7 @@
 #include "MaverickUtils/GenericFunction/GF1APolyFive.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 #include <iomanip>
+#include <tuple>
 
 #define GF1A_TYPE MaverickUtils::GF1ASpline
 
@@ -96,102 +97,23 @@ namespace Maverick {
       delete _gf1a_integrand_target;
     _gf1a_integrand_target = nullptr;
 
-    for (size i = 0; i < _gf1a_states_controls.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_states_controls[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_states_controls[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_states_controls_upper_bounds_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_states_controls_upper_bounds_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_states_controls_upper_bounds_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_states_controls_lower_bounds_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_states_controls_lower_bounds_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_states_controls_lower_bounds_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_algebraic_states_controls.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_algebraic_states_controls[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_algebraic_states_controls[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_algebraic_states_controls_upper_bounds_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_algebraic_states_controls_upper_bounds_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_algebraic_states_controls_upper_bounds_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_algebraic_states_controls_lower_bounds_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_algebraic_states_controls_lower_bounds_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_algebraic_states_controls_lower_bounds_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_point_constraints.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_point_constraints[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_point_constraints[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_point_constraints_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_point_constraints_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_point_constraints_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_path_constr.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_path_constr[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_path_constr[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_path_constr_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_path_constr_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_path_constr_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_int_constr.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_int_constr[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_int_constr[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_fo_eqns.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_fo_eqns[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_fo_eqns[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_fo_eqns_multipliers.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_fo_eqns_multipliers[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_fo_eqns_multipliers[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_post_processing.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_post_processing[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_post_processing[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_differential_post_processing.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_differential_post_processing[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_differential_post_processing[i] = nullptr;
-    }
-    for (size i = 0; i < _gf1a_integral_post_processing.size(); i++) {
-      MaverickUtils::GenericFunction1AInterface *tmp_gf1a = _gf1a_integral_post_processing[i];
-      if (tmp_gf1a != nullptr)
-        delete tmp_gf1a;
-      _gf1a_integral_post_processing[i] = nullptr;
-    }
+    auto all_spline_vecs = {
+      &_gf1a_states_controls, &_gf1a_states_controls_upper_bounds_multipliers, &_gf1a_states_controls_lower_bounds_multipliers,
+      &_gf1a_algebraic_states_controls, &_gf1a_algebraic_states_controls_upper_bounds_multipliers, &_gf1a_algebraic_states_controls_lower_bounds_multipliers,
+      &_gf1a_point_constraints, &_gf1a_point_constraints_multipliers,
+      &_gf1a_path_constr, &_gf1a_path_constr_multipliers,
+      &_gf1a_int_constr,
+      &_gf1a_fo_eqns, &_gf1a_fo_eqns_multipliers,
+      &_gf1a_post_processing, &_gf1a_differential_post_processing, &_gf1a_integral_post_processing
+    };
+
+    for (auto spline_vec : all_spline_vecs)
+      for (auto & tmp_gf1a : *spline_vec) {
+        if (tmp_gf1a != nullptr)
+          delete tmp_gf1a;
+        tmp_gf1a = nullptr;
+      }
+
   }
 
   // get a copy
@@ -339,61 +261,41 @@ namespace Maverick {
         )
       return false;
 
-    size_t point_size = _zeta.size();
-    size_t interval_size = point_size - 1;
+    auto point_size = _zeta.size();
+    auto interval_size = point_size - 1;
     if (point_size == 0)
       interval_size = 0;
 
-    if (point_size - _cumulative_target.size() != 0) return false;
-    if (interval_size - _integrand_target.size() != 0) return false;
+    auto point_size_vecs = {
+      &_states_controls, &_point_constraints,
+      &_int_constr, &_post_processing, &_integral_post_processing,
+      &_states_controls_upper_bounds_multipliers,
+      &_states_controls_lower_bounds_multipliers,
+      &_point_constraints_multipliers
+    };
 
-    for (integer i = 0; i < _states_controls.size(); i++)
-      if (point_size - _states_controls[i].size() != 0) return false;
+    auto interval_size_vecs = {
+      &_algebraic_states_controls, &_path_constr, &_fo_eqns,
+      &_differential_post_processing,
+      &_algebraic_states_controls_upper_bounds_multipliers,
+      &_algebraic_states_controls_lower_bounds_multipliers,
+      &_path_constr_multipliers,
+      &_fo_eqns_multipliers
+    };
 
-    for (integer i = 0; i < _algebraic_states_controls.size(); i++)
-      if (interval_size - _algebraic_states_controls[i].size() != 0) return false;
+    if (point_size != _cumulative_target.size()) return false;
+    for (auto vec_p : point_size_vecs)
+      for (auto & x : *vec_p) {
+        if (x.size() != point_size)
+          return false;
+      }
 
-    for (integer i = 0; i < _point_constraints.size(); i++)
-      if (point_size - _point_constraints[i].size() != 0) return false;
-
-    for (integer i = 0; i < _path_constr.size(); i++)
-      if (interval_size - _path_constr[i].size() != 0) return false;
-
-    for (integer i = 0; i < _int_constr.size(); i++)
-      if (point_size - _int_constr[i].size() != 0) return false;
-
-    for (integer i = 0; i < _fo_eqns.size(); i++)
-      if (interval_size - _fo_eqns[i].size() != 0) return false;
-
-    for (integer i = 0; i < _post_processing.size(); i++)
-      if (point_size - _post_processing[i].size() != 0) return false;
-
-    for (integer i = 0; i < _differential_post_processing.size(); i++)
-      if (interval_size - _differential_post_processing[i].size() != 0) return false;
-
-    for (integer i = 0; i < _integral_post_processing.size(); i++)
-      if (point_size - _integral_post_processing[i].size() != 0) return false;
-
-    for (size i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++)
-      if (point_size - _states_controls_upper_bounds_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++)
-      if (point_size - _states_controls_lower_bounds_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++)
-      if (interval_size - _algebraic_states_controls_upper_bounds_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++)
-      if (interval_size - _algebraic_states_controls_lower_bounds_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _point_constraints_multipliers.size(); i++)
-      if (point_size - _point_constraints_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _path_constr_multipliers.size(); i++)
-      if (interval_size - _path_constr_multipliers[i].size() != 0) return false;
-
-    for (size i = 0; i < _fo_eqns_multipliers.size(); i++)
-      if (interval_size - _fo_eqns_multipliers[i].size() != 0) return false;
+    if (interval_size != _integrand_target.size()) return false;
+    for (auto vec_p : interval_size_vecs)
+      for (auto & x : *vec_p) {
+        if (x.size() != interval_size)
+          return false;
+      }
 
     return true;
   }
@@ -401,224 +303,63 @@ namespace Maverick {
   void MidpointOcpSolutionSinglePhase::buildGf1a() {
     clearPointers();
 
+    using data_touple = std::tuple<std::vector<MaverickUtils::GenericFunction1AInterface *> *,
+      vec_2d_real *, bool>;
+
+    auto all_spline_vecs_and_data = {
+      data_touple(&_gf1a_states_controls, &_states_controls, true),
+      data_touple(&_gf1a_states_controls_upper_bounds_multipliers, &_states_controls_upper_bounds_multipliers, true),
+      data_touple(&_gf1a_states_controls_lower_bounds_multipliers, &_states_controls_lower_bounds_multipliers, true),
+      data_touple(&_gf1a_algebraic_states_controls, &_algebraic_states_controls, false),
+      data_touple(&_gf1a_algebraic_states_controls_upper_bounds_multipliers, &_algebraic_states_controls_upper_bounds_multipliers, false),
+      data_touple(&_gf1a_algebraic_states_controls_lower_bounds_multipliers, &_algebraic_states_controls_lower_bounds_multipliers, false),
+      data_touple(&_gf1a_point_constraints, &_point_constraints, true),
+      data_touple(&_gf1a_point_constraints_multipliers, &_point_constraints_multipliers, true),
+      data_touple(&_gf1a_path_constr, &_path_constr, false),
+      data_touple(&_gf1a_path_constr_multipliers, &_path_constr_multipliers, false),
+      data_touple(&_gf1a_int_constr, &_int_constr, true),
+      data_touple(&_gf1a_fo_eqns, &_fo_eqns, false),
+      data_touple(&_gf1a_fo_eqns_multipliers, &_fo_eqns_multipliers, false),
+      data_touple(&_gf1a_post_processing, &_post_processing, true),
+      data_touple(&_gf1a_differential_post_processing, &_differential_post_processing, false),
+      data_touple(&_gf1a_integral_post_processing, &_integral_post_processing, true)
+    };
+
     if (_zeta.size() == 0) { // in this case setup a null (zero) solution
       GC::GenericContainer gc;
-      for (size i = 0; i < _states_controls.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_states_controls.push_back(tmp_gf1a);
-      }
 
-      for (size i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_algebraic_states_controls.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_algebraic_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_algebraic_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_point_constraints.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_point_constraints_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_path_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_path_constr_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _int_constr.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_int_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_fo_eqns.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_fo_eqns_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _differential_post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_differential_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _integral_post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        _gf1a_integral_post_processing.push_back(tmp_gf1a);
+      for (auto touple_data : all_spline_vecs_and_data) {
+        auto p_spline_vec = std::get<0>(touple_data);
+        auto p_data_vec = std::get<1>(touple_data);
+          for (auto i = 0; i < p_data_vec->size(); i++) {
+          MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
+          tmp_gf1a->setup(gc);
+          p_spline_vec->push_back(tmp_gf1a);
+        }
       }
 
       {
         MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
         tmp_gf1a->setup(gc);
         _gf1a_integrand_target = tmp_gf1a;
-      }
 
-      {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
+        tmp_gf1a = new MaverickUtils::GF1APolyFive();
         tmp_gf1a->setup(gc);
         _gf1a_cumulative_target = tmp_gf1a;
       }
     } else if (_zeta.size() == 1) {
       // in this case setup a constant solution
       GC::GenericContainer gc;
-      for (size i = 0; i < _states_controls.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_states_controls[i][0]);
-        _gf1a_states_controls.push_back(tmp_gf1a);
-      }
 
-      for (size i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_states_controls_upper_bounds_multipliers[i][0]);
-        _gf1a_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_states_controls_lower_bounds_multipliers[i][0]);
-        _gf1a_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_states_controls[i][0]);
-        _gf1a_algebraic_states_controls.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_algebraic_states_controls_upper_bounds_multipliers[i][0]);
-        _gf1a_algebraic_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_algebraic_states_controls_lower_bounds_multipliers[i][0]);
-        _gf1a_algebraic_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_point_constraints[i][0]);
-        _gf1a_point_constraints.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_point_constraints_multipliers[i][0]);
-        _gf1a_point_constraints_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_path_constr[i][0]);
-        _gf1a_path_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_path_constr_multipliers[i][0]);
-        _gf1a_path_constr_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _int_constr.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_int_constr[i][0]);
-        _gf1a_int_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_fo_eqns_multipliers[i][0]);
-        _gf1a_fo_eqns.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns_multipliers.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_fo_eqns_multipliers[i][0]);
-        _gf1a_fo_eqns_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_post_processing[i][0]);
-        _gf1a_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _differential_post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_differential_post_processing[i][0]);
-        _gf1a_differential_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _integral_post_processing.size(); i++) {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
-        tmp_gf1a->setup(gc);
-        tmp_gf1a->setA0(_integral_post_processing[i][0]);
-        _gf1a_integral_post_processing.push_back(tmp_gf1a);
+      for (auto touple_data : all_spline_vecs_and_data) {
+        auto p_spline_vec = std::get<0>(touple_data);
+        auto p_data_vec = std::get<1>(touple_data);
+        for (auto & data : *p_data_vec) {
+          MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
+          tmp_gf1a->setup(gc);
+          tmp_gf1a->setA0(data[0]);
+          p_spline_vec->push_back(tmp_gf1a);
+        }
       }
 
       {
@@ -626,10 +367,8 @@ namespace Maverick {
         tmp_gf1a->setup(gc);
         tmp_gf1a->setA0(_integrand_target[0]);
         _gf1a_integrand_target = tmp_gf1a;
-      }
 
-      {
-        MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
+        tmp_gf1a = new MaverickUtils::GF1APolyFive();
         tmp_gf1a->setup(gc);
         tmp_gf1a->setA0(_cumulative_target[0]);
         _gf1a_cumulative_target = tmp_gf1a;
@@ -637,116 +376,18 @@ namespace Maverick {
     } else { // in this case build the splines
       vec_1d_real zeta_midpoint = extractMidpoints(_zeta);
 
-      for (size i = 0; i < _states_controls.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _states_controls[i], SPLINE_EXTEND_RANGE);
-        _gf1a_states_controls.push_back(tmp_gf1a);
-      }
+      for (auto touple_data : all_spline_vecs_and_data) {
+        auto p_spline_vec = std::get<0>(touple_data);
+        auto p_data_vec = std::get<1>(touple_data);
+        auto is_point = std::get<2>(touple_data);
+        auto const & this_zeta = is_point ? _zeta : zeta_midpoint;
 
-      for (size i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _states_controls_upper_bounds_multipliers[i], SPLINE_EXTEND_RANGE);
-        _gf1a_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _states_controls_lower_bounds_multipliers[i], SPLINE_EXTEND_RANGE);
-        _gf1a_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _algebraic_states_controls[i], SPLINE_EXTEND_RANGE);
-        _gf1a_algebraic_states_controls.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _algebraic_states_controls_upper_bounds_multipliers[i],
-                        SPLINE_EXTEND_RANGE);
-        _gf1a_algebraic_states_controls_upper_bounds_multipliers.push_back(tmp_gf1a);
-      }
-      for (size i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _algebraic_states_controls_lower_bounds_multipliers[i],
-                        SPLINE_EXTEND_RANGE);
-        _gf1a_algebraic_states_controls_lower_bounds_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _point_constraints[i], SPLINE_EXTEND_RANGE);
-        _gf1a_point_constraints.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _point_constraints_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _point_constraints_multipliers[i], SPLINE_EXTEND_RANGE);
-        _gf1a_point_constraints_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _path_constr[i], SPLINE_EXTEND_RANGE);
-        _gf1a_path_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _path_constr_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _path_constr_multipliers[i], SPLINE_EXTEND_RANGE);
-        _gf1a_path_constr_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _int_constr.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _int_constr[i], SPLINE_EXTEND_RANGE);
-        _gf1a_int_constr.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _fo_eqns[i], SPLINE_EXTEND_RANGE);
-        _gf1a_fo_eqns.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _fo_eqns_multipliers.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _fo_eqns_multipliers[i], SPLINE_EXTEND_RANGE);
-        _gf1a_fo_eqns_multipliers.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _post_processing.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _post_processing[i], SPLINE_EXTEND_RANGE);
-        _gf1a_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _differential_post_processing.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _differential_post_processing[i], SPLINE_EXTEND_RANGE);
-        _gf1a_differential_post_processing.push_back(tmp_gf1a);
-      }
-
-      for (size i = 0; i < _integral_post_processing.size(); i++) {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
-        tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, _zeta, _integral_post_processing[i], SPLINE_EXTEND_RANGE);
-        _gf1a_integral_post_processing.push_back(tmp_gf1a);
+        for (auto & data : *p_data_vec) {
+          GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
+          tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
+          tmp_gf1a->setup(SPLINE_TYPE, this_zeta, data, SPLINE_EXTEND_RANGE);
+          p_spline_vec->push_back(tmp_gf1a);
+        }
       }
 
       {
@@ -754,10 +395,8 @@ namespace Maverick {
         tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
         tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _integrand_target, SPLINE_EXTEND_RANGE);
         _gf1a_integrand_target = tmp_gf1a;
-      }
 
-      {
-        GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
+        tmp_gf1a = new GF1A_TYPE();
         tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
         tmp_gf1a->setup(SPLINE_TYPE, _zeta, _cumulative_target, SPLINE_EXTEND_RANGE);
         _gf1a_cumulative_target = tmp_gf1a;
@@ -809,45 +448,46 @@ namespace Maverick {
       header << "phase" << StreamChars::separator;
     header << "zeta" << StreamChars::separator;
 
-    for (integer i = 0; i < _states_controls.size(); i++)
-      header << "state_control" << i << StreamChars::separator;
+    using name_and_spline = std::pair<string,
+        std::vector<MaverickUtils::GenericFunction1AInterface *> const * >;
+    auto names_and_splines = {
+      name_and_spline("state_control", &_gf1a_states_controls),
+      name_and_spline("algebraic_state_control", &_gf1a_algebraic_states_controls),
+      name_and_spline("post_processing", &_gf1a_post_processing),
+      name_and_spline("diff_post_processing", &_gf1a_differential_post_processing),
+      name_and_spline("int_post_processing", &_gf1a_integral_post_processing),
+      name_and_spline("lambda_states_controls_upper", &_gf1a_states_controls_upper_bounds_multipliers),
+      name_and_spline("lambda_states_controls_lower", &_gf1a_states_controls_lower_bounds_multipliers),
+      name_and_spline("lambda_algebraic_states_controls_upper", &_gf1a_algebraic_states_controls_upper_bounds_multipliers),
+      name_and_spline("lambda_algebraic_states_controls_lower", &_gf1a_algebraic_states_controls_lower_bounds_multipliers),
+      name_and_spline("lambda_states_constraint", &_gf1a_point_constraints_multipliers),
+      name_and_spline("lambda_path_constraint", &_gf1a_path_constr_multipliers),
+      name_and_spline("lambda_point_constraint", &_gf1a_point_constraints_multipliers),
+      name_and_spline("lambda_fo_equation", &_gf1a_fo_eqns_multipliers),
+      name_and_spline("states_constraint", &_gf1a_point_constraints),
+      name_and_spline("path_constraint", &_gf1a_path_constr),
+      name_and_spline("integral_constraint", &_gf1a_int_constr),
+      name_and_spline("point_constraint", &_gf1a_point_constraints),
+      name_and_spline("fo_equation", &_gf1a_fo_eqns)
+    };
 
-    for (integer i = 0; i < _algebraic_states_controls.size(); i++)
-      header << "algebraic_state_control" << i << StreamChars::separator;
+    using name_and_constant = std::pair<string, vec_1d_real const * >;
+    auto names_and_constants = {
+      name_and_constant("parameter", &_parameters),
+      name_and_constant("lambda_parameter_upper", &_parameters_upper_bounds_multipliers),
+      name_and_constant("lambda_parameter_lower", &_parameters_lower_bounds_multipliers),
+      name_and_constant("lambda_integral_constraint", &_int_constr_multipliers),
+      name_and_constant("boundary_condition", &_boundary_conditions),
+      name_and_constant("lambda_boundary_condition", &_bcs_multipliers)
+    };
 
-    for (integer i = 0; i < _parameters.size(); i++)
-      header << "parameter" << i << StreamChars::separator;
+    for (auto & name_and_spline : names_and_splines)
+      for (auto i = 0; i < name_and_spline.second->size(); i++)
+        header << name_and_spline.first << i << StreamChars::separator;
 
-    for (integer i = 0; i < _post_processing.size(); i++)
-      header << "post_proc" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _differential_post_processing.size(); i++)
-      header << "diff_post_proc" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _integral_post_processing.size(); i++)
-      header << "int_post_proc" << i << StreamChars::separator;
-
-    // multipliers
-    for (integer i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++)
-      header << "lambda_states_controls_upper" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++)
-      header << "lambda_states_controls_lower" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++)
-      header << "lambda_algebraic_states_controls_upper" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++)
-      header << "lambda_algebraic_states_controls_lower" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _point_constraints_multipliers.size(); i++)
-      header << "lambda_states_constraints" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _path_constr_multipliers.size(); i++)
-      header << "lambda_differental_constraints" << i << StreamChars::separator;
-
-    for (integer i = 0; i < _fo_eqns_multipliers.size(); i++)
-      header << "lambda_fo_eq" << i << StreamChars::separator;
+    for (auto & name_and_constant : names_and_constants)
+      for (auto i = 0; i < name_and_constant.second->size(); i++)
+        header << "parameter" << i << StreamChars::separator;
 
     //target
     header << "integrand_target" << StreamChars::separator
@@ -863,45 +503,13 @@ namespace Maverick {
 
       body << std::scientific << std::setprecision(15);
 
-      for (integer i = 0; i < _states_controls.size(); i++)
-        body << _states_controls[i][mesh_point] << StreamChars::separator;
+      for (auto & name_and_spline : names_and_splines)
+        for (auto i = 0; i < name_and_spline.second->size(); i++)
+          header << (*name_and_spline.second)[i]->funcEval(zeta) << StreamChars::separator;
 
-      for (integer i = 0; i < _algebraic_states_controls.size(); i++)
-        body << _gf1a_algebraic_states_controls[i]->funcEval(zeta) << StreamChars::separator;
-
-      for (integer i = 0; i < _parameters.size(); i++)
-        body << _parameters[i] << StreamChars::separator;
-
-      for (integer i = 0; i < _post_processing.size(); i++)
-        body << _post_processing[i][mesh_point] << StreamChars::separator;
-
-      for (integer i = 0; i < _differential_post_processing.size(); i++)
-        body << _gf1a_differential_post_processing[i]->funcEval(zeta) << StreamChars::separator;
-
-      for (integer i = 0; i < _integral_post_processing.size(); i++)
-        body << _integral_post_processing[i][mesh_point] << StreamChars::separator;
-
-      // multipliers
-      for (integer i = 0; i < _states_controls_upper_bounds_multipliers.size(); i++)
-        body << _states_controls_upper_bounds_multipliers[i][mesh_point] << StreamChars::separator;
-
-      for (integer i = 0; i < _states_controls_lower_bounds_multipliers.size(); i++)
-        body << _states_controls_lower_bounds_multipliers[i][mesh_point] << StreamChars::separator;
-
-      for (integer i = 0; i < _algebraic_states_controls_upper_bounds_multipliers.size(); i++)
-        body << _gf1a_algebraic_states_controls_upper_bounds_multipliers[i]->funcEval(zeta) << StreamChars::separator;
-
-      for (integer i = 0; i < _algebraic_states_controls_lower_bounds_multipliers.size(); i++)
-        body << _gf1a_algebraic_states_controls_lower_bounds_multipliers[i]->funcEval(zeta) << StreamChars::separator;
-
-      for (integer i = 0; i < _point_constraints_multipliers.size(); i++)
-        body << _point_constraints_multipliers[i][mesh_point] << StreamChars::separator;
-
-      for (integer i = 0; i < _path_constr_multipliers.size(); i++)
-        body << _gf1a_path_constr_multipliers[i]->funcEval(zeta) << StreamChars::separator;
-
-      for (integer i = 0; i < _fo_eqns_multipliers.size(); i++)
-        body << _gf1a_fo_eqns_multipliers[i]->funcEval(zeta) << StreamChars::separator;
+      for (auto & name_and_constant : names_and_constants)
+        for (auto i = 0; i < name_and_constant.second->size(); i++)
+          header << (*name_and_constant.second)[i] << StreamChars::separator;
 
       //target
       body << _gf1a_integrand_target->funcEval(zeta) << StreamChars::separator
@@ -910,7 +518,6 @@ namespace Maverick {
   }
 
   void MidpointOcpSolutionSinglePhase::evalAtMesh(real zeta,
-
                                                   integer const num_states_controls, real *states_controls,
                                                   real *states_controls_upper_bounds_mult,
                                                   real *states_controls_lower_bounds_mult,
@@ -968,73 +575,31 @@ namespace Maverick {
       MAVERICK_ASSERT(num_fo_eqns == _fo_eqns_multipliers.size(),
                       "OcpCompleteSolution::evalAtMesh: wrong f.o. equations size.\n")
 
+    using pointer_and_spline = std::pair<real *, std::vector<MaverickUtils::GenericFunction1AInterface *> const *>;
 
-    if (states_controls != nullptr)
-      for (size i = 0; i < _states_controls.size(); i++)
-        states_controls[i] = _gf1a_states_controls[i]->funcEval(zeta);
+    auto pointer_and_splines = {
+      pointer_and_spline(states_controls, &_gf1a_states_controls),
+      pointer_and_spline(states_controls_upper_bounds_mult, &_gf1a_states_controls_upper_bounds_multipliers),
+      pointer_and_spline(states_controls_lower_bounds_mult, &_gf1a_states_controls_lower_bounds_multipliers),
+      pointer_and_spline(algebraic_states_controls, &_gf1a_algebraic_states_controls),
+      pointer_and_spline(algebraic_states_controls_upper_bounds_mult, &_gf1a_algebraic_states_controls_upper_bounds_multipliers),
+      pointer_and_spline(algebraic_states_controls_lower_bounds_mult, &_gf1a_algebraic_states_controls_lower_bounds_multipliers),
+      pointer_and_spline(fo_eqns, &_gf1a_fo_eqns),
+      pointer_and_spline(fo_eqns_mult, &_gf1a_fo_eqns_multipliers),
+      pointer_and_spline(states_constr, &_gf1a_point_constraints),
+      pointer_and_spline(point_constr_mult, &_gf1a_point_constraints_multipliers),
+      pointer_and_spline(path_constr, &_gf1a_path_constr),
+      pointer_and_spline(path_constr_mult, &_gf1a_path_constr_multipliers),
+      pointer_and_spline(int_constr, &_gf1a_int_constr),
+      pointer_and_spline(post_proc, &_gf1a_post_processing),
+      pointer_and_spline(diff_post_proc, &_gf1a_differential_post_processing),
+      pointer_and_spline(int_post_proc, &_gf1a_integral_post_processing)
+    };
 
-    if (states_controls_upper_bounds_mult != nullptr)
-      for (size i = 0; i < _states_controls.size(); i++)
-        states_controls_upper_bounds_mult[i] = _gf1a_states_controls_upper_bounds_multipliers[i]->funcEval(zeta);
-
-    if (states_controls_lower_bounds_mult != nullptr)
-      for (size i = 0; i < _states_controls.size(); i++)
-        states_controls_lower_bounds_mult[i] = _gf1a_states_controls_lower_bounds_multipliers[i]->funcEval(zeta);
-
-    if (algebraic_states_controls != nullptr)
-      for (size i = 0; i < _algebraic_states_controls.size(); i++)
-        algebraic_states_controls[i] = _gf1a_algebraic_states_controls[i]->funcEval(zeta);
-
-    if (algebraic_states_controls_upper_bounds_mult != nullptr)
-      for (size i = 0; i < _algebraic_states_controls.size(); i++)
-        algebraic_states_controls_upper_bounds_mult[i] = _gf1a_algebraic_states_controls_upper_bounds_multipliers[i]->funcEval(
-            zeta);
-
-    if (algebraic_states_controls_lower_bounds_mult != nullptr)
-      for (size i = 0; i < _algebraic_states_controls.size(); i++)
-        algebraic_states_controls_lower_bounds_mult[i] = _gf1a_algebraic_states_controls_lower_bounds_multipliers[i]->funcEval(
-            zeta);
-
-    if (fo_eqns != nullptr)
-      for (size i = 0; i < _fo_eqns.size(); i++)
-        fo_eqns[i] = _gf1a_fo_eqns[i]->funcEval(zeta);
-
-    if (fo_eqns_mult != nullptr)
-      for (size i = 0; i < _fo_eqns_multipliers.size(); i++)
-        fo_eqns_mult[i] = _gf1a_fo_eqns_multipliers[i]->funcEval(zeta);
-
-    if (states_constr != nullptr)
-      for (size i = 0; i < _point_constraints.size(); i++)
-        states_constr[i] = _gf1a_point_constraints[i]->funcEval(zeta);
-
-    if (point_constr_mult != nullptr)
-      for (size i = 0; i < _point_constraints_multipliers.size(); i++)
-        point_constr_mult[i] = _gf1a_point_constraints_multipliers[i]->funcEval(zeta);
-
-    if (path_constr != nullptr)
-      for (size i = 0; i < _path_constr.size(); i++)
-        path_constr[i] = _gf1a_path_constr[i]->funcEval(zeta);
-
-    if (path_constr_mult != nullptr)
-      for (size i = 0; i < _path_constr_multipliers.size(); i++)
-        path_constr_mult[i] = _gf1a_path_constr_multipliers[i]->funcEval(zeta);
-
-    if (int_constr != nullptr)
-      for (size i = 0; i < _int_constr.size(); i++)
-        int_constr[i] = _gf1a_int_constr[i]->funcEval(zeta);
-
-    if (post_proc != nullptr)
-      for (size i = 0; i < _post_processing.size(); i++)
-        post_proc[i] = _gf1a_post_processing[i]->funcEval(zeta);
-
-    if (diff_post_proc != nullptr)
-      for (size i = 0; i < _differential_post_processing.size(); i++)
-        diff_post_proc[i] = _gf1a_differential_post_processing[i]->funcEval(zeta);
-
-    if (int_post_proc != nullptr)
-      for (size i = 0; i < _integral_post_processing.size(); i++)
-        int_post_proc[i] = _gf1a_integral_post_processing[i]->funcEval(zeta);
-
+    for (auto & data : pointer_and_splines)
+      if (data.first != nullptr)
+        for (size i = 0; i < data.second->size(); i++)
+          data.first[i] = (*data.second)[i]->funcEval(zeta);
   }
 
   void MidpointOcpSolutionSinglePhase::eval(real const initial_zeta, real const final_zeta,
@@ -1046,7 +611,8 @@ namespace Maverick {
                                             integer const num_int_constr, real *int_constr_at_end,
                                             real *int_constr_mult,
                                             integer const num_int_post_proc, real *int_post_proc_at_end
-  ) const {
+                                            ) const
+  {
 
     if ((parameters != nullptr) || (params_upper_bounds_mult != nullptr) || (params_lower_bounds_mult != nullptr))
       MAVERICK_ASSERT(num_parameters == _parameters.size(),
@@ -1064,20 +630,18 @@ namespace Maverick {
       MAVERICK_ASSERT(num_int_post_proc == _integral_post_processing.size(),
                       "OcpCompleteSolution::eval: wrong integral post processing size.\n")
 
-    if (parameters != nullptr)
-      copyVectorTo(_parameters.data(), parameters, num_parameters);
+    using pointer_and_vector = std::pair<real *, vec_1d_real const *>;
+    auto pointer_and_vectors = {
+      pointer_and_vector(parameters, &_parameters),
+      pointer_and_vector(params_upper_bounds_mult, &_parameters_upper_bounds_multipliers),
+      pointer_and_vector(params_lower_bounds_mult, &_parameters_lower_bounds_multipliers),
+      pointer_and_vector(boundary_conditions, &_boundary_conditions),
+      pointer_and_vector(boundary_conditions_mult, &_bcs_multipliers)
+    };
 
-    if (params_upper_bounds_mult != nullptr)
-      copyVectorTo(_parameters_upper_bounds_multipliers.data(), params_upper_bounds_mult, num_parameters);
-
-    if (params_lower_bounds_mult != nullptr)
-      copyVectorTo(_parameters_lower_bounds_multipliers.data(), params_lower_bounds_mult, num_parameters);
-
-    if (boundary_conditions != nullptr)
-      copyVectorTo(_boundary_conditions.data(), boundary_conditions, num_boundary_conditions);
-
-    if (boundary_conditions_mult != nullptr)
-      copyVectorTo(_bcs_multipliers.data(), boundary_conditions_mult, num_boundary_conditions);
+    for (auto & data : pointer_and_vectors)
+      if (data.first != nullptr)
+        copyVectorTo(data.second->data(), data.first, (integer) data.second->size());
 
     if (int_constr_at_end != nullptr)
       for (size i = 0; i < num_int_constr; i++)
@@ -1091,7 +655,7 @@ namespace Maverick {
         int_post_proc_at_end[i] = *(_integral_post_processing[i].end() - 1);
   }
 
-  // getter
+  // getters
   real MidpointOcpSolutionSinglePhase::getTarget() const { return _target; }
 
   vec_1d_real const &MidpointOcpSolutionSinglePhase::getCumulativeTarget() const { return _cumulative_target; }
@@ -1159,257 +723,119 @@ namespace Maverick {
 
   void MidpointOcpSolutionSinglePhase::writeContentToGC(GC::GenericContainer &out_gc, MaverickOcp const *const p_ocp,
                                                         integer const i_phase) const {
+    
+    using name_func = std::function<string(integer)>;
+    name_func get_sc_name = [p_ocp, i_phase](integer i) {
+      auto num_s = p_ocp->numberOfStates(i_phase);
+      if (i < num_s)
+        return p_ocp->stateName(i_phase, i);
+      return p_ocp->controlName(i_phase, i - num_s);
+    };
+    name_func get_asc_name = [p_ocp, i_phase](integer i) {
+      auto num_s = p_ocp->numberOfAlgebraicStates(i_phase);
+      if (i < num_s)
+        return p_ocp->algebraicStateName(i_phase, i);
+      return p_ocp->algebraicControlName(i_phase, i - num_s);
+    };
+    using name_and_spline_vec = std::tuple<string, std::vector<MaverickUtils::GenericFunction1AInterface *> const *, name_func>;
+    auto names_and_spline_vecs = {
+      name_and_spline_vec("states_controls", &_gf1a_states_controls, get_sc_name),
+      name_and_spline_vec("algebraic_states_controls", &_gf1a_algebraic_states_controls, get_asc_name),
+      name_and_spline_vec("post_processings", &_gf1a_post_processing, [p_ocp, i_phase](integer i){return p_ocp->postProcessingName(i_phase, i); }),
+      name_and_spline_vec("differential_post_processings", &_gf1a_differential_post_processing, [p_ocp, i_phase](integer i){return p_ocp->differentialPostProcessingName(i_phase, i); }),
+      name_and_spline_vec("integral_post_processings", &_gf1a_integral_post_processing, [p_ocp, i_phase](integer i){return p_ocp->integralPostProcessingName(i_phase, i);}),
+      name_and_spline_vec("lambda_states_controls_upper", &_gf1a_states_controls_upper_bounds_multipliers, [&get_sc_name](integer i){return "lambda_" + get_sc_name(i) + "_upper";}),
+      name_and_spline_vec("lambda_states_controls_lower", &_gf1a_states_controls_lower_bounds_multipliers, [&get_sc_name](integer i){return "lambda_" + get_sc_name(i) + "_lower";}),
+      name_and_spline_vec("lambda_algebraic_states_controls_upper", &_gf1a_algebraic_states_controls_upper_bounds_multipliers, [&get_asc_name](integer i){return "lambda_" + get_asc_name(i) + "_upper";}),
+      name_and_spline_vec("lambda_algebraic_states_controls_lower", &_gf1a_algebraic_states_controls_lower_bounds_multipliers, [&get_asc_name](integer i){return "lambda_" + get_asc_name(i) + "_lower";}),
+      name_and_spline_vec("lambda_point_constraints", &_gf1a_point_constraints_multipliers, [p_ocp, i_phase](integer i){return "lambda_"+p_ocp->pointConstraintName(i_phase, i);}),
+      name_and_spline_vec("lambda_path_constraints", &_gf1a_path_constr_multipliers, [p_ocp, i_phase](integer i){return "lambda_"+p_ocp->pathConstraintName(i_phase, i);}),
+      name_and_spline_vec("lambda_fo_equations", &_gf1a_fo_eqns_multipliers, [](integer i){return "lambda_fo_eqs" + std::to_string(i);}),
+      name_and_spline_vec("point_constraints", &_gf1a_point_constraints, [p_ocp, i_phase](integer i){return p_ocp->pointConstraintName(i_phase, i);}),
+      name_and_spline_vec("path_constraints", &_gf1a_path_constr, [p_ocp, i_phase](integer i){return p_ocp->pathConstraintName(i_phase, i);}),
+      name_and_spline_vec("fo_equations", &_gf1a_fo_eqns, [](integer i){return "fo_eq" + std::to_string(i);}),
+      name_and_spline_vec("integral_constraints", &_gf1a_int_constr, [p_ocp, i_phase](integer i){return p_ocp->intConstraintName(i_phase, i);})
+    };
+    using name_and_spline = std::pair<string, MaverickUtils::GenericFunction1AInterface const *>;
+    auto names_and_splines = {
+      name_and_spline("integrand_lagrange_target", _gf1a_integrand_target),
+      name_and_spline("cumulative_lagrange_target", _gf1a_cumulative_target)
+    };
+    using name_and_vec = std::tuple<string, std::vector<real> const *, name_func>;
+    auto names_and_vecs = {
+      name_and_vec("parameters", &_parameters, [p_ocp, i_phase](integer i){return p_ocp->parameterName(i_phase, i);}),
+      name_and_vec("lambda_parameters_upper", &_parameters_upper_bounds_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->parameterName(i_phase, i) + "_upper";}),
+      name_and_vec("lambda_parameters_lower", &_parameters_lower_bounds_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->parameterName(i_phase, i) + "_lower";}),
+      name_and_vec("boundary_conditions", &_boundary_conditions, [p_ocp, i_phase](integer i){return p_ocp->boundaryConditionName(i_phase, i);}),
+      name_and_vec("lambda_boundary_conditions", &_bcs_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->boundaryConditionName(i_phase, i);}),
+      name_and_vec("lambda_integral_constraints", &_int_constr_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->intConstraintName(i_phase, i);})
+    };
+    
+    auto insert_values_to_gc_on_zeta = [&names_and_spline_vecs, &names_and_splines, p_ocp](GC::GenericContainer & out_gc, vec_1d_real const & zeta){
+      for (auto & name_and_spline_vec : names_and_spline_vecs) {
+        auto const & splines_vec = *(std::get<1>(name_and_spline_vec));
+        if (p_ocp == nullptr) {
+          auto const & name = std::get<0>(name_and_spline_vec);
+          out_gc[name].set_vector(splines_vec.size());
+          vector<real> tmp_vec;
+          for (auto i = 0; i < splines_vec.size(); i++) {
+            auto & spline = splines_vec[i];
+            tmp_vec.clear();
+            if (spline != nullptr)
+              for (auto & this_zeta : zeta)
+                tmp_vec.push_back(spline->funcEval(this_zeta));
+            out_gc[name][i].set_vec_real(tmp_vec);
+          }
+        } else {
+          vector<real> tmp_vec;
+          auto const & get_name = std::get<2>(name_and_spline_vec);
+          for (auto i = 0; i < splines_vec.size(); i++) {
+            auto & spline = splines_vec[i];
+            tmp_vec.clear();
+            if (spline != nullptr)
+              for (auto & this_zeta : zeta)
+                tmp_vec.push_back(spline->funcEval(this_zeta));
+            out_gc[get_name(i)].set_vec_real(tmp_vec);
+          }
+        }
+        
+      }
+      
+      for (auto & name_and_spline : names_and_splines) {
+        auto & name = name_and_spline.first;
+        auto  p_spline = name_and_spline.second;
+        vector<real> tmp_vec;
+        if (p_spline != nullptr)
+          for (auto & this_zeta : zeta)
+            tmp_vec.push_back(p_spline->funcEval(this_zeta));
+        out_gc[name].set_vec_real(tmp_vec);
+      }
+    };
+    
     out_gc.clear();
-    GC::GenericContainer &gc_midpoint = out_gc["midpoint_vars"]; // container to store midpoint original variables
-
     out_gc["zeta"].set_vec_real(_zeta);
+    out_gc["target"].set_real(getTarget());
+    for (auto & names_and_vec : names_and_vecs) {
+      auto zero_vec = vec_1d_real();
+      auto * vec = std::get<1>(names_and_vec);
+      if (vec == nullptr)
+        vec = &zero_vec;
+      if (p_ocp == nullptr)
+        out_gc[std::get<0>(names_and_vec)].set_vec_real(*vec);
+      else
+        for (int i = 0; i < vec->size(); i++)
+          out_gc[std::get<2>(names_and_vec)(i)] = (*vec)[i];
+    }
+    insert_values_to_gc_on_zeta(out_gc, _zeta);
+    
+    GC::GenericContainer &gc_midpoint = out_gc["midpoint_vars"];
     vec_1d_real zeta_center;
-    zeta_center.reserve(_zeta.size());
+    zeta_center.reserve(_zeta.size()-1);
     for (size index = 0; index < _zeta.size() - 1; index++) {
       zeta_center.push_back((_zeta[index] + _zeta[index + 1]) / 2.0);
     }
     gc_midpoint["zeta"].set_vec_real(zeta_center);
-
-    out_gc["cumulative_lagrange_target"].set_vec_real(_cumulative_target);
-
-    vec_1d_real tmp_vec;
-    tmp_vec.reserve(_zeta.size());
-    for (integer i = 0; i < _zeta.size(); i++)
-      tmp_vec.push_back(0);
-
-    if (_gf1a_integrand_target != nullptr) { // if the solution has been setup
-      for (integer i = 0; i < _zeta.size(); i++)
-        tmp_vec[i] = _gf1a_integrand_target->funcEval(_zeta[i]);
-    } else {
-      tmp_vec = {};
-    }
-    gc_midpoint["integrand_lagrange_target"].set_vec_real(_integrand_target);
-    out_gc["integrand_lagrange_target"].set_vec_real(tmp_vec);
-
-    out_gc["target"].set_real(getTarget());
-
-    if (p_ocp != nullptr) {
-      int const nx = p_ocp->numberOfStates(i_phase);
-      for (integer i = 0; i < nx; i++) {
-        out_gc[p_ocp->stateName(i_phase, i)].set_vec_real(_states_controls[i]);
-        out_gc["lambda_" + p_ocp->stateName(i_phase, i) + "_upper"].set_vec_real(
-            _states_controls_upper_bounds_multipliers[i]);
-        out_gc["lambda_" + p_ocp->stateName(i_phase, i) + "_lower"].set_vec_real(
-            _states_controls_lower_bounds_multipliers[i]);
-      }
-      for (integer i = 0; i < p_ocp->numberOfControls(i_phase); i++) {
-        out_gc[p_ocp->controlName(i_phase, i)].set_vec_real(_states_controls[nx + i]);
-        out_gc["lambda_" + p_ocp->controlName(i_phase, i) + "_upper"].set_vec_real(
-            _states_controls_upper_bounds_multipliers[nx + i]);
-        out_gc["lambda_" + p_ocp->controlName(i_phase, i) + "_lower"].set_vec_real(
-            _states_controls_lower_bounds_multipliers[nx + i]);
-      }
-      int const nax = p_ocp->numberOfAlgebraicStates(i_phase);
-      for (integer i = 0; i < nax; i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls[i]->funcEval(_zeta[j]);
-        out_gc[p_ocp->algebraicStateName(i_phase, i)].set_vec_real(tmp_vec);
-        gc_midpoint[p_ocp->algebraicStateName(i_phase, i)].set_vec_real(_algebraic_states_controls[i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_states_controls_upper_bounds_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_" + p_ocp->algebraicStateName(i_phase, i) + "_upper"].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_" + p_ocp->algebraicStateName(i_phase, i) + "_upper"].set_vec_real(
-            _algebraic_states_controls_upper_bounds_multipliers[i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_states_controls_lower_bounds_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_" + p_ocp->algebraicStateName(i_phase, i) + "_lower"].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_" + p_ocp->algebraicStateName(i_phase, i) + "_lower"].set_vec_real(
-            _algebraic_states_controls_lower_bounds_multipliers[i]);
-      }
-      for (integer i = 0; i < p_ocp->numberOfAlgebraicControls(i_phase); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls[nax + i]->funcEval(_zeta[j]);
-        out_gc[p_ocp->algebraicControlName(i_phase, i)].set_vec_real(tmp_vec);
-        gc_midpoint[p_ocp->algebraicControlName(i_phase, i)].set_vec_real(_algebraic_states_controls[nax + i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls_upper_bounds_multipliers[nax + i]->funcEval(_zeta[j]);
-        out_gc["lambda_" + p_ocp->algebraicControlName(i_phase, i) + "_upper"].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_" + p_ocp->algebraicControlName(i_phase, i) + "_upper"].set_vec_real(
-            _algebraic_states_controls_upper_bounds_multipliers[nax + i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls_lower_bounds_multipliers[nax + i]->funcEval(_zeta[j]);
-        out_gc["lambda_" + p_ocp->algebraicControlName(i_phase, i) + "_lower"].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_" + p_ocp->algebraicControlName(i_phase, i) + "_lower"].set_vec_real(
-            _algebraic_states_controls_lower_bounds_multipliers[nax + i]);
-      }
-      for (integer i = 0; i < _parameters.size(); i++) {
-        out_gc[p_ocp->parameterName(i_phase, i)].set_real(_parameters[i]);
-        out_gc["lambda_" + p_ocp->parameterName(i_phase, i) + "_upper"].set_real(
-            _parameters_upper_bounds_multipliers[i]);
-        out_gc["lambda_" + p_ocp->parameterName(i_phase, i) + "_lower"].set_real(
-            _parameters_lower_bounds_multipliers[i]);
-      }
-      for (integer i = 0; i < _point_constraints.size(); i++) {
-        out_gc[p_ocp->pointConstraintName(i_phase, i)].set_vec_real(_point_constraints[i]);
-        out_gc["lambda_" + p_ocp->pointConstraintName(i_phase, i)].set_vec_real(_point_constraints_multipliers[i]);
-      }
-      for (integer i = 0; i < _path_constr.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_path_constr[i]->funcEval(_zeta[j]);
-        out_gc[p_ocp->pathConstraintName(i_phase, i)].set_vec_real(tmp_vec);
-        gc_midpoint[p_ocp->pathConstraintName(i_phase, i)].set_vec_real(_path_constr[i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_path_constr_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_" + p_ocp->pathConstraintName(i_phase, i)].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_" + p_ocp->pathConstraintName(i_phase, i)].set_vec_real(_path_constr_multipliers[i]);
-      }
-      for (integer i = 0; i < _int_constr.size(); i++) {
-        out_gc[p_ocp->intConstraintName(i_phase, i)].set_vec_real(_int_constr[i]);
-        out_gc["lambda_" + p_ocp->intConstraintName(i_phase, i)].set_real(_int_constr_multipliers[i]);
-      }
-      for (integer i = 0; i < _fo_eqns.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_fo_eqns[i]->funcEval(_zeta[j]);
-        out_gc["equation" + std::to_string(i)].set_vec_real(tmp_vec);
-        gc_midpoint["equation" + std::to_string(i)].set_vec_real(_fo_eqns[i]);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_fo_eqns_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_equation" + std::to_string(i)].set_vec_real(tmp_vec);
-        gc_midpoint["lambda_equation" + std::to_string(i)].set_vec_real(_fo_eqns_multipliers[i]);
-      }
-      for (integer i = 0; i < _boundary_conditions.size(); i++) {
-        out_gc[p_ocp->boundaryConditionName(i_phase, i)].set_real(_boundary_conditions[i]);
-        out_gc["lambda_" + p_ocp->boundaryConditionName(i_phase, i)].set_real(_bcs_multipliers[i]);
-      }
-      for (integer i = 0; i < _post_processing.size(); i++) {
-        out_gc[p_ocp->postProcessingName(i_phase, i)].set_vec_real(_post_processing[i]);
-      }
-      for (integer i = 0; i < _differential_post_processing.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_differential_post_processing[i]->funcEval(_zeta[j]);
-        out_gc[p_ocp->differentialPostProcessingName(i_phase, i)].set_vec_real(tmp_vec);
-        gc_midpoint[p_ocp->differentialPostProcessingName(i_phase, i)].set_vec_real(_differential_post_processing[i]);
-      }
-      for (integer i = 0; i < _integral_post_processing.size(); i++) {
-        out_gc[p_ocp->integralPostProcessingName(i_phase, i)].set_vec_real(_integral_post_processing[i]);
-      }
-    } else {
-      out_gc["states_controls"].set_vector((integer) _states_controls.size());
-      out_gc["lambda_states_controls_upper"].set_vector((integer) _states_controls.size());
-      out_gc["lambda_states_controls_lower"].set_vector((integer) _states_controls.size());
-      for (integer i = 0; i < _states_controls.size(); i++) {
-        out_gc["states_controls"][i].set_vec_real(_states_controls[i]);
-        out_gc["lambda_states_controls_upper"][i].set_vec_real(_states_controls_upper_bounds_multipliers[i]);
-        out_gc["lambda_states_controls_lower"][i].set_vec_real(_states_controls_lower_bounds_multipliers[i]);
-      }
-      out_gc["algebraic_states_controls"].set_vector((integer) _algebraic_states_controls.size());
-      out_gc["lambda_algebraic_states_controls_upper"].set_vector((integer) _algebraic_states_controls.size());
-      out_gc["lambda_algebraic_states_controls_lower"].set_vector((integer) _algebraic_states_controls.size());
-      for (integer i = 0; i < _algebraic_states_controls.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls[i]->funcEval(_zeta[j]);
-        out_gc["algebraic_states_controls"][i].set_vec_real(tmp_vec);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls_upper_bounds_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_algebraic_states_controls_upper"][i].set_vec_real(tmp_vec);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_algebraic_states_controls_lower_bounds_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_algebraic_states_controls_lower"][i].set_vec_real(tmp_vec);
-      }
-
-      gc_midpoint["algebraic_states_controls"].set_vector((integer) _algebraic_states_controls.size());
-      gc_midpoint["lambda_algebraic_states_controls_upper"].set_vector((integer) _algebraic_states_controls.size());
-      gc_midpoint["lambda_algebraic_states_controls_lower"].set_vector((integer) _algebraic_states_controls.size());
-      for (integer i = 0; i < _algebraic_states_controls.size(); i++) {
-        gc_midpoint["algebraic_states_controls"][i].set_vec_real(_algebraic_states_controls[i]);
-        gc_midpoint["lambda_algebraic_states_controls_upper"][i].set_vec_real(
-            _algebraic_states_controls_upper_bounds_multipliers[i]);
-        gc_midpoint["lambda_algebraic_states_controls_lower"][i].set_vec_real(
-            _algebraic_states_controls_lower_bounds_multipliers[i]);
-      }
-
-      out_gc["parameters"].set_vector((integer) _parameters.size());
-      out_gc["lambda_parameters_upper"].set_vector((integer) _parameters.size());
-      out_gc["lambda_parameters_lower"].set_vector((integer) _parameters.size());
-      for (integer i = 0; i < _parameters.size(); i++) {
-        out_gc["parameters"][i].set_real(_parameters[i]);
-        out_gc["lambda_parameters_upper"][i].set_real(_parameters_upper_bounds_multipliers[i]);
-        out_gc["lambda_parameters_lower"][i].set_real(_parameters_lower_bounds_multipliers[i]);
-      }
-      out_gc["point_constraints"].set_vector((integer) _point_constraints.size());
-      out_gc["lambda_point_constraints"].set_vector((integer) _point_constraints.size());
-      for (integer i = 0; i < _point_constraints.size(); i++) {
-        out_gc["point_constraints"][i].set_vec_real(_point_constraints[i]);
-        out_gc["lambda_point_constraints"][i].set_vec_real(_point_constraints_multipliers[i]);
-      }
-      out_gc["path_constraints"].set_vector((u_integer) _path_constr.size());
-      out_gc["lambda_path_constraints"].set_vector((u_integer) _path_constr.size());
-      for (integer i = 0; i < _path_constr.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_path_constr[i]->funcEval(_zeta[j]);
-        out_gc["path_constraints"][i].set_vec_real(tmp_vec);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_path_constr_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_path_constraints"][i].set_vec_real(tmp_vec);
-      }
-      gc_midpoint["path_constraints"].set_vector((u_integer) _path_constr.size());
-      gc_midpoint["lambda_path_constraints"].set_vector((u_integer) _path_constr.size());
-      for (integer i = 0; i < _path_constr.size(); i++) {
-        gc_midpoint["path_constraints"][i].set_vec_real(_path_constr[i]);
-        gc_midpoint["lambda_path_constraints"][i].set_vec_real(_path_constr_multipliers[i]);
-      }
-      out_gc["integral_constraints"].set_vector((integer) _int_constr.size());
-      out_gc["lambda_integral_constraints"].set_vector((integer) _int_constr.size());
-      for (integer i = 0; i < _int_constr.size(); i++) {
-        out_gc["integral_constraints"][i].set_vec_real(_int_constr[i]);
-        out_gc["lambda_integral_constraints"][i].set_real(_int_constr_multipliers[i]);
-      }
-      out_gc["equations"].set_vector((integer) _fo_eqns.size());
-      out_gc["lambda_equations"].set_vector((integer) _fo_eqns.size());
-      for (integer i = 0; i < _fo_eqns.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_fo_eqns[i]->funcEval(_zeta[j]);
-        out_gc["equations"][i].set_vec_real(tmp_vec);
-
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_fo_eqns_multipliers[i]->funcEval(_zeta[j]);
-        out_gc["lambda_equations"][i].set_vec_real(tmp_vec);
-      }
-      gc_midpoint["equations"].set_vector((integer) _fo_eqns.size());
-      gc_midpoint["lambda_equations"].set_vector((integer) _fo_eqns.size());
-      for (integer i = 0; i < _fo_eqns.size(); i++) {
-        gc_midpoint["equations"][i].set_vec_real(_fo_eqns[i]);
-        gc_midpoint["lambda_equations"][i].set_vec_real(_fo_eqns_multipliers[i]);
-      }
-      out_gc["boundary_conditions"].set_vector((integer) _boundary_conditions.size());
-      out_gc["lambda_boundary_conditions"].set_vector((integer) _boundary_conditions.size());
-      for (integer i = 0; i < _boundary_conditions.size(); i++) {
-        out_gc["boundary_conditions"][i].set_real(_boundary_conditions[i]);
-        out_gc["lambda_boundary_conditions"][i].set_real(_bcs_multipliers[i]);
-      }
-      out_gc["post_processing"].set_vector((integer) _post_processing.size());
-      for (integer i = 0; i < _post_processing.size(); i++) {
-        out_gc["post_processing"][i].set_vec_real(_post_processing[i]);
-      }
-      out_gc["differential_processing"].set_vector((integer) _differential_post_processing.size());
-      for (integer i = 0; i < _differential_post_processing.size(); i++) {
-        for (integer j = 0; j < _zeta.size(); j++)
-          tmp_vec[j] = _gf1a_differential_post_processing[i]->funcEval(_zeta[j]);
-        out_gc["differential_processing"][i].set_vec_real(tmp_vec);
-      }
-      gc_midpoint["differential_processing"].set_vector((integer) _differential_post_processing.size());
-      for (integer i = 0; i < _differential_post_processing.size(); i++) {
-        gc_midpoint["differential_processing"][i].set_vec_real(_differential_post_processing[i]);
-      }
-      out_gc["integral_post_processing"].set_vector((integer) _integral_post_processing.size());
-      for (integer i = 0; i < _integral_post_processing.size(); i++) {
-        out_gc["integral_post_processing"][i].set_vec_real(_integral_post_processing[i]);
-      }
-    }
+    insert_values_to_gc_on_zeta(gc_midpoint, zeta_center);
   }
 
   static std::vector<real>
