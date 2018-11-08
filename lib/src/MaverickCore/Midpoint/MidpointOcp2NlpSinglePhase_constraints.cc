@@ -27,6 +27,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsBetweenMeshPoints(intege
          current_mesh_interval < last_mesh_point; current_mesh_interval++) {
 
       //zeta
+      real const zeta_left = _p_mesh->getZetaLeft(current_mesh_interval);
       real const zeta = _p_mesh->getZetaCenter(current_mesh_interval);
       real const d_zeta = _p_mesh->getDz(current_mesh_interval);
       real const d_zeta_dual = _p_mesh->getDzDual(current_mesh_interval);
@@ -62,6 +63,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsBetweenMeshPoints(intege
                       ocp_state_control_derivative,
                       ocp_algebraic_state_control,
                       ocp_params,
+                      zeta_left,
                       zeta,
                       d_zeta,
                       d_zeta_dual,
@@ -94,6 +96,7 @@ void MidpointOcp2NlpSinglePhase::evalConstraints(real const ocp_left_state_contr
                                                  real const ocp_state_control_derivative[],
                                                  real const ocp_algebraic_state_control[],
                                                  real const ocp_params[],
+                                                 real const zeta_left,
                                                  real const zeta,
                                                  real const d_zeta,
                                                  real const d_zeta_dual,
@@ -138,7 +141,7 @@ void MidpointOcp2NlpSinglePhase::evalConstraints(real const ocp_left_state_contr
   _ocp_problem.pointConstraints(_i_phase,
                                 ocp_left_state_control,
                                 ocp_params,
-                                zeta,
+                                zeta_left,
                                 p_current_constraint);
 
   //scale

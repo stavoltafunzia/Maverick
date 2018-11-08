@@ -1279,6 +1279,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                                    real const ocp_state_control_derivative[],
                                                                    real const ocp_algebraic_state_control[],
                                                                    real const ocp_params[],
+                                                                   real const zeta_left,
                                                                    real const zeta,
                                                                    real const d_zeta,
                                                                    real const d_zeta_dual,
@@ -1398,7 +1399,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
     copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
   multiplyAndCopyVectorTo(p_current_lambda, lambda_scaled, p_inv_scaling_point_constr, _dim_poc);
-  _ocp_problem.pointConstraintsHess(_i_phase, ocp_left_state_control, ocp_params, zeta, lambda_scaled,
+  _ocp_problem.pointConstraintsHess(_i_phase, ocp_left_state_control, ocp_params, zeta_left, lambda_scaled,
                                     point_constr_hess_xu_xu, point_constr_hess_xu_p, point_constr_hess_p_p);
   p_current_lambda += _dim_poc;
   delete[] lambda_scaled;

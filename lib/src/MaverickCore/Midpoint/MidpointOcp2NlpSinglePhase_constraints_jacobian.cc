@@ -619,6 +619,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
                                                                         real const state_control_derivative[],
                                                                         real const algebraic_state_control[],
                                                                         real const parameters[],
+                                                                        real const zeta_left,
                                                                         real const zeta,
                                                                         real const d_zeta,
                                                                         real const d_zeta_dual,
@@ -792,7 +793,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   // nineth and tenth blocks
   {
     integer const nnz = _point_constr_j_y_nnz;
-    _ocp_problem.pointConstraintsJac(_i_phase, left_state_control, parameters, zeta,
+    _ocp_problem.pointConstraintsJac(_i_phase, left_state_control, parameters, zeta_left,
                                      p_current_value_ptr,
                                      p_current_value_ptr + nnz);
 
