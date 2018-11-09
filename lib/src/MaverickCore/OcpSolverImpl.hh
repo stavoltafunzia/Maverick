@@ -18,7 +18,7 @@
 #include "OcpScaling.hh"
 #include "NlpSolver.hh"
 #include "OcpSolverOutput.hh"
-#include "MaverickCore/Midpoint/MidpointMeshSolutionRefiner.hh"
+#include "MaverickCore/RK1/RK1MeshSolutionRefiner.hh"
 
 namespace Maverick {
 

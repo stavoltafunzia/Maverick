@@ -5,25 +5,25 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_MESH_SOLUTION_REFINER_HH
-#define MAVERICK_MIDPOINT_MESH_SOLUTION_REFINER_HH
+#ifndef MAVERICK_RK1_MESH_SOLUTION_REFINER_HH
+#define MAVERICK_RK1_MESH_SOLUTION_REFINER_HH
 
 #include "MaverickCore/MeshSolutionRefiner.hh"
 #include "MaverickCore/EquationSolverInterface.hh"
 #include "MaverickCore/EquationSolverSupplierInterface.hh"
-#include "MaverickCore/Midpoint/MidpointMesh.hh"
+#include "MaverickCore/RK1/RK1Mesh.hh"
 #include "MaverickCore/OcpScaling.hh"
-#include "MaverickCore/Midpoint/MidpointOcpSolution.hh"
+#include "MaverickCore/RK1/RK1OcpSolution.hh"
 
 namespace Maverick {
 
-  class MidpointMeshSolutionRefiner : public MeshSolutionRefiner {
+  class RK1MeshSolutionRefiner : public MeshSolutionRefiner {
 
   public:
 
-    MidpointMeshSolutionRefiner(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling);
+    RK1MeshSolutionRefiner(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling);
 
-    ~MidpointMeshSolutionRefiner();
+    ~RK1MeshSolutionRefiner();
 
     virtual std::unique_ptr<Mesh> calculateMeshErrors(real const mesh_error_threshold,
                                                       bool const calculate_new_mesh,
@@ -35,12 +35,13 @@ namespace Maverick {
 
   protected:
 
-    void getMeshErrorsForSinglePhase(integer const i_phase, MidpointMesh const &mesh, MidpointOcpSolution const &sol,
+    void getMeshErrorsForSinglePhase(integer const i_phase, RK1Mesh const &mesh, RK1OcpSolution const &sol,
                                      vec_1d_real &mesh_errors) const;
 
-    void calculateMeshErrorBetweenMeshPoints(integer const i_phase,
+    void calculateMeshErrorBetweenMeshPoints(real const alpha,
+                                             integer const i_phase,
                                              integer const first_mesh_point, integer const last_mesh_point,
-                                             MidpointMesh const &mesh, MidpointOcpSolution const &sol,
+                                             RK1Mesh const &mesh, RK1OcpSolution const &sol,
                                              real mesh_error[]) const;
 
   };

@@ -5,14 +5,14 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_MESH_SINGLE_PHASE_HH
-#define MAVERICK_MIDPOINT_MESH_SINGLE_PHASE_HH
+#ifndef MAVERICK_RK1_MESH_SINGLE_PHASE_HH
+#define MAVERICK_RK1_MESH_SINGLE_PHASE_HH
 
 #include "MaverickCore/MeshSinglePhase.hh"
 
 namespace Maverick {
 
-  class MidpointMeshSinglePhase : public MeshSinglePhase {
+  class RK1MeshSinglePhase : public MeshSinglePhase {
 
     class Segment {
     public:
@@ -42,11 +42,13 @@ namespace Maverick {
 
   public:
 
-    MidpointMeshSinglePhase();
+    RK1MeshSinglePhase(real const default_alpha);
 
-    MidpointMeshSinglePhase(MidpointMeshSinglePhase const &mesh);
+    RK1MeshSinglePhase(RK1MeshSinglePhase const & mesh);
 
-    ~MidpointMeshSinglePhase();
+    RK1MeshSinglePhase(RK1MeshSinglePhase && mesh);
+
+    ~RK1MeshSinglePhase();
 
     // MeshSinglePhase interface
 
@@ -69,18 +71,20 @@ namespace Maverick {
     void setDiscretisationPoints(vec_1d_real const &zeta);
 
     inline integer getNumberOfIntervals() const { return getNumberOfDiscretisationPoints() - 1; }
+    
+    inline real getAlpha() const { return _alpha; }
 
-    real getZeta(integer const mesh_point_index) const;
+    real getZetaAtIndex(integer const mesh_point_index) const;
 
     real getZetaLeft(integer const mesh_interval_index) const;
 
     real getZetaRight(integer const mesh_interval_index) const;
 
-    real getZetaCenter(integer const mesh_interval_index) const;
+    real getZetaAlpha(integer const mesh_interval_index) const;
 
     real getDz(integer const mesh_interval_index) const;
 
-    real getDzDual(integer const mesh_interval_index) const;
+    real getDzAverageAtIndex(integer const mesh_point_index) const;
 
     void addSegment(Segment const segment);
 
@@ -90,13 +94,19 @@ namespace Maverick {
 
     // operators
 
-    MidpointMeshSinglePhase &operator=(MidpointMeshSinglePhase const &mesh);
+    RK1MeshSinglePhase &operator=(RK1MeshSinglePhase const &mesh);
 
-    MidpointMeshSinglePhase &operator<<(Segment const &segment);
+    RK1MeshSinglePhase &operator=(RK1MeshSinglePhase && mesh);
 
-    MidpointMeshSinglePhase &operator<<(MidpointMeshSinglePhase const &mesh);
+    RK1MeshSinglePhase &operator<<(Segment const &segment);
+
+    RK1MeshSinglePhase &operator<<(RK1MeshSinglePhase const &mesh);
 
   protected:
+    
+    real _default_alpha;
+    
+    real _alpha;
 
     bool isVectorIncreasingValues(real const values[], integer const length) const;
 

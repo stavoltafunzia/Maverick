@@ -1,6 +1,6 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
-#include "MaverickCore/Midpoint/MidpointOcpSolution.hh"
+#include "MaverickCore/RK1/RK1OcpSolution.hh"
 #include "MaverickUtils/GenericFunction/GF1ASpline.hh"
 #include "MaverickCore/MaverickSingleton.hh"
 
@@ -12,13 +12,13 @@ using namespace std;
 
 #define SPLINE_EXTEND_RANGE MaverickUtils::GF1ASpline::ExtendRange::keep_derivative
 
-MidpointOcp2NlpSinglePhase::MidpointOcp2NlpSinglePhase(MaverickOcp const &ocp_problem, Mesh const &mesh,
-                                                       integer const i_phase) : _i_phase(i_phase),
-                                                                                Ocp2Nlp(ocp_problem, mesh) {
+RK1Ocp2NlpSinglePhase::RK1Ocp2NlpSinglePhase(MaverickOcp const &ocp_problem, Mesh const &mesh, integer const i_phase) :
+                                             _i_phase(i_phase), Ocp2Nlp(ocp_problem, mesh)
+{
 
-  if (mesh.discretisationType() != Mesh::DiscretisationType::midpoint)
-    throw runtime_error("MidpointOcp2NlpSinglePhase::derivedInit: only a midpoint mesh can be used");
-  _p_mesh = (MidpointMeshSinglePhase *) &(mesh[_i_phase]);
+  if (mesh.discretisationType() != Mesh::DiscretisationType::runge_kutta_1)
+    throw runtime_error("RK1Ocp2NlpSinglePhase::derivedInit: only a 'runge_kutta_1' mesh can be used");
+  _p_mesh = (RK1MeshSinglePhase *) &(mesh[_i_phase]);
 
   vector<int **> additional_int_pointers = {
       // target gradient pointers
@@ -154,13 +154,13 @@ MidpointOcp2NlpSinglePhase::MidpointOcp2NlpSinglePhase(MaverickOcp const &ocp_pr
 }
 
 
-MidpointOcp2NlpSinglePhase::~MidpointOcp2NlpSinglePhase() {
+RK1Ocp2NlpSinglePhase::~RK1Ocp2NlpSinglePhase() {
   // pointers already deleted in super class
   clearThreadJobs();
 }
 
-void MidpointOcp2NlpSinglePhase::setup() {
-  MAVERICK_DEBUG_ASSERT(_p_mesh != nullptr, "MidpointOcp2NlpSinglePhase::setup: nullptr mesh pointer");
+void RK1Ocp2NlpSinglePhase::setup() {
+  MAVERICK_DEBUG_ASSERT(_p_mesh != nullptr, "RK1Ocp2NlpSinglePhase::setup: nullptr mesh pointer");
 
   deleteAllDataPointers();
 
@@ -194,7 +194,7 @@ void MidpointOcp2NlpSinglePhase::setup() {
 
 }
 
-void MidpointOcp2NlpSinglePhase::setupScaling() {
+void RK1Ocp2NlpSinglePhase::setupScaling() {
   OcpScaling const &scaling = _ocp_problem.getScaling();
 
   MAVERICK_DEBUG_ASSERT(scaling.getStatesControlScaling(_i_phase).size() == _dim_y,
@@ -291,15 +291,15 @@ void MidpointOcp2NlpSinglePhase::setupScaling() {
 
 }
 
-integer MidpointOcp2NlpSinglePhase::getNlpSize() const {
+integer RK1Ocp2NlpSinglePhase::getNlpSize() const {
   return (_dim_y + _dim_ay) * _p_mesh->getNumberOfIntervals() + _dim_y + _dim_p;
 }
 
-integer MidpointOcp2NlpSinglePhase::getNlpConstraintsSize() const {
+integer RK1Ocp2NlpSinglePhase::getNlpConstraintsSize() const {
   return (_dim_q) * _p_mesh->getNumberOfIntervals() + _dim_poc + _dim_bc + _dim_ic;
 }
 
-integer MidpointOcp2NlpSinglePhase::getNlpTargetGradientNnz() const {
+integer RK1Ocp2NlpSinglePhase::getNlpTargetGradientNnz() const {
   if (_is_gradient_dense)
     return getNlpSize();
 
@@ -307,7 +307,7 @@ integer MidpointOcp2NlpSinglePhase::getNlpTargetGradientNnz() const {
          (_p_mesh->getNumberOfIntervals()) * (_lagrange_target_j_y_nnz + _lagrange_target_j_ay_nnz) + _target_j_p_nnz;
 }
 
-integer MidpointOcp2NlpSinglePhase::getNlpConstraintsJacobianNnz() const {
+integer RK1Ocp2NlpSinglePhase::getNlpConstraintsJacobianNnz() const {
   return getNlpConstraintsJacobainMatrixYNnz() * _p_mesh->getNumberOfIntervals()
          + _point_constr_j_y_nnz + _point_constr_j_p_nnz
          + getNlpConstraintsJacobainMatrixFNnz()
@@ -315,13 +315,13 @@ integer MidpointOcp2NlpSinglePhase::getNlpConstraintsJacobianNnz() const {
          _int_constr_j_p_nnz;
 }
 
-integer MidpointOcp2NlpSinglePhase::getNlpHessianNnz() const {
+integer RK1Ocp2NlpSinglePhase::getNlpHessianNnz() const {
   return getNlpHessianFirstColumnBlockNnz() +
          getNlpHessianLeftColumnBlockNnz() * (_p_mesh->getNumberOfIntervals() - 1) + getNlpHessianLastColumnBlockNnz() +
          _p_mesh->getNumberOfIntervals() * getNlpHessianCentreColumnBlockNnz() + _hess_p_p_lower_mat_nnz;
 };
 
-void MidpointOcp2NlpSinglePhase::clearThreadJobs() {
+void RK1Ocp2NlpSinglePhase::clearThreadJobs() {
   // stop threads and detach them
   for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     ThreadJob &th_job = _thread_jobs[i_thread];
@@ -339,7 +339,7 @@ void MidpointOcp2NlpSinglePhase::clearThreadJobs() {
   _thread_jobs = nullptr;
 }
 
-void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
+void RK1Ocp2NlpSinglePhase::calculateWorkForThreads() {
   // clear previous thread jobs
   clearThreadJobs();
 
@@ -431,19 +431,19 @@ void MidpointOcp2NlpSinglePhase::calculateWorkForThreads() {
 #endif
 
   MAVERICK_DEBUG_ASSERT(current_mesh_point == num_mesh_intervals,
-                        "MidpointOcp2NlpSinglePhase: not all mesh points are spanned by threads")
+                        "RK1Ocp2NlpSinglePhase: not all mesh points are spanned by threads")
   MAVERICK_DEBUG_ASSERT(_actual_num_threads == (thread_mesh_intervals.size() - 1),
-                        "MidpointOcp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
+                        "RK1Ocp2NlpSinglePhase: number of threads does not match _thread_mesh_intervals.size()")
 }
 
-void MidpointOcp2NlpSinglePhase::setThreadsAffinity(threads_affinity const &th_affinity) {
+void RK1Ocp2NlpSinglePhase::setThreadsAffinity(threads_affinity const &th_affinity) {
   _th_affinity = th_affinity;
   calculateWorkForThreads();
 }
 
-void MidpointOcp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bounds[], integer const n) const {
+void RK1Ocp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bounds[], integer const n) const {
 
-  MAVERICK_ASSERT(n == getNlpSize(), "MidpointOcp2NlpSinglePhase::getNlpBounds: wrong nlp size.");
+  MAVERICK_ASSERT(n == getNlpSize(), "RK1Ocp2NlpSinglePhase::getNlpBounds: wrong nlp size.");
 
   MaverickSingleton const &_maverick = MaverickSingleton::getInstance();
 
@@ -451,13 +451,14 @@ void MidpointOcp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bo
   real *current_upper_bounds = upper_bounds;
 
   //now write the bounds at each mesh point
-  for (integer c_mesh_point = 0; c_mesh_point < _p_mesh->getNumberOfDiscretisationPoints(); c_mesh_point++) {
-    real const current_zeta = _p_mesh->getZeta(c_mesh_point);
+  for (integer c_mesh_point = 0; c_mesh_point < _p_mesh->getNumberOfIntervals(); c_mesh_point++) {
+    real const left_zeta = _p_mesh->getZetaLeft(c_mesh_point);
+    real const zeta_alpha = _p_mesh->getZetaAlpha(c_mesh_point);
 
     //write the bounds for the states and controls
     real ocp_state_control_lower_bounds[_dim_xu];
     real ocp_state_control_upper_bounds[_dim_xu];
-    _ocp_problem.getStatesControlsBounds(_i_phase, current_zeta, ocp_state_control_lower_bounds,
+    _ocp_problem.getStatesControlsBounds(_i_phase, left_zeta, ocp_state_control_lower_bounds,
                                          ocp_state_control_upper_bounds);
     multiplyAndCopyVectorTo(ocp_state_control_lower_bounds, current_lower_bounds, _p_inv_scaling_y, _dim_xu);
     multiplyAndCopyVectorTo(ocp_state_control_upper_bounds, current_upper_bounds, _p_inv_scaling_y, _dim_xu);
@@ -469,7 +470,7 @@ void MidpointOcp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bo
       if (ocp_state_control_upper_bounds[i] < ocp_state_control_lower_bounds[i]) {
         string message =
             "Upper bound for state " + _ocp_problem.stateName(_i_phase, i) + ", phase " + std::to_string(_i_phase) +
-            ", mesh value " + std::to_string(current_zeta) +
+            ", mesh value " + std::to_string(left_zeta) +
             ", is lower than the lower bound. Problem will be infeasable.\n";
         _maverick.Log(InfoLevel::info_level_warning, message);
       }
@@ -477,43 +478,75 @@ void MidpointOcp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bo
     for (integer i = _dim_x + 1; i < _dim_xu; i++) {
       if (ocp_state_control_upper_bounds[i] < ocp_state_control_lower_bounds[i]) {
         string message = "Upper bound for control " + _ocp_problem.controlName(_i_phase, i - _dim_x) + ", phase " +
-                         std::to_string(_i_phase) + ", mesh value " + std::to_string(current_zeta) +
+                         std::to_string(_i_phase) + ", mesh value " + std::to_string(left_zeta) +
                          ", is lower than the lower bound. Problem will be infeasable.\n";
         _maverick.Log(InfoLevel::info_level_warning, message);
       }
     }
 
     //write also algebraic states
-    if (c_mesh_point < _p_mesh->getNumberOfIntervals()) {
-      real ocp_algebraic_state_control_lower_bounds[_dim_xu];
-      real ocp_algebraic_state_control_upper_bounds[_dim_xu];
-      _ocp_problem.getAlgebraicStatesControlsBounds(_i_phase, current_zeta, ocp_algebraic_state_control_lower_bounds,
-                                                    ocp_algebraic_state_control_upper_bounds);
-      multiplyAndCopyVectorTo(ocp_algebraic_state_control_lower_bounds, current_lower_bounds, _p_inv_scaling_ay,
-                              _dim_axu);
-      multiplyAndCopyVectorTo(ocp_algebraic_state_control_upper_bounds, current_upper_bounds, _p_inv_scaling_ay,
-                              _dim_axu);
-      current_lower_bounds += _dim_axu;
-      current_upper_bounds += _dim_axu;
+    real ocp_algebraic_state_control_lower_bounds[_dim_xu];
+    real ocp_algebraic_state_control_upper_bounds[_dim_xu];
+    _ocp_problem.getAlgebraicStatesControlsBounds(_i_phase, zeta_alpha, ocp_algebraic_state_control_lower_bounds,
+                                                  ocp_algebraic_state_control_upper_bounds);
+    multiplyAndCopyVectorTo(ocp_algebraic_state_control_lower_bounds, current_lower_bounds, _p_inv_scaling_ay,
+                            _dim_axu);
+    multiplyAndCopyVectorTo(ocp_algebraic_state_control_upper_bounds, current_upper_bounds, _p_inv_scaling_ay,
+                            _dim_axu);
+    current_lower_bounds += _dim_axu;
+    current_upper_bounds += _dim_axu;
 
-      // check that the bounds are consistent
-      for (integer i = 0; i < _dim_ax; i++) {
-        if (ocp_algebraic_state_control_upper_bounds[i] < ocp_algebraic_state_control_lower_bounds[i]) {
-          string message =
-              "Upper bound for algebraic state " + _ocp_problem.algebraicStateName(_i_phase, i) + ", phase " +
-              std::to_string(_i_phase) + ", mesh value " + std::to_string(current_zeta) +
-              ", is lower than the lower bound. Problem will be infeasable.\n";
-          _maverick.Log(InfoLevel::info_level_warning, message);
-        }
+    // check that the bounds are consistent
+    for (integer i = 0; i < _dim_ax; i++) {
+      if (ocp_algebraic_state_control_upper_bounds[i] < ocp_algebraic_state_control_lower_bounds[i]) {
+        string message =
+            "Upper bound for algebraic state " + _ocp_problem.algebraicStateName(_i_phase, i) + ", phase " +
+            std::to_string(_i_phase) + ", mesh value " + std::to_string(zeta_alpha) +
+            ", is lower than the lower bound. Problem will be infeasable.\n";
+        _maverick.Log(InfoLevel::info_level_warning, message);
       }
-      for (integer i = _dim_ax + 1; i < _dim_axu; i++) {
-        if (ocp_algebraic_state_control_upper_bounds[i] < ocp_algebraic_state_control_lower_bounds[i]) {
-          string message =
-              "Upper bound for control " + _ocp_problem.algebraicControlName(_i_phase, i - _dim_x) + ", phase " +
-              std::to_string(_i_phase) + ", mesh value " + std::to_string(current_zeta) +
-              ", is lower than the lower bound. Problem will be infeasable.\n";
-          _maverick.Log(InfoLevel::info_level_warning, message);
-        }
+    }
+    for (integer i = _dim_ax + 1; i < _dim_axu; i++) {
+      if (ocp_algebraic_state_control_upper_bounds[i] < ocp_algebraic_state_control_lower_bounds[i]) {
+        string message =
+            "Upper bound for control " + _ocp_problem.algebraicControlName(_i_phase, i - _dim_x) + ", phase " +
+            std::to_string(_i_phase) + ", mesh value " + std::to_string(zeta_alpha) +
+            ", is lower than the lower bound. Problem will be infeasable.\n";
+        _maverick.Log(InfoLevel::info_level_warning, message);
+      }
+    }
+  }
+
+  {
+    // write bounds for the last point
+    real const right_zeta = _p_mesh->getFinalZeta();
+
+    //write the bounds for the states and controls
+    real ocp_state_control_lower_bounds[_dim_xu];
+    real ocp_state_control_upper_bounds[_dim_xu];
+    _ocp_problem.getStatesControlsBounds(_i_phase, right_zeta, ocp_state_control_lower_bounds,
+                                         ocp_state_control_upper_bounds);
+    multiplyAndCopyVectorTo(ocp_state_control_lower_bounds, current_lower_bounds, _p_inv_scaling_y, _dim_xu);
+    multiplyAndCopyVectorTo(ocp_state_control_upper_bounds, current_upper_bounds, _p_inv_scaling_y, _dim_xu);
+    current_lower_bounds += _dim_xu;
+    current_upper_bounds += _dim_xu;
+
+    // check that the bounds are consistent
+    for (integer i = 0; i < _dim_x; i++) {
+      if (ocp_state_control_upper_bounds[i] < ocp_state_control_lower_bounds[i]) {
+        string message =
+            "Upper bound for state " + _ocp_problem.stateName(_i_phase, i) + ", phase " + std::to_string(_i_phase) +
+            ", mesh value " + std::to_string(right_zeta) +
+            ", is lower than the lower bound. Problem will be infeasable.\n";
+        _maverick.Log(InfoLevel::info_level_warning, message);
+      }
+    }
+    for (integer i = _dim_x + 1; i < _dim_xu; i++) {
+      if (ocp_state_control_upper_bounds[i] < ocp_state_control_lower_bounds[i]) {
+        string message = "Upper bound for control " + _ocp_problem.controlName(_i_phase, i - _dim_x) + ", phase " +
+                         std::to_string(_i_phase) + ", mesh value " + std::to_string(right_zeta) +
+                         ", is lower than the lower bound. Problem will be infeasable.\n";
+        _maverick.Log(InfoLevel::info_level_warning, message);
       }
     }
   }
@@ -537,16 +570,16 @@ void MidpointOcp2NlpSinglePhase::getNlpBounds(real lower_bounds[], real upper_bo
   }
 
   MAVERICK_DEBUG_ASSERT(current_lower_bounds == lower_bounds + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::getNlpBounds: not all nlp lower bounds have been written.")
+                        "RK1Ocp2NlpSinglePhase::getNlpBounds: not all nlp lower bounds have been written.")
   MAVERICK_DEBUG_ASSERT(current_upper_bounds == upper_bounds + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::getNlpBounds: not all nlp upper bounds have been written.")
+                        "RK1Ocp2NlpSinglePhase::getNlpBounds: not all nlp upper bounds have been written.")
 }
 
 void
-MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real upper_bounds[], integer const n) const {
+RK1Ocp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real upper_bounds[], integer const n) const {
 
   MAVERICK_ASSERT(n == getNlpConstraintsSize(),
-                  "MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds: wrong nlp constraints size.\n");
+                  "RK1Ocp2NlpSinglePhase::getNlpConstraintsBounds: wrong nlp constraints size.\n");
 
   MaverickSingleton const &_maverick = MaverickSingleton::getInstance();
 
@@ -555,9 +588,10 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
 
   //now write the bounds at each mesh point
   for (integer c_mesh_interval = 0; c_mesh_interval < _p_mesh->getNumberOfIntervals(); c_mesh_interval++) {
-    real const current_zeta = _p_mesh->getZeta(c_mesh_interval);
+    real const zeta_left = _p_mesh->getZetaLeft(c_mesh_interval);
+    real const zeta_alpha = _p_mesh->getZetaAlpha(c_mesh_interval);
     real const d_zeta = _p_mesh->getDz(c_mesh_interval);
-    real const d_zeta_dual = _p_mesh->getDzDual(c_mesh_interval);
+    real const d_zeta_dual = _p_mesh->getDzAverageAtIndex(c_mesh_interval);
 
     //write the bounds (zero) for the equations
     writeRealToVector(current_lower_bounds, 0, _dim_fo);
@@ -574,7 +608,7 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
     else
       copyVectorTo(_p_inv_scaling_path_constr_global, p_inv_scaling_path_constr, _dim_pc);
 
-    _ocp_problem.getPathConstraintsBounds(_i_phase, current_zeta, ocp_path_constraints_lower_bounds,
+    _ocp_problem.getPathConstraintsBounds(_i_phase, zeta_alpha, ocp_path_constraints_lower_bounds,
                                           ocp_path_constraints_upper_bounds);
     multiplyAndCopyVectorTo(ocp_path_constraints_lower_bounds, current_lower_bounds, p_inv_scaling_path_constr,
                             _dim_pc);
@@ -587,7 +621,7 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
     for (integer i = 0; i < _dim_pc; i++) {
       if (ocp_path_constraints_upper_bounds[i] < ocp_path_constraints_lower_bounds[i]) {
         string message = "Upper bound for path constraint at index " + std::to_string(i) + ", phase " +
-                         std::to_string(_i_phase) + ", mesh value " + std::to_string(current_zeta) +
+                         std::to_string(_i_phase) + ", mesh value " + std::to_string(zeta_alpha) +
                          ", is lower than the lower bound. Problem will be infeasable.\n";
         _maverick.Log(InfoLevel::info_level_warning, message);
       }
@@ -602,7 +636,7 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
     else
       copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
-    _ocp_problem.getPointConstraintsBounds(_i_phase, current_zeta, ocp_point_constraints_lower_bounds,
+    _ocp_problem.getPointConstraintsBounds(_i_phase, zeta_left, ocp_point_constraints_lower_bounds,
                                            ocp_point_constraints_upper_bounds);
     multiplyAndCopyVectorTo(ocp_point_constraints_lower_bounds, current_lower_bounds, p_inv_scaling_point_constr,
                             _dim_poc);
@@ -616,23 +650,23 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
     for (integer i = 0; i < _dim_poc; i++) {
       if (ocp_point_constraints_upper_bounds[i] < ocp_point_constraints_lower_bounds[i]) {
         string message = "Upper bound for point constraint at index " + std::to_string(i) + ", phase " +
-                         std::to_string(_i_phase) + ", mesh value " + std::to_string(current_zeta) +
+                         std::to_string(_i_phase) + ", mesh value " + std::to_string(zeta_left) +
                          ", is lower than the lower bound. Problem will be infeasable.\n";
         _maverick.Log(InfoLevel::info_level_warning, message);
       }
     }
   }
 
-  real const initial_zeta = _p_mesh->getZeta(0);
-  real const final_zeta = _p_mesh->getZeta(_p_mesh->getNumberOfDiscretisationPoints() - 1);
+  real const initial_zeta = _p_mesh->getInitialZeta();
+  real const final_zeta = _p_mesh->getFinalZeta();
 
   //write the bounds of the point constraints for the last mesh point
-  real const d_zeta_dual = _p_mesh->getDzDual(_p_mesh->getNumberOfIntervals());
+  real const d_zeta_average = _p_mesh->getDzAverageAtIndex(_p_mesh->getNumberOfIntervals());
   real ocp_point_constraints_lower_bounds[_dim_poc];
   real ocp_point_constraints_upper_bounds[_dim_poc];
   real p_inv_scaling_point_constr[_dim_poc];
   if (_multiply_point_constr_by_dz)
-    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, d_zeta_dual, _dim_poc);
+    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, d_zeta_average, _dim_poc);
   else
     copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
@@ -695,12 +729,12 @@ MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real up
   }
 
   MAVERICK_DEBUG_ASSERT(current_lower_bounds == lower_bounds + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints lower bounds have been written.")
+                        "RK1Ocp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints lower bounds have been written.")
   MAVERICK_DEBUG_ASSERT(current_upper_bounds == upper_bounds + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints upper bounds have been written.")
+                        "RK1Ocp2NlpSinglePhase::getNlpConstraintsBounds: not all constraints upper bounds have been written.")
 }
 
-threads_affinity MidpointOcp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
+threads_affinity RK1Ocp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
   threads_affinity out = {};
   for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     out.push_back(_thread_jobs[i_thread].affinity);
@@ -708,14 +742,14 @@ threads_affinity MidpointOcp2NlpSinglePhase::getActualThreadsAffinityUsed(intege
   return out;
 }
 
-void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess(Nlp const &nlp_guess) {
-  std::unique_ptr<MidpointOcpSolutionSinglePhase> sol_single_phase = translateNlp2MidpointOcpSolution(nlp_guess);
-  MidpointOcpSolution sol;
+void RK1Ocp2NlpSinglePhase::setIsTargetLagrangeFromGuess(Nlp const &nlp_guess) {
+  std::unique_ptr<RK1OcpSolutionSinglePhase> sol_single_phase = translateNlp2RK1OcpSolution(nlp_guess);
+  RK1OcpSolution sol;
   sol.setSolutionAtPhase(_i_phase, *sol_single_phase);
   setIsTargetLagrangeFromGuess(sol);
 }
 
-void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess(OcpGuess const &ocp_guess) {
+void RK1Ocp2NlpSinglePhase::setIsTargetLagrangeFromGuess(OcpGuess const &ocp_guess) {
 
   real xu[_dim_xu];
   real xu_left[_dim_xu];
@@ -732,8 +766,8 @@ void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess(OcpGuess const &oc
   // evaluate the lagrange target
   real lagrange = 0;
   for (integer c_mesh_interval = 0; c_mesh_interval < _p_mesh->getNumberOfIntervals(); c_mesh_interval++) {
-    real const zeta = _p_mesh->getZetaCenter(c_mesh_interval);
-    ocp_guess.evalAtMesh(_i_phase, zeta, _dim_xu, xu, nullptr, nullptr, _dim_axu, axu, nullptr, nullptr, 0, nullptr, 0,
+    real const zeta_alpha = _p_mesh->getZetaAlpha(c_mesh_interval);
+    ocp_guess.evalAtMesh(_i_phase, zeta_alpha, _dim_xu, xu, nullptr, nullptr, _dim_axu, axu, nullptr, nullptr, 0, nullptr, 0,
                          nullptr, 0, nullptr);
 
     real const zeta_left = _p_mesh->getZetaLeft(c_mesh_interval);
@@ -745,7 +779,7 @@ void MidpointOcp2NlpSinglePhase::setIsTargetLagrangeFromGuess(OcpGuess const &oc
     computeTpzDerivativeWithoutScaling(xu_left, xu_right, dxu, 1.0 / (zeta_right - zeta_left), _dim_xu);
 
     real c_lagrange;
-    _ocp_problem.lagrange(_i_phase, xu, dxu, axu, p, zeta, c_lagrange);
+    _ocp_problem.lagrange(_i_phase, xu, dxu, axu, p, zeta_alpha, c_lagrange);
 
     lagrange += c_lagrange * (zeta_right - zeta_left);
   }

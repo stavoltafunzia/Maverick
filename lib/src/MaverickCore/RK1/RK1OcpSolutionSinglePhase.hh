@@ -5,8 +5,8 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_OCP_SOLUTION_SINGLE_PHASE_HH
-#define MAVERICK_MIDPOINT_OCP_SOLUTION_SINGLE_PHASE_HH
+#ifndef MAVERICK_RK1_OCP_SOLUTION_SINGLE_PHASE_HH
+#define MAVERICK_RK1_OCP_SOLUTION_SINGLE_PHASE_HH
 
 #include "MaverickCore/OcpSolutionSinglePhase.hh"
 #include "MaverickCore/MaverickOcp.hh"
@@ -15,21 +15,21 @@
 
 namespace Maverick {
 
-  class MidpointOcpSolutionSinglePhase : public OcpSolutionSinglePhase {
+  class RK1OcpSolutionSinglePhase : public OcpSolutionSinglePhase {
 
   public:
 
-    MidpointOcpSolutionSinglePhase();
+    RK1OcpSolutionSinglePhase();
 
-    static std::unique_ptr<MidpointOcpSolutionSinglePhase>
+    static std::unique_ptr<RK1OcpSolutionSinglePhase>
     convertFromRealTable(real_table const &table, MaverickOcp const &ocp_problem, integer const i_phase,
                          std::vector<std::string> &found_variables);
 
     // copy constructor
-    MidpointOcpSolutionSinglePhase(MidpointOcpSolutionSinglePhase const &ocp_solution);
+    RK1OcpSolutionSinglePhase(RK1OcpSolutionSinglePhase const &ocp_solution);
 
     // destructor
-    ~MidpointOcpSolutionSinglePhase();
+    ~RK1OcpSolutionSinglePhase();
 
     // full evaluation of the phase solution
     void evalAtMesh(real zeta,
@@ -137,7 +137,8 @@ namespace Maverick {
     //setter
 
     // set solution with zero multipliers
-    void setSolution(real const target,
+    void setSolution(real const alpha,
+                     real const target,
                      vec_1d_real const &zeta,
                      vec_1d_real const &cumulative_target,
                      vec_1d_real const &integrand_target,
@@ -154,7 +155,8 @@ namespace Maverick {
                      vec_2d_real const &integral_post_processing);
 
     // set solution with multipliers
-    void setSolution(real const target,
+    void setSolution(real const alpha,
+                     real const target,
                      vec_1d_real const &zeta,
                      vec_1d_real const &cumulative_target,
                      vec_1d_real const &integrand_target,
@@ -182,9 +184,11 @@ namespace Maverick {
                      vec_1d_real const &bcs_multipliers);
 
     // assignement operator
-    MidpointOcpSolutionSinglePhase &operator=(const MidpointOcpSolutionSinglePhase &ocp_solution);
+    RK1OcpSolutionSinglePhase &operator=(const RK1OcpSolutionSinglePhase &ocp_solution);
 
   protected:
+    
+    real _alpha = 0;
 
     real _target = 0;
 

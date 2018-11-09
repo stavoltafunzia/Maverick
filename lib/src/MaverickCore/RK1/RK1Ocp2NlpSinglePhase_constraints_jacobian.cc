@@ -1,4 +1,4 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 
 using namespace Maverick;
@@ -14,7 +14,7 @@ using namespace Maverick;
 // +-------------------------------------------+
 
 
-void MidpointOcp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
+void RK1Ocp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
   //Matrix Y is organised in 10 blocks, in order:
   // 1,2,3,4: fo_eqns_j_y_left_mat, fo_eqns_j_ay_mat, fo_eqns_j_y_right_mat, fo_eqns_j_p_mat,
   // 5,6,7,8: path_constr_j_y_left_mat, path_constr_j_ay_mat, path_constr_j_y_right_mat, path_constr_j_p_mat,
@@ -72,13 +72,13 @@ void MidpointOcp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
       fo_eqns_j_y_cols[counter] = i_col;   // col index (here it is equal to k)
       _p_scale_factor_fo_eqns_j_y[counter] = _p_inv_scaling_fo_eqns_global[i_row] * _p_scaling_y[i_col];
 #ifdef MAVERICK_DEBUG
-      MAVERICK_ASSERT( fo_eqns_j_y_rows[counter] == it.index(), "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for fo_eqns_j_y. Expected " << fo_eqns_j_y_rows[counter] << ", real " << it.row() << "\n")
+      MAVERICK_ASSERT( fo_eqns_j_y_rows[counter] == it.index(), "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for fo_eqns_j_y. Expected " << fo_eqns_j_y_rows[counter] << ", real " << it.row() << "\n")
 #endif
       counter++;
     }
   }
 #ifdef MAVERICK_DEBUG
-  MAVERICK_ASSERT( counter == nnz, "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for fo_eqns_j_y. Expected: " << nnz << ", real: " << counter << "\n")
+  MAVERICK_ASSERT( counter == nnz, "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for fo_eqns_j_y. Expected: " << nnz << ", real: " << counter << "\n")
 #endif
 
   //fo_eqns j ay
@@ -161,13 +161,13 @@ void MidpointOcp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
       _p_scale_factor_path_constr_j_y[counter] = _p_inv_scaling_path_constr_global[i_row] * _p_scaling_y[i_col];
 
 #ifdef MAVERICK_DEBUG
-      MAVERICK_ASSERT( path_constr_j_y_rows[counter] == it.index(), "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for path_constr_j_y.")
+      MAVERICK_ASSERT( path_constr_j_y_rows[counter] == it.index(), "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for path_constr_j_y.")
 #endif
       counter++;
     }
   }
 #ifdef MAVERICK_DEBUG
-  MAVERICK_ASSERT( counter == nnz, "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for path_constr_j_y.")
+  MAVERICK_ASSERT( counter == nnz, "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for path_constr_j_y.")
 #endif
   // path constr j ay
   nnz = _ocp_problem.pathConstraintsJacAxuNnz(_i_phase);
@@ -247,13 +247,13 @@ void MidpointOcp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
       int_constr_j_y_cols[counter] = i_col;   // col index (here it is equal to k)
       _p_scale_factor_int_constr_j_y[counter] = _p_inv_scaling_int_constr[i_row] * _p_scaling_y[i_col];
 #ifdef MAVERICK_DEBUG
-      MAVERICK_ASSERT( int_constr_j_y_rows[counter] == it.index(), "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for int_constr_j_y.")
+      MAVERICK_ASSERT( int_constr_j_y_rows[counter] == it.index(), "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong inner index for int_constr_j_y.")
 #endif
       counter++;
     }
   }
 #ifdef MAVERICK_DEBUG
-  MAVERICK_ASSERT( counter == _int_constr_j_y_nnz, "MidpointOcp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for path_constr_j_y.")
+  MAVERICK_ASSERT( counter == _int_constr_j_y_nnz, "RK1Ocp2NlpSinglePhase::setupForNlpConstraintJacobianMatrixes: wrong estimation of nonzero entries for path_constr_j_y.")
 #endif
 
   // int constr j_ay
@@ -371,7 +371,7 @@ void MidpointOcp2NlpSinglePhase::setupForNlpConstraintsJacobianMatrixes() {
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern(integer const fo_eqns_j_y_rows[],
+void RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern(integer const fo_eqns_j_y_rows[],
                                                                         integer const fo_eqns_j_y_cols[],
                                                                         integer const path_constr_j_y_rows[],
                                                                         integer const path_constr_j_y_cols[],
@@ -591,17 +591,12 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern(integer 
   delete[] p_row_indexes;
   delete[] p_col_indexes;
 
-  // end
-
 #ifdef MAVERICK_DEBUG
   {
-      //    cout << getNlpConstraintsJacobianNnz() << "\n";
-      //    cout << getNlpConstraintsJacobainMatrixFNnz() << "\n";
-      //    cout << _ocp_problem.intConstraintsJacPNnz(_i_phase) << "\n";
       integer * p_expected = _p_nlp_constraints_j_rows + getNlpConstraintsJacobianNnz();
-      MAVERICK_ASSERT( p_current_nlp_constraints_j_rows == p_expected, "MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern: wrong final value of p_current_nlp_constraints_j_rows. Current " << p_current_nlp_constraints_j_rows << ", expected " <<  p_expected << " difference: " << p_current_nlp_constraints_j_rows-p_expected << "\n")
+      MAVERICK_ASSERT( p_current_nlp_constraints_j_rows == p_expected, "RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern: wrong final value of p_current_nlp_constraints_j_rows. Current " << p_current_nlp_constraints_j_rows << ", expected " <<  p_expected << " difference: " << p_current_nlp_constraints_j_rows-p_expected << "\n")
       p_expected =  _p_nlp_constraints_j_cols + getNlpConstraintsJacobianNnz();
-      MAVERICK_ASSERT( p_current_nlp_constraints_j_cols == p_expected, "MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern: wrong final value of p_current_nlp_constraints_j_cols" )
+      MAVERICK_ASSERT( p_current_nlp_constraints_j_cols == p_expected, "RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern: wrong final value of p_current_nlp_constraints_j_cols" )
   }
 #endif
 
@@ -614,18 +609,10 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobainPattern(integer 
 //_______________________________________________________________________________________________________________________________________
 
 
-void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real const left_state_control[],
-                                                                        real const state_control[],
-                                                                        real const state_control_derivative[],
-                                                                        real const algebraic_state_control[],
-                                                                        real const parameters[],
-                                                                        real const zeta_left,
-                                                                        real const zeta,
-                                                                        real const d_zeta,
-                                                                        real const d_zeta_dual,
-                                                                        real values[]) const {
-  real *p_current_value_ptr = values;
-  real const d_zeta_inv = 1. / d_zeta;
+void RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(ocpStateAtInterval const & ocp_state, real values[]) const {
+
+  MAVERICK_RESTRICT real * p_current_value_ptr = values;
+  real const d_zeta_inv = 1. / ocp_state.d_zeta;
 
   integer const fo_eqns_j_xu_nnz = _fo_eqns_j_xu_nnz;
   real fo_eqns_j_xu_values[fo_eqns_j_xu_nnz];
@@ -641,11 +628,11 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
 
   //get fo_eqns_j_xu and dxu and directly write the third block
   _ocp_problem.foEqnsJac(_i_phase,
-                         state_control,
-                         state_control_derivative,
-                         algebraic_state_control,
-                         parameters,
-                         zeta,
+                         ocp_state.state_control,
+                         ocp_state.state_control_derivative,
+                         ocp_state.algebraic_state_control,
+                         ocp_state.parameters,
+                         ocp_state.zeta_alpha,
                          fo_eqns_j_xu_values,
                          fo_eqns_j_dxu_values,
                          p_current_value_ptr + _fo_eqns_j_y_nnz, // jac_ay
@@ -654,10 +641,10 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
 
   // scale if necessary
   if (_multiply_foeqns_by_dz) {
-    multiplyVectorBy(fo_eqns_j_xu_values, d_zeta, fo_eqns_j_xu_nnz);
-    multiplyVectorBy(fo_eqns_j_dxu_values, d_zeta, fo_eqns_j_xu_nnz);
-    multiplyVectorBy(p_current_value_ptr + _fo_eqns_j_y_nnz, d_zeta, fo_eqns_j_ay_nnz); // jac ay
-    multiplyVectorBy(p_current_value_ptr + 2 * _fo_eqns_j_y_nnz + fo_eqns_j_ay_nnz, d_zeta, _fo_eqns_j_p_nnz); // jac p
+    multiplyVectorBy(fo_eqns_j_xu_values, ocp_state.d_zeta, fo_eqns_j_xu_nnz);
+    multiplyVectorBy(fo_eqns_j_dxu_values, ocp_state.d_zeta, fo_eqns_j_xu_nnz);
+    multiplyVectorBy(p_current_value_ptr + _fo_eqns_j_y_nnz, ocp_state.d_zeta, fo_eqns_j_ay_nnz); // jac ay
+    multiplyVectorBy(p_current_value_ptr + 2 * _fo_eqns_j_y_nnz + fo_eqns_j_ay_nnz, ocp_state.d_zeta, _fo_eqns_j_p_nnz); // jac p
   }
 
   _ocp_problem.foEqnsJacXuPattern(_i_phase, fo_eqns_j_xu_rows, fo_eqns_j_xu_cols);
@@ -685,8 +672,8 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   fo_eqns_j_y_right_mat.reserve(_fo_eqns_j_y_nnz);
 #endif
 
-  fo_eqns_j_y_left_mat = fo_eqns_j_xu_mat * 0.5 - fo_eqns_j_dxu_mat * d_zeta_inv;
-  fo_eqns_j_y_right_mat = fo_eqns_j_xu_mat * 0.5 + fo_eqns_j_dxu_mat * d_zeta_inv;
+  fo_eqns_j_y_left_mat = fo_eqns_j_xu_mat * (1 - ocp_state.alpha) - fo_eqns_j_dxu_mat * d_zeta_inv;
+  fo_eqns_j_y_right_mat = fo_eqns_j_xu_mat * ocp_state.alpha + fo_eqns_j_dxu_mat * d_zeta_inv;
 
   //write the first and second matrix block to the output
   multiplyAndCopyVectorTo((real *) fo_eqns_j_y_left_mat.valuePtr(), p_current_value_ptr, _p_scale_factor_fo_eqns_j_y,
@@ -723,8 +710,8 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
 
   integer const path_constr_j_ay_nnz = _path_constr_j_ay_nnz;
 
-  _ocp_problem.pathConstraintsJac(_i_phase, state_control, state_control_derivative, algebraic_state_control,
-                                  parameters, zeta,
+  _ocp_problem.pathConstraintsJac(_i_phase, ocp_state.state_control, ocp_state.state_control_derivative, ocp_state.algebraic_state_control,
+                                  ocp_state.parameters, ocp_state.zeta_alpha,
                                   path_constr_j_xu_values,
                                   path_constr_j_dxu_values,
                                   p_current_value_ptr + _path_constr_j_y_nnz, //jac_ay
@@ -732,10 +719,10 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   );
 
   if (_multiply_path_constr_by_dz) {
-    multiplyVectorBy(path_constr_j_xu_values, d_zeta, path_constr_j_xu_nnz);
-    multiplyVectorBy(path_constr_j_dxu_values, d_zeta, path_constr_j_dxu_nnz);
-    multiplyVectorBy(p_current_value_ptr + _path_constr_j_y_nnz, d_zeta, path_constr_j_ay_nnz); // jac ay
-    multiplyVectorBy(p_current_value_ptr + 2 * _path_constr_j_y_nnz + path_constr_j_ay_nnz, d_zeta,
+    multiplyVectorBy(path_constr_j_xu_values, ocp_state.d_zeta, path_constr_j_xu_nnz);
+    multiplyVectorBy(path_constr_j_dxu_values, ocp_state.d_zeta, path_constr_j_dxu_nnz);
+    multiplyVectorBy(p_current_value_ptr + _path_constr_j_y_nnz, ocp_state.d_zeta, path_constr_j_ay_nnz); // jac ay
+    multiplyVectorBy(p_current_value_ptr + 2 * _path_constr_j_y_nnz + path_constr_j_ay_nnz, ocp_state.d_zeta,
                      _path_constr_j_p_nnz); // jac p
   }
 
@@ -764,8 +751,8 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   path_constr_j_y_right_mat.reserve(_path_constr_j_y_nnz);
 #endif
 
-  path_constr_j_y_left_mat = path_constr_j_xu_mat * 0.5 - path_constr_j_dxu_mat * d_zeta_inv;
-  path_constr_j_y_right_mat = path_constr_j_xu_mat * 0.5 + path_constr_j_dxu_mat * d_zeta_inv;
+  path_constr_j_y_left_mat = path_constr_j_xu_mat * (1 - ocp_state.alpha) - path_constr_j_dxu_mat * d_zeta_inv;
+  path_constr_j_y_right_mat = path_constr_j_xu_mat * ocp_state.alpha + path_constr_j_dxu_mat * d_zeta_inv;
 
   //write the fifth matrix block
   multiplyAndCopyVectorTo((real *) path_constr_j_y_left_mat.valuePtr(), p_current_value_ptr,
@@ -793,13 +780,13 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   // nineth and tenth blocks
   {
     integer const nnz = _point_constr_j_y_nnz;
-    _ocp_problem.pointConstraintsJac(_i_phase, left_state_control, parameters, zeta_left,
+    _ocp_problem.pointConstraintsJac(_i_phase, ocp_state.left_state_control, ocp_state.parameters, ocp_state.zeta_left,
                                      p_current_value_ptr,
                                      p_current_value_ptr + nnz);
 
     if (_multiply_point_constr_by_dz) {
-      multiplyVectorBy(p_current_value_ptr, d_zeta_dual, nnz);
-      multiplyVectorBy(p_current_value_ptr + nnz, d_zeta_dual, _point_constr_j_p_nnz);
+      multiplyVectorBy(p_current_value_ptr, ocp_state.d_zeta_average, nnz);
+      multiplyVectorBy(p_current_value_ptr + nnz, ocp_state.d_zeta_average, _point_constr_j_p_nnz);
     }
     multiplyVectorBy(p_current_value_ptr, _p_scale_factor_point_constr_j_y, nnz);
     p_current_value_ptr += nnz;
@@ -812,7 +799,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
   }
 
   MAVERICK_DEBUG_ASSERT(p_current_value_ptr == values + getNlpConstraintsJacobainMatrixYNnz(),
-                        "MidpointOcp2NlpSinglePhase::writeNlpConstraintsJacobianMatrixY: wrong evaluation of pointer in matrix CY calculation")
+                        "RK1Ocp2NlpSinglePhase::writeNlpConstraintsJacobianMatrixY: wrong evaluation of pointer in matrix CY calculation")
 
 }
 
@@ -822,14 +809,14 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixY(real con
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixF(real const initial_state_control[],
+void RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixF(real const initial_state_control[],
                                                                         real const final_state_control[],
                                                                         real const parameters[],
                                                                         real const initial_zeta,
                                                                         real const final_zeta,
                                                                         real values[]) const {
   //Matrix CF is organised in 3 blocks, in order: boundary_conditions_j_xui, boundary_conditions_j_xuf, boundary_conditions_j_p
-  real *p_current_value_ptr = values;
+  MAVERICK_RESTRICT real * p_current_value_ptr = values;
 
   // FIRST, SECOND AND THIRD BLOCK
   real *p_jac_xu_ini = p_current_value_ptr;
@@ -850,7 +837,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixF(real con
   p_current_value_ptr = p_jac_p + p_nnz;
 
   MAVERICK_DEBUG_ASSERT(p_current_value_ptr == values + getNlpConstraintsJacobainMatrixFNnz(),
-                        "MidpointOcp2NlpSinglePhase::writeNLPConstraintJacobianMatrixF: wrong evaluation of pointer in matrix CF calculation")
+                        "RK1Ocp2NlpSinglePhase::writeNLPConstraintJacobianMatrixF: wrong evaluation of pointer in matrix CF calculation")
 
 }
 
@@ -860,15 +847,14 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixF(real con
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixI(real const state_control[],
-                                                                        real const state_control_derivative[],
-                                                                        real const algebraic_state_control[],
-                                                                        real const parameters[],
-                                                                        real const zeta,
-                                                                        real const d_zeta,
-                                                                        real values_left[],
-                                                                        real values_right[],
-                                                                        real jac_p_values[]) const {
+void RK1Ocp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixI(ocpStateAtInterval const & ocp_state,
+                                                                        real in_values_left[],
+                                                                        real in_values_right[],
+                                                                        real in_jac_p_values[]) const {
+
+  MAVERICK_RESTRICT real * values_left = in_values_left;
+  MAVERICK_RESTRICT real * values_right = in_values_right;
+  MAVERICK_RESTRICT real * jac_p_values = in_jac_p_values;
 
   integer nnz = _int_constr_j_xu_nnz;
   real int_constr_j_xu_values[nnz];
@@ -888,18 +874,18 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixI(real con
 
   //get int constr jac
   _ocp_problem.intConstraintsJac(_i_phase,
-                                 state_control,
-                                 state_control_derivative,
-                                 algebraic_state_control,
-                                 parameters,
-                                 zeta,
+                                 ocp_state.state_control,
+                                 ocp_state.state_control_derivative,
+                                 ocp_state.algebraic_state_control,
+                                 ocp_state.parameters,
+                                 ocp_state.zeta_alpha,
                                  int_constr_j_xu_values,
                                  int_constr_j_dxu_values,
                                  int_constr_j_axu_values,
                                  int_constr_j_p_values);
   // jacobian w.r.t p
   multiplyVectorBy(int_constr_j_p_values, _p_scale_factor_int_constr_j_p, jac_p_nnz);
-  multiplyAndSumVectorTo(int_constr_j_p_values, jac_p_values, d_zeta, jac_p_nnz);
+  multiplyAndSumVectorTo(int_constr_j_p_values, jac_p_values, ocp_state.d_zeta, jac_p_nnz);
 
   // jacobian w.r.t xu
   _ocp_problem.intConstraintsJacXuPattern(_i_phase, int_constr_j_xu_rows, int_constr_j_xu_cols);
@@ -927,8 +913,8 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixI(real con
   int_constr_j_y_right_mat.reserve(_int_constr_j_y_nnz);
 #endif
 
-  int_constr_j_y_left_mat = int_constr_j_xu_mat * (0.5 * d_zeta) - int_constr_j_dxu_mat;
-  int_constr_j_y_right_mat = int_constr_j_xu_mat * (0.5 * d_zeta) + int_constr_j_dxu_mat;
+  int_constr_j_y_left_mat = int_constr_j_xu_mat * ((1 - ocp_state.alpha) * ocp_state.d_zeta) - int_constr_j_dxu_mat;
+  int_constr_j_y_right_mat = int_constr_j_xu_mat * (ocp_state.alpha * ocp_state.d_zeta) + int_constr_j_dxu_mat;
 
   //write the first matrix block to the output
   multiplyAndSumVectorTo((real *) int_constr_j_y_left_mat.valuePtr(), values_left, _p_scale_factor_int_constr_j_y,
@@ -936,7 +922,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpConstraintsJacobianMatrixI(real con
 
   // now algebraic states and controls
   multiplyAndSumVectorTo(int_constr_j_axu_values, values_left + _int_constr_j_y_nnz, _p_scale_factor_int_constr_j_ay,
-                         d_zeta, _int_constr_j_ay_nnz);
+                         ocp_state.d_zeta, _int_constr_j_ay_nnz);
 
   //write the second matrix block to the output
   multiplyAndCopyVectorTo((real *) int_constr_j_y_right_mat.valuePtr(), values_right, _p_scale_factor_int_constr_j_y,

@@ -1,14 +1,14 @@
-#include "MidpointOcpSolution.hh"
+#include "RK1OcpSolution.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 
 using namespace std;
 
 namespace Maverick {
 
-  MidpointOcpSolution::MidpointOcpSolution() {
+  RK1OcpSolution::RK1OcpSolution() {
   }
 
-  MidpointOcpSolution::MidpointOcpSolution(MidpointOcpSolution const &ocp_solution) {
+  RK1OcpSolution::RK1OcpSolution(RK1OcpSolution const &ocp_solution) {
     clear();
     for (integer i = 0; i < ocp_solution.getNumberOfPhases(); i++) {
       _solutions.push_back(ocp_solution(i));
@@ -16,7 +16,7 @@ namespace Maverick {
     _solutions.shrink_to_fit();
   }
 
-  MidpointOcpSolution &MidpointOcpSolution::operator=(const MidpointOcpSolution &ocp_solution) {
+  RK1OcpSolution &RK1OcpSolution::operator=(const RK1OcpSolution &ocp_solution) {
     clear();
     for (integer i = 0; i < ocp_solution.getNumberOfPhases(); i++) {
       _solutions.push_back(ocp_solution(i));
@@ -24,13 +24,13 @@ namespace Maverick {
     return *this;
   }
 
-  OcpSolutionSinglePhase const &MidpointOcpSolution::operator[](integer const i_phase) const {
+  OcpSolutionSinglePhase const &RK1OcpSolution::operator[](integer const i_phase) const {
     return this->operator()(i_phase);
   }
 
-  MidpointOcpSolutionSinglePhase const &MidpointOcpSolution::operator()(integer const i_phase) const {
+  RK1OcpSolutionSinglePhase const &RK1OcpSolution::operator()(integer const i_phase) const {
     MAVERICK_SKIPABLE_ASSERT(i_phase < (integer) _solutions.size(),
-                             "MidpointOcpSolutionSinglePhase::const operator(): number of mesh point " << i_phase
+                             "RK1OcpSolutionSinglePhase::const operator(): number of mesh point " << i_phase
                                                                                                        << " greater than "
                                                                                                        <<
                                                                                                        _solutions.size() -
@@ -38,52 +38,52 @@ namespace Maverick {
     return _solutions[i_phase];
   }
 
-  MidpointOcpSolutionSinglePhase &MidpointOcpSolution::operator()(integer const i_phase) {
+  RK1OcpSolutionSinglePhase &RK1OcpSolution::operator()(integer const i_phase) {
     MAVERICK_SKIPABLE_ASSERT(i_phase < (integer) _solutions.size(),
-                             "MidpointOcpSolutionSinglePhase::operator(): number of mesh point " << i_phase
+                             "RK1OcpSolutionSinglePhase::operator(): number of mesh point " << i_phase
                                                                                                  << " greater than "
                                                                                                  << _solutions.size() -
                                                                                                     1 << ".")
     return _solutions[i_phase];
   }
 
-  unique_ptr<OcpSolution> MidpointOcpSolution::copy() const {
-    return unique_ptr<MidpointOcpSolution>(new MidpointOcpSolution(*this));
+  unique_ptr<OcpSolution> RK1OcpSolution::copy() const {
+    return unique_ptr<RK1OcpSolution>(new RK1OcpSolution(*this));
   }
 
-  MidpointOcpSolution &MidpointOcpSolution::operator<<(MidpointOcpSolutionSinglePhase const &ocp_solution) {
+  RK1OcpSolution &RK1OcpSolution::operator<<(RK1OcpSolutionSinglePhase const &ocp_solution) {
     _solutions.push_back(ocp_solution);
     return *this;
   }
 
-  integer MidpointOcpSolution::getNumberOfPhases() const {
+  integer RK1OcpSolution::getNumberOfPhases() const {
     return (integer) _solutions.size();
   }
 
-  void MidpointOcpSolution::clear() {
+  void RK1OcpSolution::clear() {
     _solutions.clear();
   }
 
   void
-  MidpointOcpSolution::setSolutionAtPhase(integer const i_phase, MidpointOcpSolutionSinglePhase const &ocp_solution) {
+  RK1OcpSolution::setSolutionAtPhase(integer const i_phase, RK1OcpSolutionSinglePhase const &ocp_solution) {
     integer additional_phases = i_phase - getNumberOfPhases() + 1;
     if (additional_phases <= 0) {
       _solutions[i_phase] = ocp_solution;
     } else {
       for (integer i = 0; i < additional_phases - 1; i++)
-        _solutions.push_back(MidpointOcpSolutionSinglePhase());
+        _solutions.push_back(RK1OcpSolutionSinglePhase());
       _solutions.push_back(ocp_solution);
     }
   }
 
-  real MidpointOcpSolution::getTarget() const {
+  real RK1OcpSolution::getTarget() const {
     real target = 0;
     for (integer i = 0; i < _solutions.size(); i++)
       target += _solutions[i].getTarget();
     return target;
   }
 
-  void MidpointOcpSolution::evalAtMesh(integer const i_phase,
+  void RK1OcpSolution::evalAtMesh(integer const i_phase,
                                        real const zeta,
 
                                        integer const num_states_controls, real *states_controls,
@@ -113,7 +113,7 @@ namespace Maverick {
                0, nullptr);
   }
 
-  void MidpointOcpSolution::eval(integer const i_phase,
+  void RK1OcpSolution::eval(integer const i_phase,
                                  real const initial_zeta, real const final_zeta,
 
                                  integer const num_parameters, real *parameters, real *params_upper_bounds_mult,
@@ -131,7 +131,7 @@ namespace Maverick {
   }
 
   // full evaluation
-  void MidpointOcpSolution::evalAtMesh(integer const i_phase,
+  void RK1OcpSolution::evalAtMesh(integer const i_phase,
                                        real zeta,
 
                                        integer const num_states_controls, real *states_controls,
@@ -149,7 +149,7 @@ namespace Maverick {
                                        integer const num_int_post_proc, real *int_post_proc
   ) const {
     MAVERICK_ASSERT(i_phase < getNumberOfPhases(),
-                    "MidpointOcpSolution::evalAtMesh: phase out of bounds. Requested phase " << i_phase
+                    "RK1OcpSolution::evalAtMesh: phase out of bounds. Requested phase " << i_phase
                                                                                              << " when phase bounds are 0 - "
                                                                                              << getNumberOfPhases() - 1
                                                                                              << ".\n")
@@ -168,7 +168,7 @@ namespace Maverick {
                                    num_int_post_proc, int_post_proc);
   }
 
-  void MidpointOcpSolution::eval(integer const i_phase,
+  void RK1OcpSolution::eval(integer const i_phase,
                                  real const initial_zeta, real const final_zeta,
 
                                  integer const num_parameters, real *parameters, real *params_upper_bounds_mult,
@@ -179,7 +179,7 @@ namespace Maverick {
                                  integer const num_int_post_proc, real *int_post_proc_at_end
   ) const {
     MAVERICK_ASSERT(i_phase < getNumberOfPhases(),
-                    "MidpointOcpSolution::eval: phase out of bounds. Requested phase " << i_phase
+                    "RK1OcpSolution::eval: phase out of bounds. Requested phase " << i_phase
                                                                                        << " when phase bounds are 0 - "
                                                                                        << getNumberOfPhases() - 1
                                                                                        << ".\n")
@@ -191,21 +191,21 @@ namespace Maverick {
                              num_int_post_proc, int_post_proc_at_end);
   }
 
-  void MidpointOcpSolution::writeAllMeshVarsToStream(std::ostream &out) const {
+  void RK1OcpSolution::writeAllMeshVarsToStream(std::ostream &out) const {
     for (integer i_phase = 0; i_phase < _solutions.size(); i_phase++) {
       writeOnePhaseMeshVarsToStream(i_phase, out);
     }
   }
 
-  void MidpointOcpSolution::writeOnePhaseMeshVarsToStream(integer const i_phase, ostream &out) const {
+  void RK1OcpSolution::writeOnePhaseMeshVarsToStream(integer const i_phase, ostream &out) const {
     MAVERICK_ASSERT(i_phase < getNumberOfPhases(),
-                    "MidpointOcpSolution::writeMeshVarsToStream: phase out of bounds. Requested phase " << i_phase
+                    "RK1OcpSolution::writeMeshVarsToStream: phase out of bounds. Requested phase " << i_phase
                                                                                                         << " when phase bounds are 0 - "
                                                                                                         <<
                                                                                                         getNumberOfPhases() -
                                                                                                         1 << ".\n")
 
-    MidpointOcpSolutionSinglePhase const &current_sol = _solutions[i_phase];
+    RK1OcpSolutionSinglePhase const &current_sol = _solutions[i_phase];
     stringstream body;
     stringstream header;
     current_sol.writeMeshVarsToStream(body, header);
@@ -217,7 +217,7 @@ namespace Maverick {
     out << body.str();
   }
 
-  void MidpointOcpSolution::writeContentToGC(GC::GenericContainer &out_gc, MaverickOcp const *const p_ocp) const {
+  void RK1OcpSolution::writeContentToGC(GC::GenericContainer &out_gc, MaverickOcp const *const p_ocp) const {
     out_gc.clear();
 
     // target
@@ -228,21 +228,21 @@ namespace Maverick {
     }
   }
 
-  std::unique_ptr<MidpointOcpSolution>
-  MidpointOcpSolution::getFromGuessTablesForOcpProblem(std::vector<real_table> const &guess_table,
+  std::unique_ptr<RK1OcpSolution>
+  RK1OcpSolution::getFromGuessTablesForOcpProblem(std::vector<real_table> const &guess_table,
                                                        MaverickOcp const &ocp_problem,
                                                        std::vector<std::vector<std::string>> &found_variables) {
 
     found_variables = {};
-    MidpointOcpSolution *solution = new MidpointOcpSolution();
+    RK1OcpSolution *solution = new RK1OcpSolution();
     for (integer i = 0; i < guess_table.size(); i++) {
       std::vector<string> tmp_found;
-      std::unique_ptr<MidpointOcpSolutionSinglePhase> c_sol = MidpointOcpSolutionSinglePhase::convertFromRealTable(
+      std::unique_ptr<RK1OcpSolutionSinglePhase> c_sol = RK1OcpSolutionSinglePhase::convertFromRealTable(
           guess_table[i], ocp_problem, i, tmp_found);
       solution->operator<<(*(c_sol.get()));
       found_variables.push_back(tmp_found);
     }
-    return std::unique_ptr<MidpointOcpSolution>(solution);
+    return std::unique_ptr<RK1OcpSolution>(solution);
   }
 
 }

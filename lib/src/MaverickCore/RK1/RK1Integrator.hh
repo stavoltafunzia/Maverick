@@ -5,8 +5,8 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_INTEGRATOR_HH
-#define MAVERICK_MIDPOINT_INTEGRATOR_HH
+#ifndef MAVERICK_RK1_INTEGRATOR_HH
+#define MAVERICK_RK1_INTEGRATOR_HH
 
 #include "MaverickCore/EquationSolverSupplierInterface.hh"
 #include "MaverickCore/MaverickOcp.hh"
@@ -16,16 +16,17 @@
 
 namespace Maverick {
 
-  class MidpointIntegrator : public EquationSolverSupplierInterface {
+  class RK1Integrator : public EquationSolverSupplierInterface {
 
   public:
 
-    MidpointIntegrator(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling, integer const i_phase,
-                       MeshSolutionRefiner::EquationIntegratorType integrator_type);
+    RK1Integrator(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling, integer const i_phase,
+                  MeshSolutionRefiner::EquationIntegratorType integrator_type);
 
-    ~MidpointIntegrator();
+    ~RK1Integrator();
 
-    integer integrateForward(integer const n_x, real const x_left[], real x_right_solution[],
+    integer integrateForward(real const _alpha,
+                             integer const n_x, real const x_left[], real x_right_solution[],
                              integer const n_u, real const u_left[], real const u_right[],
                              integer const n_alg_x, real alg_x_solution[],
                              integer const n_alg_u, real const alg_u[],
@@ -76,6 +77,8 @@ namespace Maverick {
     void finalizeSolution(integer const n_x, real const x_solution[], real const error) const;
 
   protected:
+    
+    real _alpha;
 
     void loadIpoptEquationSolver();
 
@@ -90,7 +93,7 @@ namespace Maverick {
     std::unique_ptr<EquationSolverInterface> _p_solver = nullptr;
 
     // data for calculation
-    real _zeta_center = 0;
+    real _zeta_alpha = 0;
     real _d_zeta_inv = 0;
     integer _dim_x = 0;
     integer _dim_u = 0;
@@ -120,7 +123,7 @@ namespace Maverick {
     real *_p_c_xu_right_ns = nullptr;
     real *_p_c_axu_ns = nullptr;
     real *_p_p_ns = nullptr;
-    real *_p_c_xu_center_ns = nullptr;
+    real *_p_c_xu_alpha_ns = nullptr;
     real *_p_c_xu_diff_ns = nullptr;
 
     //matrix variables
@@ -153,7 +156,7 @@ namespace Maverick {
 
     void initializeMatrixes();
 
-    MidpointIntegrator &operator=(MidpointIntegrator const &);
+    RK1Integrator &operator=(RK1Integrator const &);
 
   };
 }

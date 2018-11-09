@@ -1,7 +1,7 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickUtils/GenericFunction/GF1ASpline.hh"
-#include "MaverickCore/Midpoint/MidpointOcpSolution.hh"
+#include "MaverickCore/RK1/RK1OcpSolution.hh"
 
 using namespace Maverick;
 
@@ -11,20 +11,20 @@ using namespace Maverick;
 #define SPLINE_EXTEND_RANGE MaverickUtils::GF1ASpline::ExtendRange::keep_derivative
 
 // convert nlp to ocp solution: lagrange multiplers are converted
-std::unique_ptr<OcpSolution> MidpointOcp2NlpSinglePhase::translateNlp2OcpSolution(Nlp const &nlp) const {
-  MidpointOcpSolution *sol = new MidpointOcpSolution();
-  sol->setSolutionAtPhase(_i_phase, *(translateNlp2MidpointOcpSolution(nlp)));
-  return std::unique_ptr<MidpointOcpSolution>(sol);
+std::unique_ptr<OcpSolution> RK1Ocp2NlpSinglePhase::translateNlp2OcpSolution(Nlp const &nlp) const {
+  RK1OcpSolution *sol = new RK1OcpSolution();
+  sol->setSolutionAtPhase(_i_phase, *(translateNlp2RK1OcpSolution(nlp)));
+  return std::unique_ptr<RK1OcpSolution>(sol);
 };
 
 // convert nlp to ocp solution: lagrange multiplers are converted
-std::unique_ptr<MidpointOcpSolutionSinglePhase>
-MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_input) const {
+std::unique_ptr<RK1OcpSolutionSinglePhase>
+RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
 
   MAVERICK_ASSERT(nlp_input.getNlpSize() == getNlpSize(),
-                  "MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution: wrong nlp size.\n");
+                  "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong nlp size.\n");
   MAVERICK_ASSERT(nlp_input.getNlpConstraintsSize() == getNlpConstraintsSize(),
-                  "MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution: wrong nlp constraints size.\n");
+                  "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong nlp constraints size.\n");
 
   // convert multipliers from nlp to ocp first
   Nlp nlp_tmp(nlp_input);
@@ -38,7 +38,7 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
   // initialize variables
   vec_1d_real cumulative_target(num_mesh_point);
   cumulative_target[0] = 0;
-  vec_1d_real integrand_target(num_mesh_point - 1); // evaluated at middle mesh point
+  vec_1d_real integrand_target(num_mesh_point - 1); // evaluated at alpha mesh point
 
   vec_2d_real states_controls(_dim_xu);
   vec_2d_real states_controls_lower_bound_mult(_dim_xu);
@@ -68,8 +68,8 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
   vec_2d_real path_constr(_dim_pc);
   vec_2d_real path_constr_mult(_dim_pc);
   for (size i = 0; i < _dim_pc; i++) {
-    path_constr[i] = vec_1d_real(num_mesh_point - 1); // evaluated at middle mesh point
-    path_constr_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at middle mesh point
+    path_constr[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
+    path_constr_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real int_constr(_dim_ic);
@@ -82,8 +82,8 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
   vec_2d_real fo_eqns(_dim_fo);
   vec_2d_real fo_eqns_mult(_dim_fo);
   for (size i = 0; i < _dim_fo; i++) {
-    fo_eqns[i] = vec_1d_real(num_mesh_point - 1); // evaluated at middle mesh point
-    fo_eqns_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at middle mesh point
+    fo_eqns[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
+    fo_eqns_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real post_proc(_ocp_problem.numberOfPostProcessing(_i_phase));
@@ -93,7 +93,7 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
   vec_2d_real diff_post_proc(_ocp_problem.numberOfDifferentialPostProcessing(_i_phase));
   for (size i = 0; i < diff_post_proc.size(); i++) {
-    diff_post_proc[i] = vec_1d_real(num_mesh_point - 1); // evaluated at middle mesh point
+    diff_post_proc[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real int_post_proc(_ocp_problem.numberOfIntegralPostProcessing(_i_phase));
@@ -123,7 +123,7 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
   for (integer c_mesh_point = 0; c_mesh_point < num_mesh_point; c_mesh_point++) {
     //zeta
-    real c_zeta = _p_mesh->getZeta(c_mesh_point);
+    real zeta_left = _p_mesh->getZetaAtIndex(c_mesh_point);
 
     // left state
     real const *left_xu = current_nlp_y;
@@ -137,7 +137,7 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
     //post processing
     real tmp_post_proc[post_proc.size()];
-    _ocp_problem.postProcessing(_i_phase, left_xu, nlp_params, c_zeta, tmp_post_proc);
+    _ocp_problem.postProcessing(_i_phase, left_xu, nlp_params, zeta_left, tmp_post_proc);
     for (integer j = 0; j < post_proc.size(); j++)
       post_proc[j][c_mesh_point] = tmp_post_proc[j];
 
@@ -158,19 +158,19 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
       //right and center states
       real const *right_xu = current_nlp_y + _dim_y + _dim_ay;
-      real center_xu[_dim_xu];
-      computeTpzCenterWithoutScaling(left_xu, right_xu, center_xu, _dim_xu);
+      real alpha_xu[_dim_xu];
+      computeTpzAlphaWithoutScaling(_p_mesh->getAlpha(), left_xu, right_xu, alpha_xu, _dim_xu);
 
       // algerbaic states
       real const *alg_xu = current_nlp_y + _dim_y;
 
-      real c_center_zeta = _p_mesh->getZetaCenter(c_mesh_point);
+      real zeta_alpha = _p_mesh->getZetaAlpha(c_mesh_point);
       real c_d_zeta = _p_mesh->getDz(c_mesh_point);
       real diff_xu[_dim_xu];
       computeTpzDerivativeWithoutScaling(left_xu, right_xu, diff_xu, 1.0 / c_d_zeta, _dim_xu);
 
       //integrand target
-      _ocp_problem.lagrange(_i_phase, center_xu, diff_xu, alg_xu, nlp_params, c_center_zeta,
+      _ocp_problem.lagrange(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha,
                             integrand_target[c_mesh_point]);
 
       //cumulative target
@@ -183,10 +183,10 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
       }
 #ifdef MAVERICK_DEBUG_SOLUTION
       real tmp_fo_eqns[_dim_fo];
-      _ocp_problem.foEqns(_i_phase, center_xu, diff_xu, nlp_params, c_center_zeta, tmp_fo_eqns);
+      _ocp_problem.foEqns(_i_phase, alpha_xu, diff_xu, nlp_params, zeta_alpha, tmp_fo_eqns);
       for (integer tmp=0; tmp<_dim_fo; tmp++) {
           real error = abs(tmp_fo_eqns[tmp] - *(current_nlp_constr + tmp ) );
-          MAVERICK_ASSERT( error < 1e-6, "MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution: wrong evaluation of fo equations. Nlp value: " << *(current_nlp_constr + _dim_poc + tmp) << ", calculated value: "  << tmp_fo_eqns[tmp] << " at mesh point " << c_mesh_point << ".\n")
+          MAVERICK_ASSERT( error < 1e-6, "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong evaluation of fo equations. Nlp value: " << *(current_nlp_constr + _dim_poc + tmp) << ", calculated value: "  << tmp_fo_eqns[tmp] << " at mesh point " << c_mesh_point << ".\n")
       }
 #endif
 
@@ -198,28 +198,28 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
 #ifdef MAVERICK_DEBUG_SOLUTION
       real tmp_path_constr[_dim_pc];
-      _ocp_problem.pathConstraints(_i_phase, center_xu, diff_xu, nlp_params, c_center_zeta, tmp_path_constr);
+      _ocp_problem.pathConstraints(_i_phase, alpha_xu, diff_xu, nlp_params, zeta_alpha, tmp_path_constr);
       for (integer tmp=0; tmp<_dim_pc; tmp++) {
           real error = abs(tmp_path_constr[tmp] - *(current_nlp_constr + _dim_fo + tmp ) );
-          MAVERICK_ASSERT( error < 1e-4, "MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution: wrong evaluation of path constraints\n")
+          MAVERICK_ASSERT( error < 1e-4, "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong evaluation of path constraints\n")
       }
 #endif
       //integral constraints
       real tmp_int_constr[_dim_ic];
-      _ocp_problem.intConstraints(_i_phase, center_xu, diff_xu, alg_xu, nlp_params, c_center_zeta, tmp_int_constr);
+      _ocp_problem.intConstraints(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha, tmp_int_constr);
       for (integer j = 0; j < int_constr.size(); j++)
         int_constr[j][c_mesh_point + 1] = int_constr[j][c_mesh_point] + tmp_int_constr[j] * c_d_zeta;
 
       //differential post processing
       real tmp_diff_post_proc[diff_post_proc.size()];
-      _ocp_problem.differentialPostProcessing(_i_phase, center_xu, diff_xu, alg_xu, nlp_params, c_center_zeta,
+      _ocp_problem.differentialPostProcessing(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha,
                                               tmp_diff_post_proc);
       for (integer j = 0; j < diff_post_proc.size(); j++)
         diff_post_proc[j][c_mesh_point] = tmp_diff_post_proc[j];
 
       //integral post processing
       real tmp_int_post_proc[int_post_proc.size()];
-      _ocp_problem.integralPostProcessing(_i_phase, center_xu, diff_xu, alg_xu, nlp_params, c_center_zeta,
+      _ocp_problem.integralPostProcessing(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha,
                                           tmp_int_post_proc);
       for (integer j = 0; j < int_post_proc.size(); j++)
         int_post_proc[j][c_mesh_point + 1] = int_post_proc[j][c_mesh_point] + tmp_int_post_proc[j] * c_d_zeta;
@@ -266,7 +266,7 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
       real error = abs( *(int_constr[tmp].end()-1) - (int_constr_ptr[tmp] ) );
       if ( *(int_constr[tmp].end()-1) != 0 )
           error = error / abs((*(int_constr[tmp].end()-1)));
-      MAVERICK_ASSERT( error < 1e-3, "MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution: wrong evaluation of integral constraints. Calculated " << *(int_constr[tmp].end()-1) << ", should be " << int_constr_ptr[tmp] << "\n")
+      MAVERICK_ASSERT( error < 1e-3, "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong evaluation of integral constraints. Calculated " << *(int_constr[tmp].end()-1) << ", should be " << int_constr_ptr[tmp] << "\n")
   }
 #endif
 
@@ -285,18 +285,19 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
 
   // some debug checks
   MAVERICK_DEBUG_ASSERT(current_nlp_y == nlp.getY().data() + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::getMidpointOcpSolution: wrong final pointer to the nlp states.\n")
+                        "RK1Ocp2NlpSinglePhase::getRK1OcpSolution: wrong final pointer to the nlp states.\n")
   MAVERICK_DEBUG_ASSERT(current_nlp_z_u == nlp.getUpperBoundsMultiplier().data() + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::getMidpointOcpSolution: wrong final pointer to the nlp upper multipliers.\n")
+                        "RK1Ocp2NlpSinglePhase::getRK1OcpSolution: wrong final pointer to the nlp upper multipliers.\n")
   MAVERICK_DEBUG_ASSERT(current_nlp_z_l == nlp.getLowerBoundsMultiplier().data() + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::getMidpointOcpSolution: wrong final pointer to the nlp lower bounds multipliers.\n")
+                        "RK1Ocp2NlpSinglePhase::getRK1OcpSolution: wrong final pointer to the nlp lower bounds multipliers.\n")
   MAVERICK_DEBUG_ASSERT(current_nlp_constr == nlp.getConstraints().data() + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::getMidpointOcpSolution: wrong final pointer to the nlp constraints.\n")
+                        "RK1Ocp2NlpSinglePhase::getRK1OcpSolution: wrong final pointer to the nlp constraints.\n")
   MAVERICK_DEBUG_ASSERT(current_nlp_constr_mult == nlp.getConstraintsMultipliers().data() + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::getMidpointOcpSolution: wrong final pointer to the nlp constraints multipliers.\n")
+                        "RK1Ocp2NlpSinglePhase::getRK1OcpSolution: wrong final pointer to the nlp constraints multipliers.\n")
 
-  MidpointOcpSolutionSinglePhase *ocp_solution = new MidpointOcpSolutionSinglePhase();
-  ocp_solution->setSolution(target,
+  RK1OcpSolutionSinglePhase *ocp_solution = new RK1OcpSolutionSinglePhase();
+  ocp_solution->setSolution(_p_mesh->getAlpha(),
+                            target,
                             _p_mesh->getDiscretisationPoints(),
                             cumulative_target,
                             integrand_target,
@@ -324,11 +325,11 @@ MidpointOcp2NlpSinglePhase::translateNlp2MidpointOcpSolution(Nlp const &nlp_inpu
                             bcs_mult
   );
 
-  return std::unique_ptr<MidpointOcpSolutionSinglePhase>(ocp_solution);
+  return std::unique_ptr<RK1OcpSolutionSinglePhase>(ocp_solution);
 }
 
 // convert ocp guess or ocp solution to nlp: lagrange multiplers are converted
-Nlp MidpointOcp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess) const {
+Nlp RK1Ocp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess) const {
 
   integer const nlp_size = getNlpSize();
 
@@ -378,8 +379,8 @@ Nlp MidpointOcp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess)
 
   //now write the provided guess at each mesh point
   for (integer c_mesh_point = 0; c_mesh_point < _p_mesh->getNumberOfIntervals(); c_mesh_point++) {
-    real c_zeta = _p_mesh->getZeta(c_mesh_point);
-    real c_zeta_center = _p_mesh->getZetaCenter(c_mesh_point);
+    real zeta_left = _p_mesh->getZetaLeft(c_mesh_point);
+    real zeta_alpha = _p_mesh->getZetaAlpha(c_mesh_point);
 
     real *fo_eqns_mult = current_nlp_constr_mult;
     real *path_constr_mult = current_nlp_constr_mult + _dim_fo;
@@ -387,16 +388,16 @@ Nlp MidpointOcp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess)
 
     // eval quantities at mesh point
     ocp_guess.evalAtMesh(_i_phase,
-                         c_zeta,
+                         zeta_left,
                          _dim_xu, current_y, current_z_u, current_z_l,
                          0, nullptr, nullptr, nullptr, //algebraic states
                          0, nullptr,
                          _dim_poc, point_constr_mult,
                          0, nullptr);
 
-    // eval quantities at middle of mesh interval
+    // eval quantities at alpha mesh interval
     ocp_guess.evalAtMesh(_i_phase,
-                         c_zeta_center,
+                         zeta_alpha,
                          0, nullptr, nullptr, nullptr,
                          _dim_axu, current_y + _dim_y, current_z_u + _dim_y, current_z_l + _dim_y, //algebraic states
                          _dim_fo, fo_eqns_mult,
@@ -435,18 +436,18 @@ Nlp MidpointOcp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess)
   current_z_l += _dim_p;
 
   MAVERICK_DEBUG_ASSERT(current_y == nlp_y + nlp_size,
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer to nlp y. Difference (current minus expected): "
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer to nlp y. Difference (current minus expected): "
                             << current_y - (nlp_y + nlp_size) << " \n")
   MAVERICK_DEBUG_ASSERT(current_z_u == nlp_z_u + nlp_size,
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer to nlp z upper.\n")
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer to nlp z upper.\n")
   MAVERICK_DEBUG_ASSERT(current_z_l == nlp_z_l + nlp_size,
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer to nlp z lower.\n")
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer to nlp z lower.\n")
   MAVERICK_DEBUG_ASSERT(current_nlp_constr_mult == nlp_constr_mult + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer to nlp contraints.\n")
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer to nlp contraints.\n")
   MAVERICK_DEBUG_ASSERT(nlp_bcs_mult + _dim_bc == nlp_int_constr_mult,
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer for boundary conditions multipliers.\n")
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer for boundary conditions multipliers.\n")
   MAVERICK_DEBUG_ASSERT(nlp_int_constr_mult + _dim_ic == nlp_constr_mult + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::translateMidpointOcpSolution2Nlp: wrong final pointer for integral constraints multipliers.\n")
+                        "RK1Ocp2NlpSinglePhase::translateRK1OcpSolution2Nlp: wrong final pointer for integral constraints multipliers.\n")
 
   // write the solution
   Nlp nlp;
@@ -472,13 +473,13 @@ Nlp MidpointOcp2NlpSinglePhase::translateOcpGuess2Nlp(OcpGuess const &ocp_guess)
   return nlp;
 }
 
-void MidpointOcp2NlpSinglePhase::scaleNlp(Nlp &nlp,
+void RK1Ocp2NlpSinglePhase::scaleNlp(Nlp &nlp,
                                           bool const unscale) const {
   Nlp const &nlp_input = nlp;
   MAVERICK_DEBUG_ASSERT(nlp_input.getNlpSize() == getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlp: wrong nlp size.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlp: wrong nlp size.\n")
   MAVERICK_DEBUG_ASSERT(nlp_input.getNlpConstraintsSize() == getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlp: wrong nlp constraints size.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlp: wrong nlp constraints size.\n")
 
   // create working variables
   real *nlp_y_output = new real[getNlpSize()];
@@ -624,12 +625,12 @@ void MidpointOcp2NlpSinglePhase::scaleNlp(Nlp &nlp,
     }
 
     //point constraints
-    real const d_zeta_dual = _p_mesh->getDzDual(c_mesh_point);
+    real const d_zeta_average = _p_mesh->getDzAverageAtIndex(c_mesh_point);
     real p_inv_scaling_point_constr[_dim_poc];
     real p_scaling_point_constr[_dim_poc];
     if (_multiply_point_constr_by_dz) {
-      multiplyAndCopyVectorTo(p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, d_zeta_dual, _dim_poc);
-      multiplyAndCopyVectorTo(p_scaling_point_constr_global, p_scaling_point_constr, 1.0 / d_zeta_dual, _dim_poc);
+      multiplyAndCopyVectorTo(p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, d_zeta_average, _dim_poc);
+      multiplyAndCopyVectorTo(p_scaling_point_constr_global, p_scaling_point_constr, 1.0 / d_zeta_average, _dim_poc);
     } else {
       copyVectorTo(p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
       copyVectorTo(p_scaling_point_constr_global, p_scaling_point_constr, _dim_poc);
@@ -689,16 +690,16 @@ void MidpointOcp2NlpSinglePhase::scaleNlp(Nlp &nlp,
 
 
   MAVERICK_DEBUG_ASSERT(c_nlp_y_output == nlp_y_output + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlp: wrong final y pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlp: wrong final y pointer.\n")
 
   MAVERICK_DEBUG_ASSERT(c_nlp_z_lower_output == nlp_y_lower_bound_mult_output + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlp: wrong final lower bounds pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlp: wrong final lower bounds pointer.\n")
 
   MAVERICK_DEBUG_ASSERT(c_nlp_z_upper_output == nlp_y_upper_bound_mult_output + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlp: wrong final upper bounds pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlp: wrong final upper bounds pointer.\n")
 
   MAVERICK_DEBUG_ASSERT(c_nlp_constr_mult_output == nlp_constraints_mult_output + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::scaleNlpMultipliers: wrong final constraints pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::scaleNlpMultipliers: wrong final constraints pointer.\n")
 
   Nlp &nlp_output = nlp;
 
@@ -716,14 +717,14 @@ void MidpointOcp2NlpSinglePhase::scaleNlp(Nlp &nlp,
 // translates the multiplers of the NLP to OCP ones. The Y and CONSTRAINTS data of the output nlp is copied form the input one
 // if the inverse flag is true, then the inverse scaling is performed (i.e. ocp to nlp)
 // the two nlp (input and output) can also be the same nlp
-void MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers(Nlp &nlp,
+void RK1Ocp2NlpSinglePhase::convertNlp2OcpMultipliers(Nlp &nlp,
                                                            bool const inverse) const {
   Nlp const &nlp_input = nlp;
 
   MAVERICK_DEBUG_ASSERT(nlp_input.getNlpSize() == getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::convertNlpMultipliers: wrong nlp size.\n")
+                        "RK1Ocp2NlpSinglePhase::convertNlpMultipliers: wrong nlp size.\n")
   MAVERICK_DEBUG_ASSERT(nlp_input.getNlpConstraintsSize() == getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::convertNlpMultipliers: wrong nlp constraints size.\n")
+                        "RK1Ocp2NlpSinglePhase::convertNlpMultipliers: wrong nlp constraints size.\n")
 
   // create working variables
   real *nlp_y_upper_bound_mult_output = new real[getNlpSize()];
@@ -786,7 +787,7 @@ void MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers(Nlp &nlp,
     c_nlp_constr_mult_output += _dim_poc;
   }
 
-  real delta = _p_mesh->getDz(num_mesh_intervals - 1); // dual amplitude
+  real delta = _p_mesh->getDz(num_mesh_intervals - 1); // dual amplitude approximation
   if (inverse)  // in this case multipliers must be scaled inversely, so we take the inverse of c_dz
     delta = 1 / delta;
   real const delta_inv = 1 / delta;
@@ -825,13 +826,13 @@ void MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers(Nlp &nlp,
   c_nlp_constr_mult_output += _dim_ic;
 
   MAVERICK_DEBUG_ASSERT(c_nlp_z_lower_mult_output == nlp_y_lower_bound_mult_output + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final lower bounds pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final lower bounds pointer.\n")
 
   MAVERICK_DEBUG_ASSERT(c_nlp_z_upper_mult_output == nlp_y_upper_bound_mult_output + getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final upper bounds pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final upper bounds pointer.\n")
 
   MAVERICK_DEBUG_ASSERT(c_nlp_constr_mult_output == nlp_constraints_mult_output + getNlpConstraintsSize(),
-                        "MidpointOcp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final constraints pointer.\n")
+                        "RK1Ocp2NlpSinglePhase::convertNlp2OcpMultipliers: wrong final constraints pointer.\n")
 
   Nlp &nlp_output = nlp;
   nlp_output.setNlp(getNlpSize(), nlp_input.getY().data(), nlp_y_upper_bound_mult_output, nlp_y_lower_bound_mult_output,

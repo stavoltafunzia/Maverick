@@ -86,7 +86,7 @@ void deleteMaverickOcpSolver(void *const p_solver, int *const p_err_code);
 /* Search the maverick solver with the ID specified and calls the 'solve' method passing the GenericContainer
 	 with the provided id. The solution is saved in the output generic container passed through pointer.
 	 If sol_type is 0, then the solution will be saved with general variables names (see the writeContentToGC method
-	 of MidpointOcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
+	 of OcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
  Error codes are: 0 = succsefull
 									1 = Solver ID not found
 									2 = input GenericContainer ID not found
@@ -102,7 +102,7 @@ solveFromInternalGC(int maverick_id, int input_generic_container_id, int sol_typ
 /* Search the maverick solver with the ID specified and calls the 'solve' method passing the GenericContainer
  passed thorugh pointer. The solution is saved in the output generic container passed through pointer.
  If sol_type is 0, then the solution will be saved with general variables names (see the writeContentToGC method
- of MidpointOcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
+ of OcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
  Error codes are: 0 = succsefull
 									1 = Solver ID not found
 									2 = input GenericContainer pointer null
@@ -118,7 +118,7 @@ solveFromExternalGC(int maverick_id, void *p_input_generic_container, int sol_ty
 /* call the 'solve' method to the solver passed through pointer and pass as argument the GenericContainer
  passed thorugh pointer. The solution is saved in the output generic container passed through pointer.
  If sol_type is 0, then the solution will be saved with general variables names (see the writeContentToGC method
- of MidpointOcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
+ of OcpSolution). If sol_type is 0, then the solution will be saved with specific variables names.
  Error codes are: 0 = succsefull
 									1 = Solver pointer null
 									2 = input GenericContainer pointer null

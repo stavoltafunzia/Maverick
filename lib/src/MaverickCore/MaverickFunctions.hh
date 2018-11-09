@@ -78,13 +78,12 @@ namespace Maverick {
     return out;
   }
 
-  //TODO write in a way that makes less memeory copies
   template<typename T>
-  std::vector<T> extractMidpoints(std::vector<T> const &input_vector) {
+  std::vector<T> extractAlphaPoints(std::vector<T> const &input_vector, T const alpha) {
     std::vector<T> out;
-    for (size index = 0; index < input_vector.size() - 1; index++)
-      out.push_back((input_vector[index] + input_vector[index + 1]) / 2.0);
-    out.shrink_to_fit();
+    out.reserve(input_vector.size() - 1);
+    for (auto index = 0; index < input_vector.size() - 1; index++)
+      out.push_back(input_vector[index] * alpha + input_vector[index + 1] * (1 - alpha));
     return out;
   }
 
@@ -93,13 +92,13 @@ namespace Maverick {
   computeTpzDerivative(real const leftValues[], real const rightValues[], real const scaling[], real outputValues[],
                        real const dz_inverse, integer const length);
 
-  void computeTpzCenter(real const leftValues[], real const rightValues[], real const scaling[], real outputValues[],
+  void computeTpzAlpha(real const alpha, real const leftValues[], real const rightValues[], real const scaling[], real outputValues[],
                         integer const length);
 
   void computeTpzDerivativeWithoutScaling(real const leftValues[], real const rightValues[], real outputValues[],
                                           real const dz_inverse, integer const length);
 
-  void computeTpzCenterWithoutScaling(real const leftValues[], real const rightValues[], real outputValues[],
+  void computeTpzAlphaWithoutScaling(real const alpha, real const leftValues[], real const rightValues[], real outputValues[],
                                       integer const length);
 
   void copyVectorTo(real const from[], real to[], integer const length);

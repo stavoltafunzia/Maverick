@@ -272,10 +272,10 @@ namespace Maverick {
     }
   }
 
-  void computeTpzCenter(real const leftValues[], real const rightValues[], real const scaling[], real outputValues[],
+  void computeTpzAlpha(real const alpha, real const leftValues[], real const rightValues[], real const scaling[], real outputValues[],
                         integer const length) {
     for (integer i = 0; i < length; i++) {
-      outputValues[i] = (rightValues[i] + leftValues[i]) * 0.5 * scaling[i];
+      outputValues[i] = (leftValues[i] * (1 - alpha) + rightValues[i] * alpha ) * scaling[i];
     }
   }
 
@@ -285,10 +285,10 @@ namespace Maverick {
       outputValues[i] = (rightValues[i] - leftValues[i]) * dz_inverse;
   }
 
-  void computeTpzCenterWithoutScaling(real const leftValues[], real const rightValues[], real outputValues[],
+  void computeTpzAlphaWithoutScaling(real const alpha, real const leftValues[], real const rightValues[], real outputValues[],
                                       integer const length) {
     for (integer i = 0; i < length; i++)
-      outputValues[i] = (rightValues[i] + leftValues[i]) * 0.5;
+      outputValues[i] = leftValues[i] * (1 - alpha) + rightValues[i] * alpha;
   }
 
   void copyVectorTo(real const from[], real to[], integer const length) {

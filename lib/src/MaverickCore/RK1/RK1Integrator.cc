@@ -1,5 +1,5 @@
 #include "MaverickCore/EquationSolverInterface.hh"
-#include "MaverickCore/Midpoint/MidpointIntegrator.hh"
+#include "MaverickCore/RK1/RK1Integrator.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickSingleton.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
@@ -17,7 +17,7 @@ using namespace std;
 
 namespace Maverick {
 
-  MidpointIntegrator::MidpointIntegrator(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling,
+  RK1Integrator::RK1Integrator(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling,
                                          integer const i_phase,
                                          MeshSolutionRefiner::EquationIntegratorType integrator_type) : _ocp(
       ocp_problem), _scaling(ocp_scaling), _i_phase(i_phase) {
@@ -33,7 +33,7 @@ namespace Maverick {
 
     _p_c_xu_right_ns = new real[_dim_y];
     _p_c_xu_left_ns = new real[_dim_y];
-    _p_c_xu_center_ns = new real[_dim_y];
+    _p_c_xu_alpha_ns = new real[_dim_y];
     _p_c_xu_diff_ns = new real[_dim_y];
     _p_c_axu_ns = new real[_dim_ay];
 
@@ -63,19 +63,19 @@ namespace Maverick {
   }
 
 
-  MidpointIntegrator::~MidpointIntegrator() {
+  RK1Integrator::~RK1Integrator() {
     _p_solver = nullptr;
 
     std::vector<real *> to_delete_real = {_p_scaling_y, _p_inv_scaling_y, _p_scaling_ay, _p_inv_scaling_ay,
-                                          _p_c_xu_left_ns, _p_c_xu_right_ns, _p_c_axu_ns, _p_p_ns, _p_c_xu_center_ns,
+                                          _p_c_xu_left_ns, _p_c_xu_right_ns, _p_c_axu_ns, _p_p_ns, _p_c_xu_alpha_ns,
                                           _p_c_xu_diff_ns,
                                           _p_inv_scaling_fo_eqns, _p_scale_factor_jac, _p_scale_factor_jac_dense,
                                           _p_scale_factor_hess
     };
 
-    for (std::vector<real *>::iterator it = to_delete_real.begin(); it != to_delete_real.end(); it++) {
-      if (*it != nullptr)
-        delete[] *it;
+    for (auto & it : to_delete_real) {
+      if (it != nullptr)
+        delete[] it;
     }
 
     std::vector<integer *> to_delete_int = {_p_j_xu_outer_starts, _p_j_dxu_outer_starts, _p_j_axu_outer_starts,
@@ -87,15 +87,15 @@ namespace Maverick {
                                             _p_h_dxu_axu_rows, _p_h_axu_axu_rows,
                                             _p_jac_cols, _p_jac_rows};//, _p_hess_cols, _p_hess_rows};
 
-    for (std::vector<integer *>::iterator it = to_delete_int.begin(); it != to_delete_int.end(); it++) {
-      if (*it != nullptr)
-        delete[] *it;
+    for (auto & it : to_delete_int) {
+      if (it != nullptr)
+        delete[] it;
     }
 
 
   }
 
-  void MidpointIntegrator::initializeMatrixes() {
+  void RK1Integrator::initializeMatrixes() {
     // JACOBIAN
     {
       integer const _nnz_j_xu = _ocp.foEqnsJacXuNnz(_i_phase);
@@ -312,7 +312,8 @@ namespace Maverick {
         hess.block(_dim_x, _dim_x, _dim_ax, _dim_ax) = hess_axu_axu.block(0, 0, _dim_ax, _dim_ax);
         hess.block(_dim_x, 0, _dim_ax, _dim_x) =
             hess_xu_axu.block(0, 0, _dim_ax, _dim_x) + hess_dxu_axu.block(0, 0, _dim_ax, _dim_x);
-        hess.block(0, _dim_x, _dim_x, _dim_ax) = hess.block(_dim_x, 0, _dim_ax, _dim_x).transpose();
+        if ((_dim_x > 0) && (_dim_ax > 0))
+          hess.block(0, _dim_x, _dim_x, _dim_ax) = hess.block(_dim_x, 0, _dim_ax, _dim_x).transpose();
       }
       _p_scale_factor_hess = new real[_dim_unk * _dim_unk];
 
@@ -340,7 +341,7 @@ namespace Maverick {
     }
   }
 
-  void MidpointIntegrator::loadIpoptEquationSolver() {
+  void RK1Integrator::loadIpoptEquationSolver() {
     _p_solver = nullptr;
 
 #ifndef DO_NOT_USE_MAV_SHARED_LIB
@@ -363,7 +364,7 @@ namespace Maverick {
 #endif
   }
 
-  void MidpointIntegrator::loadTensolveEquationSolver() {
+  void RK1Integrator::loadTensolveEquationSolver() {
     _p_solver = nullptr;
 
 #ifndef DO_NOT_USE_MAV_SHARED_LIB
@@ -387,7 +388,8 @@ namespace Maverick {
 #endif
   }
 
-  integer MidpointIntegrator::integrateForward(integer const n_x, real const x_left[], real x_right_solution[],
+  integer RK1Integrator::integrateForward(real const alpha,
+                                          integer const n_x, real const x_left[], real x_right_solution[],
                                                integer const n_u, real const u_left[], real const u_right[],
                                                integer const n_alg_x, real alg_x_solution[],
                                                integer const n_alg_u, real const alg_u[],
@@ -396,9 +398,9 @@ namespace Maverick {
                                                real const starting_x[],
                                                real const starting_alg_x[],
                                                real &solution_error) {
-    _zeta_center = zeta_left + d_zeta / 2.0;
+    _alpha = alpha;
+    _zeta_alpha = zeta_left + d_zeta  * _alpha;
     _d_zeta_inv = 1 / d_zeta;
-    //        _is_forward = true;
 
     //write guess
     copyVectorTo(starting_x, _p_c_xu_right_ns, _dim_x);
@@ -433,44 +435,44 @@ namespace Maverick {
 
   }
 
-  void MidpointIntegrator::writeStateScaled(real const x[], real const ax[]) const {
+  void RK1Integrator::writeStateScaled(real const x[], real const ax[]) const {
     // copy right x to right state
     multiplyAndCopyVectorTo(x, _p_c_xu_right_ns, _p_scaling_y, _dim_x);
     // copy algebraic x
     multiplyAndCopyVectorTo(ax, _p_c_axu_ns, _p_scaling_ay, _dim_ax);
 
     // calculate center state and derivative
-    computeTpzCenterWithoutScaling(_p_c_xu_left_ns, _p_c_xu_right_ns, _p_c_xu_center_ns, _dim_y);
+    computeTpzAlphaWithoutScaling(_alpha, _p_c_xu_left_ns, _p_c_xu_right_ns, _p_c_xu_alpha_ns, _dim_y);
     computeTpzDerivativeWithoutScaling(_p_c_xu_left_ns, _p_c_xu_right_ns, _p_c_xu_diff_ns, _d_zeta_inv, _dim_y);
   }
 
   // EquationSolverSupplierInterface methods
 
-  void MidpointIntegrator::getProblemInfo(integer &n_x, integer &n_eq) const {
+  void RK1Integrator::getProblemInfo(integer &n_x, integer &n_eq) const {
     n_x = _dim_unk;
     n_eq = _dim_eq;
   }
 
-  void MidpointIntegrator::getProblemInfo(integer &n_x, integer &n_eq, integer &nnz_jac_sparse) const {
+  void RK1Integrator::getProblemInfo(integer &n_x, integer &n_eq, integer &nnz_jac_sparse) const {
     getProblemInfo(n_x, n_eq);
     nnz_jac_sparse = _nnz_jac;
     //        nnz_hess = _nnz_hess;
   }
 
-  void MidpointIntegrator::getVarsBounds(integer const n_x, real lower[], real upper[]) const {
-    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "MidpointIntegrator::getVarsBounds: wrong x size\n")
+  void RK1Integrator::getVarsBounds(integer const n_x, real lower[], real upper[]) const {
+    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "RK1Integrator::getVarsBounds: wrong x size\n")
 
     // differential state bounds
     real tmp_low[_dim_y];
     real tmp_up[_dim_y];
-    _ocp.getStatesControlsBounds(_i_phase, _zeta_center, tmp_low, tmp_up);
+    _ocp.getStatesControlsBounds(_i_phase, _zeta_alpha, tmp_low, tmp_up);
     multiplyVectorBy(tmp_low, _p_inv_scaling_y, _dim_y);
     multiplyVectorBy(tmp_up, _p_inv_scaling_y, _dim_y);
 
     // algebraic state bounds
     real tmp_a_low[_dim_ay];
     real tmp_a_up[_dim_ay];
-    _ocp.getAlgebraicStatesControlsBounds(_i_phase, _zeta_center, tmp_a_low, tmp_a_up);
+    _ocp.getAlgebraicStatesControlsBounds(_i_phase, _zeta_alpha, tmp_a_low, tmp_a_up);
     multiplyVectorBy(tmp_a_low, _p_inv_scaling_ay, _dim_ay);
     multiplyVectorBy(tmp_a_up, _p_inv_scaling_ay, _dim_ay);
 
@@ -492,31 +494,31 @@ namespace Maverick {
     }
   }
 
-  void MidpointIntegrator::getSparseJacStructure(integer const nnz_jac, integer cols[], integer rows[]) const {
-    MAVERICK_DEBUG_ASSERT(nnz_jac == _nnz_jac, "MidpointIntegrator::getJacStructure: wrong jacobian size\n")
+  void RK1Integrator::getSparseJacStructure(integer const nnz_jac, integer cols[], integer rows[]) const {
+    MAVERICK_DEBUG_ASSERT(nnz_jac == _nnz_jac, "RK1Integrator::getJacStructure: wrong jacobian size\n")
     copyVectorTo(_p_jac_rows, rows, nnz_jac);
     copyVectorTo(_p_jac_cols, cols, nnz_jac);
   }
 
-  void MidpointIntegrator::evalEquations(bool const new_unk,
+  void RK1Integrator::evalEquations(bool const new_unk,
                                          integer const n_unk, real const unk[],
                                          integer const n_eq, real eq[]) const {
-    MAVERICK_DEBUG_ASSERT(n_unk == _dim_unk, "MidpointIntegrator::evalEquations: wrong unknown size\n");
-    MAVERICK_DEBUG_ASSERT(n_eq == _dim_eq, "MidpointIntegrator::evalEquations: wrong equation size\n");
+    MAVERICK_DEBUG_ASSERT(n_unk == _dim_unk, "RK1Integrator::evalEquations: wrong unknown size\n");
+    MAVERICK_DEBUG_ASSERT(n_eq == _dim_eq, "RK1Integrator::evalEquations: wrong equation size\n");
 
     if (new_unk)
       writeStateScaled(unk, unk + _dim_x);
 
-    _ocp.foEqns(_i_phase, _p_c_xu_center_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_center, eq);
+    _ocp.foEqns(_i_phase, _p_c_xu_alpha_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_alpha, eq);
 
     multiplyVectorBy(eq, _p_inv_scaling_fo_eqns, n_eq);
   }
 
-  void MidpointIntegrator::evalEquationsSparseJac(bool const new_unk,
+  void RK1Integrator::evalEquationsSparseJac(bool const new_unk,
                                                   integer const n_unk, real const unk[],
                                                   integer const n_grad, real grad[]) const {
-    MAVERICK_DEBUG_ASSERT(n_unk == _dim_unk, "MidpointIntegrator::evalEquationsSparseJac: wrong unknown size\n");
-    MAVERICK_DEBUG_ASSERT(n_grad == _nnz_jac, "MidpointIntegrator::evalEquationsSparseJac: wrong gradient size\n");
+    MAVERICK_DEBUG_ASSERT(n_unk == _dim_unk, "RK1Integrator::evalEquationsSparseJac: wrong unknown size\n");
+    MAVERICK_DEBUG_ASSERT(n_grad == _nnz_jac, "RK1Integrator::evalEquationsSparseJac: wrong gradient size\n");
     if (new_unk)
       writeStateScaled(unk, unk + _dim_x);
 
@@ -529,7 +531,7 @@ namespace Maverick {
     real grad_dxu[_nnz_j_dxu];
     real grad_axu[_nnz_j_axu];
     real grad_p[_nnz_j_p];
-    _ocp.foEqnsJac(_i_phase, _p_c_xu_center_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_center, grad_xu, grad_dxu,
+    _ocp.foEqnsJac(_i_phase, _p_c_xu_alpha_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_alpha, grad_xu, grad_dxu,
                    grad_axu, grad_p);
 
     Eigen::Map<SparseMatrix> grad_xu_mat(_dim_eq, _dim_y, _nnz_j_xu,
@@ -554,8 +556,7 @@ namespace Maverick {
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
     grad_x.reserve(n_grad);
 #endif
-    //        if (_is_forward)
-    grad_x = grad_xu_mat.block(0, 0, _dim_eq, _dim_x) * 0.5 + grad_dxu_mat.block(0, 0, _dim_eq, _dim_x) * _d_zeta_inv;
+    grad_x = grad_xu_mat.block(0, 0, _dim_eq, _dim_x) * _alpha + grad_dxu_mat.block(0, 0, _dim_eq, _dim_x) * _d_zeta_inv;
     grad_x.makeCompressed();
     integer const grad_x_nnz = (integer) grad_x.nonZeros();
     multiplyAndCopyVectorTo(grad_x.valuePtr(), grad, _p_scale_factor_jac, grad_x_nnz);
@@ -570,11 +571,11 @@ namespace Maverick {
                             (integer) grad_ax.nonZeros());
   }
 
-  void MidpointIntegrator::evalEquationsDenseJac(bool const new_unk,
+  void RK1Integrator::evalEquationsDenseJac(bool const new_unk,
                                                  integer const n_unk, real const unk[],
                                                  real grad[]) const {
     MAVERICK_DEBUG_ASSERT(_dim_x + _dim_ax == _dim_unk,
-                          "MidpointIntegrator::evalEquationsDenseJac: wrong unknown size\n");
+                          "RK1Integrator::evalEquationsDenseJac: wrong unknown size\n");
     if (new_unk)
       writeStateScaled(unk, unk + _dim_x);
 
@@ -587,7 +588,7 @@ namespace Maverick {
     real grad_dxu[_nnz_j_dxu];
     real grad_axu[_nnz_j_axu];
     real grad_p[_nnz_j_p];
-    _ocp.foEqnsJac(_i_phase, _p_c_xu_center_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_center, grad_xu, grad_dxu,
+    _ocp.foEqnsJac(_i_phase, _p_c_xu_alpha_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_alpha, grad_xu, grad_dxu,
                    grad_axu, grad_p);
 
     Eigen::Map<SparseMatrix> grad_xu_mat(_dim_eq, _dim_y, _nnz_j_xu,
@@ -611,19 +612,19 @@ namespace Maverick {
     DenseMatrix result(_dim_eq, _dim_unk);
 
     result.block(0, 0, _dim_eq, _dim_x) =
-        grad_xu_mat.block(0, 0, _dim_eq, _dim_x) * 0.5 + grad_dxu_mat.block(0, 0, _dim_eq, _dim_x) * _d_zeta_inv;
+        grad_xu_mat.block(0, 0, _dim_eq, _dim_x) * _alpha + grad_dxu_mat.block(0, 0, _dim_eq, _dim_x) * _d_zeta_inv;
     result.block(0, _dim_x, _dim_eq, _dim_ax) = grad_axu_mat.block(0, 0, _dim_eq, _dim_ax);
 
     multiplyAndCopyVectorTo(result.data(), grad, _p_scale_factor_jac_dense, _dim_eq * _dim_unk);
   }
 
-  void MidpointIntegrator::evalEquationsDenseHess(bool const new_unk,
+  void RK1Integrator::evalEquationsDenseHess(bool const new_unk,
                                                   integer const n_unk, real const unk[],
                                                   integer const n_eq, real const lambda[],
                                                   real hess[]) const {
 
-    MAVERICK_DEBUG_ASSERT(_dim_x + _dim_ax == _dim_unk, "MidpointIntegrator::evalEquationsDenseHess: wrong x size\n");
-    MAVERICK_DEBUG_ASSERT(n_eq == _dim_eq, "MidpointIntegrator::evalEquationsDenseHess: wrong equation size\n");
+    MAVERICK_DEBUG_ASSERT(_dim_x + _dim_ax == _dim_unk, "RK1Integrator::evalEquationsDenseHess: wrong x size\n");
+    MAVERICK_DEBUG_ASSERT(n_eq == _dim_eq, "RK1Integrator::evalEquationsDenseHess: wrong equation size\n");
 
     // scale the lambda
     real lambda_scaled[_dim_x];
@@ -652,7 +653,7 @@ namespace Maverick {
       real hess_axu_p[_ocp.foEqnsHessAxuPNnz(_i_phase)];
       real hess_p_p[_ocp.foEqnsHessPPNnz(_i_phase)];
 
-      _ocp.foEqnsHess(_i_phase, _p_c_xu_center_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_center, lambda_scaled,
+      _ocp.foEqnsHess(_i_phase, _p_c_xu_alpha_ns, _p_c_xu_diff_ns, _p_c_axu_ns, _p_p_ns, _zeta_alpha, lambda_scaled,
                       hess_xu_xu, hess_dxu_dxu, hess_xu_axu, hess_xu_p, hess_dxu_dxu, hess_dxu_axu, hess_dxu_p,
                       hess_axu_axu, hess_axu_p, hess_p_p);
     }
@@ -694,11 +695,10 @@ namespace Maverick {
                                               0);
 
     DenseMatrix result(_dim_unk, _dim_unk);
-    //        if (_is_forward)
-    result.block(0, 0, _dim_x, _dim_x) = hess_xu_xu_mat.block(0, 0, _dim_x, _dim_x) * 0.25
+    result.block(0, 0, _dim_x, _dim_x) = hess_xu_xu_mat.block(0, 0, _dim_x, _dim_x) * _alpha * _alpha
                                          + hess_dxu_dxu_mat.block(0, 0, _dim_x, _dim_x) * (_d_zeta_inv * _d_zeta_inv)
-                                         + hess_xu_dxu_mat.block(0, 0, _dim_x, _dim_x) * 0.5 * _d_zeta_inv;
-    result.block(_dim_x, 0, _dim_ax, _dim_x) = hess_xu_axu_mat.block(0, 0, _dim_ax, _dim_x) * 0.5 +
+                                         + hess_xu_dxu_mat.block(0, 0, _dim_x, _dim_x) * _alpha * _d_zeta_inv;
+    result.block(_dim_x, 0, _dim_ax, _dim_x) = hess_xu_axu_mat.block(0, 0, _dim_ax, _dim_x) * _alpha +
                                                hess_dxu_axu_mat.block(0, 0, _dim_ax, _dim_x) * _d_zeta_inv;
     result.block(0, _dim_x, _dim_x, _dim_ax) = result.block(_dim_x, 0, _dim_ax, _dim_x).transpose();
     result.block(_dim_x, _dim_x, _dim_ax, _dim_ax) = hess_axu_axu_mat.block(0, 0, _dim_ax, _dim_ax);
@@ -706,14 +706,14 @@ namespace Maverick {
     multiplyAndCopyVectorTo(result.data(), hess, _p_scale_factor_hess, _dim_unk * _dim_unk);
   }
 
-  void MidpointIntegrator::getStartingPoint(integer const n_x, real x[]) const {
-    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "MidpointIntegrator::getStartingPoint: wrong x size\n")
+  void RK1Integrator::getStartingPoint(integer const n_x, real x[]) const {
+    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "RK1Integrator::getStartingPoint: wrong x size\n")
     multiplyAndCopyVectorTo(_p_c_xu_right_ns, x, _p_inv_scaling_y, _dim_x);
     multiplyAndCopyVectorTo(_p_c_axu_ns, x + _dim_x, _p_inv_scaling_ay, _dim_ax);
   }
 
-  void MidpointIntegrator::finalizeSolution(integer const n_x, real const x_solution[], real const error) const {
-    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "MidpointIntegrator::finalizeSolution: wrong x size\n")
+  void RK1Integrator::finalizeSolution(integer const n_x, real const x_solution[], real const error) const {
+    MAVERICK_DEBUG_ASSERT(n_x == _dim_unk, "RK1Integrator::finalizeSolution: wrong x size\n")
     multiplyAndCopyVectorTo(x_solution, _p_c_xu_right_ns, _p_scaling_y, _dim_x);
     multiplyAndCopyVectorTo(x_solution + _dim_x, _p_c_axu_ns, _p_scaling_ay, _dim_ax);
     _sol_error = error;

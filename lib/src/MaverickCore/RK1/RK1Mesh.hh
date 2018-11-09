@@ -5,27 +5,27 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_MESH_HH
-#define MAVERICK_MIDPOINT_MESH_HH
+#ifndef MAVERICK_RK1_MESH_HH
+#define MAVERICK_RK1_MESH_HH
 
 #include "MaverickCore/Mesh.hh"
-#include "MaverickCore/Midpoint/MidpointMeshSinglePhase.hh"
+#include "MaverickCore/RK1/RK1MeshSinglePhase.hh"
 
 namespace Maverick {
 
-  class MidpointMesh : public Mesh {
+  class RK1Mesh : public Mesh {
 
   public:
 
-    MidpointMesh();
+    RK1Mesh();
 
-    MidpointMesh(MidpointMesh const &gc_mesh);
+    RK1Mesh(RK1Mesh const &gc_mesh);
 
-    virtual ~MidpointMesh();
+    virtual ~RK1Mesh();
 
     // Mesh class interface
 
-    virtual DiscretisationType discretisationType() const { return DiscretisationType::midpoint; }
+    virtual DiscretisationType discretisationType() const { return DiscretisationType::runge_kutta_1; }
 
     virtual void setup(GC::GenericContainer const &gc);
 
@@ -46,9 +46,9 @@ namespace Maverick {
 
     // additional methods
 
-    void copy(MidpointMesh const &mesh);
+    void copy(RK1Mesh const &mesh);
 
-    void setMeshForPhase(integer const i_phase, MidpointMeshSinglePhase const &mesh);
+    void setMeshForPhase(integer const i_phase, RK1MeshSinglePhase const &mesh);
 
     integer maxNewPoints() const { return _max_new_points; }
 
@@ -56,21 +56,23 @@ namespace Maverick {
 
     // operators
 
-    MidpointMeshSinglePhase const &operator()(integer const i_phase) const;
+    RK1MeshSinglePhase const &operator()(integer const i_phase) const;
 
-    MidpointMeshSinglePhase &operator()(integer const i_phase);
+    RK1MeshSinglePhase &operator()(integer const i_phase);
 
-    MidpointMesh &operator=(const MidpointMesh &mesh);
+    RK1Mesh &operator=(const RK1Mesh &mesh);
 
-    MidpointMesh &operator<<(const MidpointMeshSinglePhase &mesh);
+    RK1Mesh &operator<<(const RK1MeshSinglePhase &mesh);
 
   protected:
+
+    real _default_alpha;
 
     integer _max_new_points;
 
     real _new_points_log_factor;
 
-    std::vector<MidpointMeshSinglePhase> _meshes;
+    std::vector<RK1MeshSinglePhase> _meshes;
 
   };
 }

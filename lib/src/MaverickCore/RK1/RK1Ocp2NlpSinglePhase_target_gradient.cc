@@ -1,4 +1,4 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "../MaverickFunctions.hh"
 
 using namespace Maverick;
@@ -15,7 +15,7 @@ using namespace Maverick;
 
 
 
-void MidpointOcp2NlpSinglePhase::setupForNlpTargetGradient() {
+void RK1Ocp2NlpSinglePhase::setupForNlpTargetGradient() {
 
   //collect quantities from ocp
 
@@ -227,16 +227,15 @@ void MidpointOcp2NlpSinglePhase::setupForNlpTargetGradient() {
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateLagrangeTargetGradient(
-    real const ocp_state_control[],
-    real const ocp_state_control_derivative[],
-    real const ocp_algebraic_state_control[],
-    real const ocp_params[],
-    real const zeta,
-    real const d_zeta,
-    real *p_gradient_left,
-    real *p_gradient_right,
-    real *p_gradient_p) const {
+void RK1Ocp2NlpSinglePhase::calculateLagrangeTargetGradient(
+    ocpStateAtInterval const & ocp_state,
+    real *p_in_gradient_left,
+    real *p_in_gradient_right,
+    real *p_in_gradient_p) const
+{
+  MAVERICK_RESTRICT real * p_gradient_left = p_in_gradient_left;
+  MAVERICK_RESTRICT real * p_gradient_right = p_in_gradient_right;
+  MAVERICK_RESTRICT real * p_gradient_p = p_in_gradient_p;
 
   integer lagrange_j_xu_nnz = _ocp_problem.lagrangeJacXuNnz(_i_phase);
   integer lagrange_j_dxu_nnz = _ocp_problem.lagrangeJacDxuNnz(_i_phase);
@@ -248,11 +247,11 @@ void MidpointOcp2NlpSinglePhase::calculateLagrangeTargetGradient(
   real tmp_target_j_p[lagrange_j_p_nnz];
 
   _ocp_problem.lagrangeJac(_i_phase,
-                           ocp_state_control,
-                           ocp_state_control_derivative,
-                           ocp_algebraic_state_control,
-                           ocp_params,
-                           zeta,
+                           ocp_state.state_control,
+                           ocp_state.state_control_derivative,
+                           ocp_state.algebraic_state_control,
+                           ocp_state.parameters,
+                           ocp_state.zeta_alpha,
                            tmp_target_j_xu,
                            tmp_target_j_dxu,
                            tmp_target_j_axu,
@@ -280,9 +279,9 @@ void MidpointOcp2NlpSinglePhase::calculateLagrangeTargetGradient(
                                               0);
 
   SparseMatrix lagrange_j_y_right_mat(_dim_xu, 1);
-  lagrange_j_y_right_mat = lagrange_j_xu_mat * 0.5f * d_zeta + lagrange_j_dxu_mat;
+  lagrange_j_y_right_mat = lagrange_j_xu_mat * ocp_state.alpha * ocp_state.d_zeta + lagrange_j_dxu_mat;
   SparseMatrix lagrange_j_y_left_mat(_dim_xu, 1);
-  lagrange_j_y_left_mat = lagrange_j_xu_mat * 0.5f * d_zeta - lagrange_j_dxu_mat;
+  lagrange_j_y_left_mat = lagrange_j_xu_mat * (1-ocp_state.alpha) * ocp_state.d_zeta - lagrange_j_dxu_mat;
 
   writeRealToVector(p_gradient_right, 0, _lagrange_target_j_y_nnz);
 
@@ -306,7 +305,7 @@ void MidpointOcp2NlpSinglePhase::calculateLagrangeTargetGradient(
     writeRealToVector(p_gradient_left + _lagrange_target_j_y_nnz, 0, _dim_ay);
     for (integer i = 0; i < lagrange_j_axu_nnz; i++) {
       *(p_gradient_left + _lagrange_target_j_y_nnz + lagrange_target_j_ay_pattern[i]) =
-          tmp_target_j_axu[i] * _p_scale_factor_lagrange_target_j_ay[i] * d_zeta;
+          tmp_target_j_axu[i] * _p_scale_factor_lagrange_target_j_ay[i] * ocp_state.d_zeta;
     }
 
     // j_p
@@ -314,34 +313,19 @@ void MidpointOcp2NlpSinglePhase::calculateLagrangeTargetGradient(
     _ocp_problem.lagrangeJacPPattern(_i_phase, lagrange_target_j_p_pattern);
     for (integer i = 0; i < lagrange_j_p_nnz; i++) {
       *(p_gradient_p + lagrange_target_j_p_pattern[i]) +=
-          tmp_target_j_p[i] * _p_scale_factor_lagrange_target_j_p[i] * d_zeta;
+          tmp_target_j_p[i] * _p_scale_factor_lagrange_target_j_p[i] * ocp_state.d_zeta;
     }
-
-
-//        cout << "left grad ";
-//        for (integer i=0; i<_lagrange_target_j_y_nnz; i++)
-//            cout << p_gradient_left[i] << "\t";
-//        cout << endl;
-//
-//        cout << "rigth grad ";
-//        for (integer i=0; i<_lagrange_target_j_y_nnz; i++)
-//            cout << p_gradient_right[i] << "\t";
-//        cout << endl;
 
   } else {
     multiplyAndSumVectorTo(lagrange_j_y_left_mat.valuePtr(), p_gradient_left, _p_scale_factor_lagrange_target_j_y,
                            _lagrange_target_j_y_nnz);
-    multiplyVectorBy(tmp_target_j_axu, d_zeta, lagrange_j_axu_nnz);
+    multiplyVectorBy(tmp_target_j_axu, ocp_state.d_zeta, lagrange_j_axu_nnz);
     multiplyAndCopyVectorTo(tmp_target_j_axu, p_gradient_left + _lagrange_target_j_y_nnz,
                             _p_scale_factor_lagrange_target_j_ay, lagrange_j_axu_nnz);
     multiplyAndCopyVectorTo(lagrange_j_y_right_mat.valuePtr(), p_gradient_right, _p_scale_factor_lagrange_target_j_y,
                             _lagrange_target_j_y_nnz);
     multiplyVectorBy(tmp_target_j_p, _p_scale_factor_lagrange_target_j_p, lagrange_j_p_nnz);
-    multiplyAndSumVectorTo(tmp_target_j_p, p_gradient_p, d_zeta, lagrange_j_p_nnz);
+    multiplyAndSumVectorTo(tmp_target_j_p, p_gradient_p, ocp_state.d_zeta, lagrange_j_p_nnz);
   }
 
-//            cout << "p grad ";
-//            for (integer i=0; i<lagrange_j_p_nnz; i++)
-//                cout << tmp_target_j_p[i] << "\t";
-//            cout << endl;
 }

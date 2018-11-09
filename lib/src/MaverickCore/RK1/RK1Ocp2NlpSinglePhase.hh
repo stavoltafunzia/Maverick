@@ -5,12 +5,12 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_OCP2NLP_SINGLE_PHASE_HH
-#define MAVERICK_MIDPOINT_OCP2NLP_SINGLE_PHASE_HH
+#ifndef MAVERICK_RK1_OCP2NLP_SINGLE_PHASE_HH
+#define MAVERICK_RK1_OCP2NLP_SINGLE_PHASE_HH
 
 #include "MaverickCore/Ocp2Nlp.hh"
-#include "MaverickCore/Midpoint/MidpointMeshSinglePhase.hh"
-#include "MaverickCore/Midpoint/MidpointOcpSolutionSinglePhase.hh"
+#include "MaverickCore/RK1/RK1MeshSinglePhase.hh"
+#include "MaverickCore/RK1/RK1OcpSolutionSinglePhase.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 #include <thread>
 #include <condition_variable>
@@ -34,7 +34,7 @@
 
 namespace Maverick {
 
-  class MidpointOcp2NlpSinglePhase : public Ocp2Nlp {
+  class RK1Ocp2NlpSinglePhase : public Ocp2Nlp {
 
     /*
      0) a p_mesh is formed by N+1 p_mesh points and N p_mesh intervals
@@ -57,9 +57,9 @@ namespace Maverick {
 
   public:
 
-    MidpointOcp2NlpSinglePhase(MaverickOcp const &ocp_problem, Mesh const &mesh, integer const i_phase);
+    RK1Ocp2NlpSinglePhase(MaverickOcp const &ocp_problem, Mesh const &mesh, integer const i_phase);
 
-    virtual ~MidpointOcp2NlpSinglePhase();
+    virtual ~RK1Ocp2NlpSinglePhase();
 
     // public output
 
@@ -96,7 +96,7 @@ namespace Maverick {
     // convert nlp to ocp solution without doing any scaling
     virtual std::unique_ptr<OcpSolution> translateNlp2OcpSolution(Nlp const &nlp) const;
 
-    virtual std::unique_ptr<MidpointOcpSolutionSinglePhase> translateNlp2MidpointOcpSolution(Nlp const &nlp) const;
+    virtual std::unique_ptr<RK1OcpSolutionSinglePhase> translateNlp2RK1OcpSolution(Nlp const &nlp) const;
 
     // convert ocp guess ot solution to nlp without doing any scaling
     virtual Nlp translateOcpGuess2Nlp(OcpGuess const &ocp_guess) const;
@@ -118,8 +118,21 @@ namespace Maverick {
     threads_affinity getActualThreadsAffinityUsed(integer const i_phase) const;
 
   protected:
+    
+    struct ocpStateAtInterval {
+      real * left_state_control = nullptr;
+      real * state_control = nullptr;
+      real * state_control_derivative = nullptr;
+      real * algebraic_state_control = nullptr;
+      real const * parameters = nullptr;
+      real zeta_left = 0;
+      real zeta_alpha = 0;
+      real d_zeta = 0;
+      real d_zeta_average = 0;
+      real alpha = 0.5;
+    };
 
-    MidpointMeshSinglePhase const *_p_mesh = nullptr;
+    RK1MeshSinglePhase const *_p_mesh = nullptr;
 
     // ocp and nlp dimensions
     integer _i_phase = 0;
@@ -157,12 +170,7 @@ namespace Maverick {
              (_lagrange_target_j_y_nnz + _lagrange_target_j_ay_nnz) * mesh_interval;
     }
 
-    void calculateLagrangeTargetGradient(real const ocp_state_control[],
-                                         real const ocp_state_control_derivative[],
-                                         real const ocp_algebraic_state_control[],
-                                         real const ocp_params[],
-                                         real const zeta,
-                                         real const d_zeta,
+    void calculateLagrangeTargetGradient(ocpStateAtInterval const & ocp_state,
                                          real *p_gradient_left,
                                          real *p_gradient_right,
                                          real *p_gradient_p) const;
@@ -177,15 +185,7 @@ namespace Maverick {
                                                   std::exception_ptr *exc_ptr
     ) const;
 
-    void evalConstraints(real const ocp_left_state_control[],
-                         real const ocp_state_control[],
-                         real const ocp_state_control_derivative[],
-                         real const ocp_algebraic_state_control[],
-                         real const ocp_params[],
-                         real const zeta_left,
-                         real const zeta,
-                         real const d_zeta,
-                         real const d_zeta_dual,
+    void evalConstraints(ocpStateAtInterval const & ocp_state,
                          real **const p_p_current_constraint,
                          real int_constraints[]) const;
 
@@ -250,23 +250,10 @@ namespace Maverick {
 
     void setupForNlpConstraintsJacobianMatrixes();
 
-    void calculateNlpConstraintsJacobianMatrixY(real const ocp_left_state_control[],
-                                                real const ocp_state_control[],
-                                                real const ocp_state_control_derivative[],
-                                                real const ocp_algebraic_state_control[],
-                                                real const ocp_parameters[],
-                                                real const zeta_left,
-                                                real const zeta,
-                                                real const d_zeta,
-                                                real const d_zeta_dual,
+    void calculateNlpConstraintsJacobianMatrixY(ocpStateAtInterval const & ocp_state,
                                                 real values[]) const;
 
-    void calculateNlpConstraintsJacobianMatrixI(real const ocp_state_control[],
-                                                real const ocp_state_control_derivative[],
-                                                real const ocp_algebraic_state_control[],
-                                                real const ocp_parameters[],
-                                                real const zeta,
-                                                real const d_zeta,
+    void calculateNlpConstraintsJacobianMatrixI(ocpStateAtInterval const & ocp_state,
                                                 real values_left[],
                                                 real values_right[],
                                                 real jac_p_values[]) const;
@@ -397,15 +384,7 @@ namespace Maverick {
 
     void setupForNlpHessianMatrixes();
 
-    void calculateHessianBlockAtMeshMiddle(real const ocp_left_state_control[],
-                                           real const ocp_state_control[],
-                                           real const ocp_state_control_derivative[],
-                                           real const ocp_algebraic_state_control[],
-                                           real const ocp_params[],
-                                           real const zeta_left,
-                                           real const zeta,
-                                           real const d_zeta,
-                                           real const d_zeta_dual,
+    void calculateHessianBlockAtMeshMiddle(ocpStateAtInterval const & ocp_state,
                                            real const lambda_0_not_scaled,
                                            real const lambda_not_scaled[],
                                            real const int_constr_lambda_scaled[],
@@ -554,11 +533,11 @@ namespace Maverick {
 
   private:
 
-    MidpointOcp2NlpSinglePhase();
+    RK1Ocp2NlpSinglePhase();
 
-    MidpointOcp2NlpSinglePhase(const MidpointOcp2NlpSinglePhase &);
+    RK1Ocp2NlpSinglePhase(const RK1Ocp2NlpSinglePhase &);
 
-    MidpointOcp2NlpSinglePhase &operator=(const MidpointOcp2NlpSinglePhase &);
+    RK1Ocp2NlpSinglePhase &operator=(const RK1Ocp2NlpSinglePhase &);
 
   };
 }

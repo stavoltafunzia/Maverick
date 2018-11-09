@@ -1,6 +1,6 @@
 #include "OcpSolverImpl.hh"
 #include "MaverickFunctions.hh"
-#include "MaverickCore/Midpoint/MidpointOcp2NlpSinglePhase.hh"
+#include "MaverickCore/RK1/RK1Ocp2NlpSinglePhase.hh"
 #include "Maverick2Ipopt/getIpoptSolvers.hh"
 #include <iomanip>
 
@@ -528,7 +528,7 @@ void OcpSolverImpl::setMesh(Mesh const &mesh) {
 
 //SETUP MESH ONLY
 void OcpSolverImpl::setupMeshOnly(GC::GenericContainer const &gc_mesh) {
-  shared_ptr<Mesh> mesh = shared_ptr<Mesh>(new MidpointMesh()); // currenty only this mesh type is implemented
+  shared_ptr<Mesh> mesh = shared_ptr<Mesh>(new RK1Mesh()); // currenty only this mesh type is implemented
   mesh->setup(gc_mesh);
   setMesh(mesh);
 }
@@ -811,10 +811,8 @@ void OcpSolverImpl::setupGuessTablesOnly(GC::GenericContainer const &gc_guess_ta
     }
 
     // now convert the tables to an ocp guess
-
     vector<vector<string>> found_vars_vec;
-    std::unique_ptr<OcpSolution> solution = MidpointOcpSolution::getFromGuessTablesForOcpProblem(tables, _ocp_problem,
-                                                                                                 found_vars_vec);
+    std::unique_ptr<OcpSolution> solution = RK1OcpSolution::getFromGuessTablesForOcpProblem(tables, _ocp_problem, found_vars_vec);
     stringstream found_vars;
     for (integer i = 0; i < found_vars_vec.size(); i++) {
       vector<string> const &vars = found_vars_vec[i];

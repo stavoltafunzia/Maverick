@@ -22,7 +22,7 @@ namespace Maverick {
   public:
 
     enum DiscretisationType {
-      midpoint = 0
+      runge_kutta_1 = 0
     };
 
     Mesh();

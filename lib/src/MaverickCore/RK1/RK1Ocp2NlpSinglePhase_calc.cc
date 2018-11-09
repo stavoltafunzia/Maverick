@@ -1,4 +1,4 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 
 #ifdef __linux__
@@ -8,18 +8,23 @@
 using namespace Maverick;
 using namespace std;
 
-integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], integer const n_y, real const lambda[],
+integer RK1Ocp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], integer const n_y, real const lambda[],
                                                            real const lambda_0,
-                                                           real *target_out,
-                                                           real target_jac_out[], integer const n_t_j,
-                                                           real constraints_out[], integer const n_c,
-                                                           real constraints_jac_out[], integer const n_c_jac,
-                                                           real hessian_out[], integer const n_hess
-) const {
+                                                           real * in_target_out,
+                                                           real in_target_jac_out[], integer const n_t_j,
+                                                           real in_constraints_out[], integer const n_c,
+                                                           real in_constraints_jac_out[], integer const n_c_jac,
+                                                           real in_hessian_out[], integer const n_hess
+                                                           ) const
+{
   MAVERICK_DEBUG_ASSERT(n_y == getNlpSize(),
-                        "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong length of NLP data. Passed " << n_y
-                                                                                                                << ", actual "
-                                                                                                                << getNlpSize());
+                        "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong length of NLP data. Passed " << n_y << ", actual " << getNlpSize());
+
+  MAVERICK_RESTRICT real * target_out = in_target_out;
+  MAVERICK_RESTRICT real * target_jac_out = in_target_jac_out;
+  MAVERICK_RESTRICT real * constraints_out = in_constraints_out;
+  MAVERICK_RESTRICT real * constraints_jac_out = in_constraints_jac_out;
+  MAVERICK_RESTRICT real * hessian_out = in_hessian_out;
 
   bool const evaluate_target = target_out != nullptr;
   bool const evaluate_target_j = target_jac_out != nullptr;
@@ -31,22 +36,22 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 
   if (evaluate_target_j) {
       MAVERICK_ASSERT( n_t_j == getNlpTargetGradientNnz(), std::string(__FILE__) + ": " + std::to_string(__LINE__) + ": wrong target gradient size.\n")
-      // MAVERICK_ASSERT( target_jac_out != nullptr, "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate target jacobian with a nullptr target jacobian pointer.")
+      // MAVERICK_ASSERT( target_jac_out != nullptr, "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate target jacobian with a nullptr target jacobian pointer.")
   }
   if (evaluate_constraints) {
-      MAVERICK_ASSERT( n_c == getNlpConstraintsSize(), "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: wrong number of constraints requested. Requested " << n_c << " actual " << getNlpConstraintsSize() << ".")
-      // MAVERICK_ASSERT( constraints_out != nullptr, "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate constraints with a nullptr constraints pointer.")
+      MAVERICK_ASSERT( n_c == getNlpConstraintsSize(), "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: wrong number of constraints requested. Requested " << n_c << " actual " << getNlpConstraintsSize() << ".")
+      // MAVERICK_ASSERT( constraints_out != nullptr, "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate constraints with a nullptr constraints pointer.")
   }
 
   if (evaluate_constraints_j) {
-      MAVERICK_ASSERT( n_c_jac == getNlpConstraintsJacobianNnz(), "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: wrong length of constraints jacobian requested. Requested " << n_c_jac << " actual " << getNlpConstraintsJacobianNnz() << ".")
-      // MAVERICK_ASSERT( constraints_jac_out != nullptr, "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate constraints jacobian with a nullptr constraints jacobian pointer.")
+      MAVERICK_ASSERT( n_c_jac == getNlpConstraintsJacobianNnz(), "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: wrong length of constraints jacobian requested. Requested " << n_c_jac << " actual " << getNlpConstraintsJacobianNnz() << ".")
+      // MAVERICK_ASSERT( constraints_jac_out != nullptr, "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate constraints jacobian with a nullptr constraints jacobian pointer.")
   }
 
   if (evaluate_hessian) {
-      MAVERICK_ASSERT( n_hess == getNlpHessianNnz(), "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: wrong length of target hessian requested. Requested " << n_hess << " actual " << getNlpHessianNnz() << ".")
-      MAVERICK_ASSERT( lambda != nullptr, "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate hessian with a nullptr pointer to lambda.")
-      // MAVERICK_ASSERT( hessian_out != nullptr, "MidpointOcp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate hessian with a nullptr hessian pointer.")
+      MAVERICK_ASSERT( n_hess == getNlpHessianNnz(), "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: wrong length of target hessian requested. Requested " << n_hess << " actual " << getNlpHessianNnz() << ".")
+      MAVERICK_ASSERT( lambda != nullptr, "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate hessian with a nullptr pointer to lambda.")
+      // MAVERICK_ASSERT( hessian_out != nullptr, "RK1Ocp2NlpSinglePhase::calculateNlpQuantities: asked to evaluate hessian with a nullptr hessian pointer.")
   }
 
 #endif
@@ -183,7 +188,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 
   for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     ThreadJob const &th_job = _thread_jobs[i_thread];
-    th_job.job = std::bind(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
+    th_job.job = std::bind(&RK1Ocp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
                            th_job.start_mesh_interval, th_job.end_mesh_interval,
                            t_nlp_y[i_thread], t_ocp_params,
                            t_target_out[i_thread],
@@ -196,18 +201,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
                            t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
                            th_job.exc_ptr
     );
-    //nullptr);
-    // threads[i_thread] = new std::thread(&MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints, this,
-    //                                     _thread_mesh_intervals[i_thread], _thread_mesh_intervals[i_thread+1],
-    //                                     t_nlp_y[i_thread], t_ocp_params,
-    //                                     t_target_out[i_thread],
-    //                                     t_lagrange_target_jac_out[i_thread], t_lagrange_target_j_r_out[i_thread],  t_lagrange_target_j_y_last_out[i_thread],
-    //                                     t_constraints_out[i_thread], t_int_constraints_out[i_thread],
-    //                                     t_constraints_jac_out[i_thread], t_int_constraints_jac_y_out[i_thread], t_int_constraints_jac_p_out[i_thread], t_int_constraints_jac_y_last_out[i_thread],
-    //                                     t_hessian_out[i_thread], t_hessian_last_column_out[i_thread], t_hess_p_p_lower_mat[i_thread],
-    //                                     t_lambda[i_thread], integral_constraint_lambda_scaled, lambda_0,
-    //                                     &exc_ptrs[i_thread]
-    //                                     );
+
     {
       unique_lock<mutex> lock(*(th_job.job_mutex));
       th_job.job_todo = true;
@@ -215,8 +209,8 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     th_job.cond_var->notify_one();
   }
 
-  real const final_zeta = _p_mesh->getZeta(_p_mesh->getNumberOfIntervals());
-  real const initial_zeta = _p_mesh->getZeta(0);
+  real const final_zeta = _p_mesh->getFinalZeta();
+  real const initial_zeta = _p_mesh->getInitialZeta();
   real const *const p_initial_state_control_scaled = nlp_y;
   real const *const p_final_state_control_scaled = nlp_y + getNlpYPtrIndexForInterval(_p_mesh->getNumberOfIntervals());
   real ocp_initial_state_control[_dim_y];
@@ -276,7 +270,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     real p_inv_scaling_point_constr[_dim_poc];
     if (_multiply_point_constr_by_dz)
       multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr,
-                              _p_mesh->getDzDual(_p_mesh->getNumberOfDiscretisationPoints() - 1), _dim_poc);
+                              _p_mesh->getDzAverageAtIndex(_p_mesh->getNumberOfDiscretisationPoints() - 1), _dim_poc);
     else
       copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
@@ -321,7 +315,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 #ifdef MAVERICK_DEBUG
     if ( _th_affinity.size() == 1 ) {
         MAVERICK_ASSERT(p_current_constraints_j == constraints_jac_out + getNlpConstraintsJacobainPtrIndexForF() ,
-                        "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian pointer for matrix F. Current pointer: " << p_current_constraints_j << ", expected: " << constraints_jac_out + getNlpConstraintsJacobainPtrIndexForF() << ".")
+                        "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian pointer for matrix F. Current pointer: " << p_current_constraints_j << ", expected: " << constraints_jac_out + getNlpConstraintsJacobainPtrIndexForF() << ".")
     }
 #endif
     calculateNlpConstraintsJacobianMatrixF(ocp_initial_state_control,
@@ -336,7 +330,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     if ( _th_affinity.size() == 1 ) {
         p_current_constraints_j += (_int_constr_j_y_nnz + _int_constr_j_ay_nnz) * _p_mesh->getNumberOfIntervals() + _int_constr_j_y_nnz + _ocp_problem.intConstraintsJacPNnz(_i_phase);
         MAVERICK_ASSERT(p_current_constraints_j == constraints_jac_out + getNlpConstraintsJacobianNnz() ,
-                        "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian final pointer.")
+                        "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong constraints jacobian final pointer.")
     }
 #endif
   }
@@ -364,7 +358,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
     calculateHessianLastConstrBcsMayer(ocp_initial_state_control, ocp_final_state_control, ocp_params,
                                        initial_zeta,
                                        final_zeta,
-                                       _p_mesh->getDzDual(_p_mesh->getNumberOfDiscretisationPoints() - 1),
+                                       _p_mesh->getDzAverageAtIndex(_p_mesh->getNumberOfDiscretisationPoints() - 1),
                                        lambda, p_current_constraint_lambda, lambda_0,
                                        last_point_constr_hess_y_y_lower_mat,
                                        last_point_constr_hess_y_p_mat,
@@ -698,10 +692,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
       real *hessian_last_column = hessian_out + getNlpHessianPtrIndexForLeftBlock(_p_mesh->getNumberOfIntervals());
       writeRealToVector(hessian_last_column, 0, getNlpHessianRightColumnBlockNnz());
     }
-    //        cout << "\nhess1:\n";
-    //        for (integer i=0; i<getNlpHessianNnz(); i++)
-    //            cout << hessian_out[i] << " ";
-    //        cout << "\n\n";
+
     {
       //first glue the hessian written by all threads
       for (integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
@@ -719,21 +710,12 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
         }
         sumVectorTo(t_hessian_last_column_out[i_thread] + _hess_y_y_lower_mat_nnz, current_hessian_middle_column_end,
                     _hess_y_p_mat_nnz);
-        //                cout << "column: ";
-        //                for (integer i=0; i<nnz; i++) {
-        //                    cout << t_hessian_last_column_out[i_thread][i] << " ";
-        //                }
-        //                cout << "\n";
         delete[] t_hessian_last_column_out[i_thread];
 
         hess_p_p_lower_mat += *(t_hess_p_p_lower_mat[i_thread]);
         delete t_hess_p_p_lower_mat[i_thread];
       }
     }
-    //        cout << "\nhess2:\n";
-    //        for (integer i=0; i<getNlpHessianNnz(); i++)
-    //            cout << hessian_out[i] << " ";
-    //        cout << "\n\n";
 
     // update the hessian with the values of the boundary conditions, mayer target and last point constraints
     {
@@ -787,14 +769,9 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
       copyVectorTo((real *) hess_first_y_p_mat.valuePtr(), p_current_hessian, _hess_first_y_p_mat_nnz);
       p_current_hessian += _hess_first_y_p_mat_nnz;
 
-      //            cout << _hess_first_14_lower_mat_nnz << "\n";
-      //            cout << _hess_2_mat_nnz << "\n";
-      //            cout << _hess_xi_xf_mat_nnz << "\n";
-      //            cout << _hess_first_35_mat_nnz << "\n";
-
 #ifdef  MAVERICK_DEBUG
       real * p_expected = hessian_out + getNlpHessianFirstColumnBlockNnz();
-      MAVERICK_ASSERT( p_current_hessian == p_expected, "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong pointer for hessian first column end.\n")
+      MAVERICK_ASSERT( p_current_hessian == p_expected, "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong pointer for hessian first column end.\n")
 #endif
 
     }
@@ -804,7 +781,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
           hessian_out + getNlpHessianNnz() - _hess_p_p_lower_mat_nnz - getNlpHessianLastColumnBlockNnz();
 #ifdef  MAVERICK_DEBUG
       real * p_expected = hessian_out + getNlpHessianFirstColumnBlockNnz() + getNlpHessianLeftColumnBlockNnz() * (_p_mesh->getNumberOfIntervals() - 1 ) + + getNlpHessianCentreColumnBlockNnz() * _p_mesh->getNumberOfIntervals();
-      MAVERICK_ASSERT( p_hessia_written == p_expected, "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong pointer for hessian last column.\n")
+      MAVERICK_ASSERT( p_hessia_written == p_expected, "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong pointer for hessian last column.\n")
 #endif
       Eigen::Map<SparseMatrix> hess_y_y_lower_mat(_dim_xu, _dim_xu, _hess_y_y_lower_mat_nnz,
                                                   _p_hess_y_y_lower_mat_outer_starts,
@@ -859,7 +836,7 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
       p_current_hessian += _hess_p_p_lower_mat_nnz;
 
 #ifdef MAVERICK_DEBUG
-      MAVERICK_ASSERT( p_current_hessian == hessian_out + getNlpHessianNnz(), "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong final hessian pointer.\n")
+      MAVERICK_ASSERT( p_current_hessian == hessian_out + getNlpHessianNnz(), "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong final hessian pointer.\n")
 #endif
     }
   }
@@ -874,35 +851,55 @@ integer MidpointOcp2NlpSinglePhase::calculateNlpQuantities(real const nlp_y[], i
 
 
 
-void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer const first_mesh_point,
+void RK1Ocp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer const first_mesh_point,
                                                                          integer const last_mesh_point,
                                                                          real const nlp_y[], real const ocp_params[],
-                                                                         real *lagrange_target_out,
-                                                                         real lagrange_target_jac_y_out[],
-                                                                         real lagrange_target_j_r_out[],
-                                                                         real lagrange_target_j_y_last_out[],
-                                                                         real constraints_out[],
-                                                                         real int_constraints_out[],
-                                                                         real constraints_jac_out[],
-                                                                         real int_constraints_jac_y_out[],
-                                                                         real int_constraints_jac_p_out[],
-                                                                         real int_constraints_jac_y_last_out[],
-                                                                         real hessian_out[],
-                                                                         real hessian_last_column_out[],
+                                                                         real * in_lagrange_target_out,
+                                                                         real in_lagrange_target_jac_y_out[],
+                                                                         real in_lagrange_target_j_r_out[],
+                                                                         real in_lagrange_target_j_y_last_out[],
+                                                                         real in_constraints_out[],
+                                                                         real in_int_constraints_out[],
+                                                                         real in_constraints_jac_out[],
+                                                                         real in_int_constraints_jac_y_out[],
+                                                                         real in_int_constraints_jac_p_out[],
+                                                                         real in_int_constraints_jac_y_last_out[],
+                                                                         real in_hessian_out[],
+                                                                         real in_hessian_last_column_out[],
                                                                          SparseMatrix *hess_p_p_lower_mat,
                                                                          real const lambda[],
                                                                          real const integral_constraint_lambda_scaled[],
                                                                          real const lambda_0,
                                                                          std::exception_ptr &exc_ptr
-) const {
+                                                                         ) const
+{
+  MAVERICK_RESTRICT real * lagrange_target_out = in_lagrange_target_out;
+  MAVERICK_RESTRICT real * lagrange_target_jac_y_out = in_lagrange_target_jac_y_out;
+  MAVERICK_RESTRICT real * lagrange_target_j_r_out = in_lagrange_target_j_r_out;
+  MAVERICK_RESTRICT real * lagrange_target_j_y_last_out = in_lagrange_target_j_y_last_out;
+  MAVERICK_RESTRICT real * constraints_out = in_constraints_out;
+  MAVERICK_RESTRICT real * int_constraints_out = in_int_constraints_out;
+  MAVERICK_RESTRICT real * constraints_jac_out = in_constraints_jac_out;
+  MAVERICK_RESTRICT real * int_constraints_jac_y_out = in_int_constraints_jac_y_out;
+  MAVERICK_RESTRICT real * int_constraints_jac_p_out = in_int_constraints_jac_p_out;
+  MAVERICK_RESTRICT real * int_constraints_jac_y_last_out = in_int_constraints_jac_y_last_out;
+  MAVERICK_RESTRICT real * hessian_out = in_hessian_out;
+  MAVERICK_RESTRICT real * hessian_last_column_out = in_hessian_last_column_out;
+
   try {
-    //    lagrange_target_jac_y_out=nullptr;
-    //    lagrange_target_j_r_out=nullptr;
-    //    lagrange_target_j_y_last_out=nullptr;
 
     // Y and P pointers
     real const *p_current_y_scaled = nlp_y;
     //real const * p_current_y = nlp_y + min_mesh_point;
+    
+    real buffer[_dim_y+_dim_y+_dim_y+_dim_ay];
+    ocpStateAtInterval ocp_state;
+    ocp_state.left_state_control = buffer;
+    ocp_state.state_control = ocp_state.left_state_control + _dim_y;
+    ocp_state.state_control_derivative = ocp_state.state_control + _dim_y;
+    ocp_state.algebraic_state_control = ocp_state.state_control_derivative + _dim_y;
+    ocp_state.parameters = ocp_params;
+    ocp_state.alpha = _p_mesh->getAlpha();
 
     // OUTPUT STREAMS
     //target
@@ -927,26 +924,20 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
          current_mesh_interval < last_mesh_point; current_mesh_interval++) {
 
       //zeta
-      real const zeta_left = _p_mesh->getZetaLeft(current_mesh_interval);
-      real const zeta = _p_mesh->getZetaCenter(current_mesh_interval);
-      real const d_zeta = _p_mesh->getDz(current_mesh_interval);
-      real const d_zeta_dual = _p_mesh->getDzDual(current_mesh_interval);
+      ocp_state.zeta_left = _p_mesh->getZetaLeft(current_mesh_interval);
+      ocp_state.zeta_alpha = _p_mesh->getZetaAlpha(current_mesh_interval);
+      ocp_state.d_zeta = _p_mesh->getDz(current_mesh_interval);
+      ocp_state.d_zeta_average = _p_mesh->getDzAverageAtIndex(current_mesh_interval);
 
       //variables
       real const *p_left_state_control_scaled = p_current_y_scaled;
       real const *p_right_state_control_scaled = p_current_y_scaled + _dim_y + _dim_ay;
-      real ocp_left_state_control[_dim_y];
-      multiplyAndCopyVectorTo(p_left_state_control_scaled, ocp_left_state_control, _p_scaling_y, _dim_y);
-      real ocp_state_control[_dim_xu]; //ocp states and controls at the middle point of the _p_mesh interval
-      computeTpzCenter(p_left_state_control_scaled, p_right_state_control_scaled, _p_scaling_y, ocp_state_control,
-                       _dim_xu);
-      real ocp_state_control_derivative[_dim_xu]; //ocp states and controls derivatives at the middle point of the _p_mesh interval
-      computeTpzDerivative(p_left_state_control_scaled, p_left_state_control_scaled + _dim_ay + _dim_y, _p_scaling_y,
-                           ocp_state_control_derivative, 1 / d_zeta, _dim_xu);
+      
+      multiplyAndCopyVectorTo(p_left_state_control_scaled, ocp_state.left_state_control, _p_scaling_y, _dim_y);
+      computeTpzAlpha(_p_mesh->getAlpha(), p_left_state_control_scaled, p_right_state_control_scaled, _p_scaling_y, ocp_state.state_control, _dim_xu);
+      computeTpzDerivative(p_left_state_control_scaled, p_left_state_control_scaled + _dim_ay + _dim_y, _p_scaling_y, ocp_state.state_control_derivative, 1 / ocp_state.d_zeta, _dim_xu);
       // algebraic states and controls
-      real ocp_algebraic_state_control[_dim_axu];
-      multiplyAndCopyVectorTo(p_left_state_control_scaled + _dim_y, ocp_algebraic_state_control, _p_scaling_ay,
-                              _dim_axu);
+      multiplyAndCopyVectorTo(p_left_state_control_scaled + _dim_y, ocp_state.algebraic_state_control, _p_scaling_ay, _dim_axu);
 
 #ifdef MAVERICK_DEBUG
       if ( _th_affinity.size() == 1 ) {
@@ -964,13 +955,13 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
       if (lagrange_target_out) {
         real tmp_target;
         _ocp_problem.lagrange(_i_phase,
-                              ocp_state_control,
-                              ocp_state_control_derivative,
-                              ocp_algebraic_state_control,
-                              ocp_params,
-                              zeta,
+                              ocp_state.state_control,
+                              ocp_state.state_control_derivative,
+                              ocp_state.algebraic_state_control,
+                              ocp_state.parameters,
+                              ocp_state.zeta_alpha,
                               tmp_target);
-        *lagrange_target_out += tmp_target * _inv_scaling_target * d_zeta;
+        *lagrange_target_out += tmp_target * _inv_scaling_target * ocp_state.d_zeta;
       }
 
       if (lagrange_target_jac_y_out) {
@@ -980,12 +971,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
           p_lagrange_target_j_right = lagrange_target_j_y_last_out;
         }
 
-        calculateLagrangeTargetGradient(ocp_state_control,
-                                        ocp_state_control_derivative,
-                                        ocp_algebraic_state_control,
-                                        ocp_params,
-                                        zeta,
-                                        d_zeta,
+        calculateLagrangeTargetGradient(ocp_state,
                                         p_current_target_j_y,
                                         p_lagrange_target_j_right,
                                         lagrange_target_j_r_out);
@@ -994,40 +980,13 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
       }
 
       if (constraints_out) {
-        //            cout << "mesh point " << current_mesh_interval << "\n";
-        //            cout << "Y left: ";
-        //            for (integer i=0; i < _dim_y; i++) {
-        //                cout << *(ocp_left_state_control+i) << "\t";
-        //            }
-        //            cout << "\n";
-        //            cout << "Y right: ";
-        //            for (integer i=0; i < _dim_y; i++) {
-        //                cout << p_left_state_control_scaled[i+_dim_y]*_p_scaling_y[i] << "\t";
-        //            }
-        //            cout << "\n";
-        evalConstraints(ocp_left_state_control,
-                        ocp_state_control,
-                        ocp_state_control_derivative,
-                        ocp_algebraic_state_control,
-                        ocp_params,
-                        zeta_left,
-                        zeta,
-                        d_zeta,
-                        d_zeta_dual,
+        evalConstraints(ocp_state,
                         &p_current_constraint,
                         int_constraints_out);
       }
 
       if (constraints_jac_out) {
-        calculateNlpConstraintsJacobianMatrixY(ocp_left_state_control,
-                                               ocp_state_control,
-                                               ocp_state_control_derivative,
-                                               ocp_algebraic_state_control,
-                                               ocp_params,
-                                               zeta_left,
-                                               zeta,
-                                               d_zeta,
-                                               d_zeta_dual,
+        calculateNlpConstraintsJacobianMatrixY(ocp_state,
                                                p_current_constraints_j);
 
         p_current_constraints_j += getNlpConstraintsJacobainMatrixYNnz();
@@ -1036,12 +995,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
         if (current_mesh_interval == last_mesh_point - 1)
           p_current_int_constr_j_y_right = int_constraints_jac_y_last_out;
 
-        calculateNlpConstraintsJacobianMatrixI(ocp_state_control,
-                                               ocp_state_control_derivative,
-                                               ocp_algebraic_state_control,
-                                               ocp_params,
-                                               zeta,
-                                               d_zeta,
+        calculateNlpConstraintsJacobianMatrixI(ocp_state,
                                                p_current_int_constr_j_y,
                                                p_current_int_constr_j_y_right,
                                                int_constraints_jac_p_out);
@@ -1061,15 +1015,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
           p_hessian_y_p_right_block = p_hessian_y_y_right_block + _hess_y_y_lower_mat_nnz;
         }
 
-        calculateHessianBlockAtMeshMiddle(ocp_left_state_control,
-                                          ocp_state_control,
-                                          ocp_state_control_derivative,
-                                          ocp_algebraic_state_control,
-                                          ocp_params,
-                                          zeta_left,
-                                          zeta,
-                                          d_zeta,
-                                          d_zeta_dual,
+        calculateHessianBlockAtMeshMiddle(ocp_state,
                                           lambda_0,
                                           p_current_constraint_lambda,
                                           integral_constraint_lambda_scaled,
@@ -1077,25 +1023,6 @@ void MidpointOcp2NlpSinglePhase::calculateNlpQuantitiesBetweenMeshPoints(integer
                                           p_hessian_y_y_right_block,
                                           p_hessian_y_p_right_block,
                                           *hess_p_p_lower_mat);
-
-        //            cout << "middle column: ";
-        //            for (integer i=0; i<getNlpHessianMiddleColumnBlockNnz(); i++) {
-        //                cout << p_current_hessian[i] << "\t";
-        //            }
-        //            cout << "\nright column: ";
-        //            for (integer i=0; i< _hess_14_lower_mat_nnz; i++) {
-        //                cout << p_hessian_fourth_block[i] << "\t";
-        //            }
-        //            cout << "\nright column end: ";
-        //            for (integer i=0; i< _hess_35_mat_nnz; i++) {
-        //                cout << p_hessian_fifth_block[i] << "\t";
-        //            }
-        //            cout << "\n\n\n";
-        //            cout << "\nhessian: ";
-        //            for (integer i=0; i< getNlpHessianNnz(); i++) {
-        //                cout << hessian_out[i] << "\t";
-        //            }
-        //            cout << "\n\n\n";
 
         p_current_constraint_lambda += _dim_q;
         p_current_hessian += getNlpHessianLeftColumnBlockNnz() + getNlpHessianCentreColumnBlockNnz();

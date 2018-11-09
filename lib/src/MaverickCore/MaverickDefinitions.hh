@@ -14,6 +14,8 @@
 #include <sstream>
 #include <vector>
 
+#define MAVERICK_RESTRICT
+
 namespace Maverick {
 
   typedef double real;

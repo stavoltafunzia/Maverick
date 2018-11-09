@@ -1,4 +1,4 @@
-#include "MidpointOcpSolutionSinglePhase.hh"
+#include "RK1OcpSolutionSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickSingleton.hh"
 #include "MaverickUtils/GenericFunction/GF1ASpline.hh"
@@ -21,10 +21,11 @@ using namespace std;
 
 namespace Maverick {
 
-  MidpointOcpSolutionSinglePhase::MidpointOcpSolutionSinglePhase() {}
+  RK1OcpSolutionSinglePhase::RK1OcpSolutionSinglePhase() {}
 
-  MidpointOcpSolutionSinglePhase::MidpointOcpSolutionSinglePhase(MidpointOcpSolutionSinglePhase const &ocp_solution) {
-    setSolution(ocp_solution.getTarget(),
+  RK1OcpSolutionSinglePhase::RK1OcpSolutionSinglePhase(RK1OcpSolutionSinglePhase const &ocp_solution) {
+    setSolution(ocp_solution._alpha,
+                ocp_solution.getTarget(),
                 ocp_solution.getDiscretisationPoints(),
                 ocp_solution.getCumulativeTarget(),
                 ocp_solution.getIntegrandTarget(),
@@ -52,9 +53,10 @@ namespace Maverick {
                 ocp_solution.getBoundaryConditionsMultipliers());
   }
 
-  MidpointOcpSolutionSinglePhase &
-  MidpointOcpSolutionSinglePhase::operator=(const MidpointOcpSolutionSinglePhase &ocp_solution) {
-    setSolution(ocp_solution.getTarget(),
+  RK1OcpSolutionSinglePhase &
+  RK1OcpSolutionSinglePhase::operator=(const RK1OcpSolutionSinglePhase &ocp_solution) {
+    setSolution(ocp_solution._alpha,
+                ocp_solution.getTarget(),
                 ocp_solution.getDiscretisationPoints(),
                 ocp_solution.getCumulativeTarget(),
                 ocp_solution.getIntegrandTarget(),
@@ -84,11 +86,11 @@ namespace Maverick {
   }
 
 
-  MidpointOcpSolutionSinglePhase::~MidpointOcpSolutionSinglePhase() {
+  RK1OcpSolutionSinglePhase::~RK1OcpSolutionSinglePhase() {
     clearPointers();
   }
 
-  void MidpointOcpSolutionSinglePhase::clearPointers() {
+  void RK1OcpSolutionSinglePhase::clearPointers() {
     if (_gf1a_cumulative_target != nullptr)
       delete _gf1a_cumulative_target;
     _gf1a_cumulative_target = nullptr;
@@ -117,13 +119,14 @@ namespace Maverick {
   }
 
   // get a copy
-  unique_ptr<OcpSolutionSinglePhase> MidpointOcpSolutionSinglePhase::copy() const {
-    return std::unique_ptr<OcpSolutionSinglePhase>(new MidpointOcpSolutionSinglePhase(*this));
+  unique_ptr<OcpSolutionSinglePhase> RK1OcpSolutionSinglePhase::copy() const {
+    return std::unique_ptr<OcpSolutionSinglePhase>(new RK1OcpSolutionSinglePhase(*this));
   }
 
   //setter
 
-  void MidpointOcpSolutionSinglePhase::setSolution(real const target,
+  void RK1OcpSolutionSinglePhase::setSolution(real const alpha,
+                                              real const target,
                                                    vec_1d_real const &zeta,
                                                    vec_1d_real const &cumulative_target,
                                                    vec_1d_real const &integrand_target,
@@ -150,7 +153,8 @@ namespace Maverick {
     vec_2d_real fo_eqns_mult_zeros(fo_eqns.size(), vec_1d_intervals_zeros);
     vec_1d_real bcs_mult_zero = vec_1d_real(boundary_conditions.size(), 0);
 
-    setSolution(target,
+    setSolution(alpha,
+                target,
                 zeta,
                 cumulative_target,
                 integrand_target,
@@ -180,7 +184,8 @@ namespace Maverick {
     );
   }
 
-  void MidpointOcpSolutionSinglePhase::setSolution(real const target,
+  void RK1OcpSolutionSinglePhase::setSolution(real const alpha,
+                                              real const target,
                                                    vec_1d_real const &zeta,
                                                    vec_1d_real const &cumulative_target,
                                                    vec_1d_real const &integrand_target,
@@ -207,6 +212,7 @@ namespace Maverick {
                                                    vec_2d_real const &fo_eqns_multipliers,
                                                    vec_1d_real const &bcs_multipliers) {
 
+    _alpha = alpha;
     _target = target;
     _zeta = zeta;
     _cumulative_target = cumulative_target;
@@ -237,7 +243,7 @@ namespace Maverick {
 
     if (!areVectorsConsistent()) {
       MaverickSingleton::getInstance().Log(InfoLevel::info_level_warning,
-                                           "MidpointOcpSolutionSinglePhase::setSolution: solution has been set with non consistent vectors length. Solution will be cleared.\n");
+                                           "RK1OcpSolutionSinglePhase::setSolution: solution has been set with non consistent vectors length. Solution will be cleared.\n");
       clear();
       return;
     }
@@ -245,7 +251,7 @@ namespace Maverick {
     buildGf1a();
   }
 
-  bool MidpointOcpSolutionSinglePhase::areVectorsConsistent() const {
+  bool RK1OcpSolutionSinglePhase::areVectorsConsistent() const {
 
     if ((_states_controls_upper_bounds_multipliers.size() != _states_controls.size()) ||
         (_states_controls_lower_bounds_multipliers.size() != _states_controls.size()) ||
@@ -300,7 +306,7 @@ namespace Maverick {
     return true;
   }
 
-  void MidpointOcpSolutionSinglePhase::buildGf1a() {
+  void RK1OcpSolutionSinglePhase::buildGf1a() {
     clearPointers();
 
     using data_touple = std::tuple<std::vector<MaverickUtils::GenericFunction1AInterface *> *,
@@ -374,13 +380,13 @@ namespace Maverick {
         _gf1a_cumulative_target = tmp_gf1a;
       }
     } else { // in this case build the splines
-      vec_1d_real zeta_midpoint = extractMidpoints(_zeta);
+      vec_1d_real zeta_alpha = extractAlphaPoints(_zeta, _alpha);
 
       for (auto touple_data : all_spline_vecs_and_data) {
         auto p_spline_vec = std::get<0>(touple_data);
         auto p_data_vec = std::get<1>(touple_data);
         auto is_point = std::get<2>(touple_data);
-        auto const & this_zeta = is_point ? _zeta : zeta_midpoint;
+        auto const & this_zeta = is_point ? _zeta : zeta_alpha;
 
         for (auto & data : *p_data_vec) {
           GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
@@ -393,7 +399,7 @@ namespace Maverick {
       {
         GF1A_TYPE *tmp_gf1a = new GF1A_TYPE();
         tmp_gf1a->setCheckRange(SPLINE_CHECK_RANGE);
-        tmp_gf1a->setup(SPLINE_TYPE, zeta_midpoint, _integrand_target, SPLINE_EXTEND_RANGE);
+        tmp_gf1a->setup(SPLINE_TYPE, zeta_alpha, _integrand_target, SPLINE_EXTEND_RANGE);
         _gf1a_integrand_target = tmp_gf1a;
 
         tmp_gf1a = new GF1A_TYPE();
@@ -405,7 +411,7 @@ namespace Maverick {
     }
   }
 
-  void MidpointOcpSolutionSinglePhase::clear() {
+  void RK1OcpSolutionSinglePhase::clear() {
     _target = 0;
     _cumulative_target = {};
     _integrand_target = {};
@@ -435,11 +441,11 @@ namespace Maverick {
     _bcs_multipliers = {};
   }
 
-  void MidpointOcpSolutionSinglePhase::writeMeshVarsToStream(ostream &body, ostream &header) const {
+  void RK1OcpSolutionSinglePhase::writeMeshVarsToStream(ostream &body, ostream &header) const {
     writeMeshVarsToStream(body, header, false, 0);
   }
 
-  void MidpointOcpSolutionSinglePhase::writeMeshVarsToStream(ostream &body, ostream &header, bool const add_phase_index,
+  void RK1OcpSolutionSinglePhase::writeMeshVarsToStream(ostream &body, ostream &header, bool const add_phase_index,
                                                              integer const phase_index) const {
     //write solution to output in the following sequence:
 
@@ -517,7 +523,7 @@ namespace Maverick {
     }
   }
 
-  void MidpointOcpSolutionSinglePhase::evalAtMesh(real zeta,
+  void RK1OcpSolutionSinglePhase::evalAtMesh(real zeta,
                                                   integer const num_states_controls, real *states_controls,
                                                   real *states_controls_upper_bounds_mult,
                                                   real *states_controls_lower_bounds_mult,
@@ -540,12 +546,12 @@ namespace Maverick {
     if ((states_controls != nullptr) || (states_controls_upper_bounds_mult != nullptr) ||
         (states_controls_lower_bounds_mult != nullptr))
       MAVERICK_ASSERT(num_states_controls == _states_controls.size(),
-                      "MidpointOcpSolutionSinglePhase::evalAtMesh: wrong states and controls size.\n")
+                      "RK1OcpSolutionSinglePhase::evalAtMesh: wrong states and controls size.\n")
 
     if ((algebraic_states_controls != nullptr) || (algebraic_states_controls_upper_bounds_mult != nullptr) ||
         (algebraic_states_controls_lower_bounds_mult != nullptr))
       MAVERICK_ASSERT(num_alg_states_controls == _algebraic_states_controls.size(),
-                      "MidpointOcpSolutionSinglePhase::evalAtMesh: wrong algerbaic states and controls size.\n")
+                      "RK1OcpSolutionSinglePhase::evalAtMesh: wrong algerbaic states and controls size.\n")
 
     if (int_constr != nullptr)
       MAVERICK_ASSERT(num_int_constr == _int_constr.size(),
@@ -602,7 +608,7 @@ namespace Maverick {
           data.first[i] = (*data.second)[i]->funcEval(zeta);
   }
 
-  void MidpointOcpSolutionSinglePhase::eval(real const initial_zeta, real const final_zeta,
+  void RK1OcpSolutionSinglePhase::eval(real const initial_zeta, real const final_zeta,
 
                                             integer const num_parameters, real *parameters,
                                             real *params_upper_bounds_mult, real *params_lower_bounds_mult,
@@ -616,7 +622,7 @@ namespace Maverick {
 
     if ((parameters != nullptr) || (params_upper_bounds_mult != nullptr) || (params_lower_bounds_mult != nullptr))
       MAVERICK_ASSERT(num_parameters == _parameters.size(),
-                      "MidpointOcpSolutionSinglePhase::evalParams wrong parameter size.\n")
+                      "RK1OcpSolutionSinglePhase::evalParams wrong parameter size.\n")
 
     if ((int_constr_at_end != nullptr) || (int_constr_mult != nullptr))
       MAVERICK_ASSERT(num_int_constr == _int_constr_multipliers.size(),
@@ -656,74 +662,74 @@ namespace Maverick {
   }
 
   // getters
-  real MidpointOcpSolutionSinglePhase::getTarget() const { return _target; }
+  real RK1OcpSolutionSinglePhase::getTarget() const { return _target; }
 
-  vec_1d_real const &MidpointOcpSolutionSinglePhase::getCumulativeTarget() const { return _cumulative_target; }
+  vec_1d_real const &RK1OcpSolutionSinglePhase::getCumulativeTarget() const { return _cumulative_target; }
 
-  vec_1d_real const &MidpointOcpSolutionSinglePhase::getIntegrandTarget() const { return _integrand_target; }
+  vec_1d_real const &RK1OcpSolutionSinglePhase::getIntegrandTarget() const { return _integrand_target; }
 
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getStatesControls() const { return _states_controls; }
-
-  vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getAlgebraicStatesControls() const { return _algebraic_states_controls; }
-
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getPointConstraints() const { return _point_constraints; }
-
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getPathConstraints() const { return _path_constr; }
-
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getIntegralConstraints() const { return _int_constr; }
-
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getFoEquations() const { return _fo_eqns; }
-
-  vec_1d_real const &MidpointOcpSolutionSinglePhase::getParameters() const { return _parameters; }
-
-  vec_1d_real const &MidpointOcpSolutionSinglePhase::getDiscretisationPoints() const { return _zeta; }
-
-  vec_1d_real const &MidpointOcpSolutionSinglePhase::getBoundaryConditions() const { return _boundary_conditions; }
-
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getPostProcessing() const { return _post_processing; }
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getStatesControls() const { return _states_controls; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getDifferentialPostProcessing() const { return _differential_post_processing; }
+  RK1OcpSolutionSinglePhase::getAlgebraicStatesControls() const { return _algebraic_states_controls; }
+
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getPointConstraints() const { return _point_constraints; }
+
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getPathConstraints() const { return _path_constr; }
+
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getIntegralConstraints() const { return _int_constr; }
+
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getFoEquations() const { return _fo_eqns; }
+
+  vec_1d_real const &RK1OcpSolutionSinglePhase::getParameters() const { return _parameters; }
+
+  vec_1d_real const &RK1OcpSolutionSinglePhase::getDiscretisationPoints() const { return _zeta; }
+
+  vec_1d_real const &RK1OcpSolutionSinglePhase::getBoundaryConditions() const { return _boundary_conditions; }
+
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getPostProcessing() const { return _post_processing; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getIntegralPostProcessing() const { return _integral_post_processing; }
+  RK1OcpSolutionSinglePhase::getDifferentialPostProcessing() const { return _differential_post_processing; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getStatesControlsUpperBoundsMultipliers() const { return _states_controls_upper_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getIntegralPostProcessing() const { return _integral_post_processing; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getStatesControlsLowerBoundsMultipliers() const { return _states_controls_lower_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getStatesControlsUpperBoundsMultipliers() const { return _states_controls_upper_bounds_multipliers; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getAlgebraicStatesControlsUpperBoundsMultipliers() const { return _algebraic_states_controls_upper_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getStatesControlsLowerBoundsMultipliers() const { return _states_controls_lower_bounds_multipliers; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getAlgebraicStatesControlsLowerBoundsMultipliers() const { return _algebraic_states_controls_lower_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getAlgebraicStatesControlsUpperBoundsMultipliers() const { return _algebraic_states_controls_upper_bounds_multipliers; }
+
+  vec_2d_real const &
+  RK1OcpSolutionSinglePhase::getAlgebraicStatesControlsLowerBoundsMultipliers() const { return _algebraic_states_controls_lower_bounds_multipliers; }
 
   vec_1d_real const &
-  MidpointOcpSolutionSinglePhase::getParametersUpperBoundsMultipliers() const { return _parameters_upper_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getParametersUpperBoundsMultipliers() const { return _parameters_upper_bounds_multipliers; }
 
   vec_1d_real const &
-  MidpointOcpSolutionSinglePhase::getParametersLowerBoundsMultipliers() const { return _parameters_lower_bounds_multipliers; }
+  RK1OcpSolutionSinglePhase::getParametersLowerBoundsMultipliers() const { return _parameters_lower_bounds_multipliers; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getPointConstraintsMultipliers() const { return _point_constraints_multipliers; }
+  RK1OcpSolutionSinglePhase::getPointConstraintsMultipliers() const { return _point_constraints_multipliers; }
 
   vec_2d_real const &
-  MidpointOcpSolutionSinglePhase::getPathConstraintsMultipliers() const { return _path_constr_multipliers; }
+  RK1OcpSolutionSinglePhase::getPathConstraintsMultipliers() const { return _path_constr_multipliers; }
 
   vec_1d_real const &
-  MidpointOcpSolutionSinglePhase::getIntConstraintsMultipliers() const { return _int_constr_multipliers; }
+  RK1OcpSolutionSinglePhase::getIntConstraintsMultipliers() const { return _int_constr_multipliers; }
 
-  vec_2d_real const &MidpointOcpSolutionSinglePhase::getFoEqnsMultipliers() const { return _fo_eqns_multipliers; }
+  vec_2d_real const &RK1OcpSolutionSinglePhase::getFoEqnsMultipliers() const { return _fo_eqns_multipliers; }
 
   vec_1d_real const &
-  MidpointOcpSolutionSinglePhase::getBoundaryConditionsMultipliers() const { return _bcs_multipliers; }
+  RK1OcpSolutionSinglePhase::getBoundaryConditionsMultipliers() const { return _bcs_multipliers; }
 
-  void MidpointOcpSolutionSinglePhase::writeContentToGC(GC::GenericContainer &out_gc, MaverickOcp const *const p_ocp,
+  void RK1OcpSolutionSinglePhase::writeContentToGC(GC::GenericContainer &out_gc, MaverickOcp const *const p_ocp,
                                                         integer const i_phase) const {
-    
+
     using name_func = std::function<string(integer)>;
     name_func get_sc_name = [p_ocp, i_phase](integer i) {
       auto num_s = p_ocp->numberOfStates(i_phase);
@@ -770,7 +776,7 @@ namespace Maverick {
       name_and_vec("lambda_boundary_conditions", &_bcs_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->boundaryConditionName(i_phase, i);}),
       name_and_vec("lambda_integral_constraints", &_int_constr_multipliers, [p_ocp, i_phase](integer i){return "lambda_" + p_ocp->intConstraintName(i_phase, i);})
     };
-    
+
     auto insert_values_to_gc_on_zeta = [&names_and_spline_vecs, &names_and_splines, p_ocp](GC::GenericContainer & out_gc, vec_1d_real const & zeta){
       for (auto & name_and_spline_vec : names_and_spline_vecs) {
         auto const & splines_vec = *(std::get<1>(name_and_spline_vec));
@@ -798,9 +804,9 @@ namespace Maverick {
             out_gc[get_name(i)].set_vec_real(tmp_vec);
           }
         }
-        
+
       }
-      
+
       for (auto & name_and_spline : names_and_splines) {
         auto & name = name_and_spline.first;
         auto  p_spline = name_and_spline.second;
@@ -811,7 +817,7 @@ namespace Maverick {
         out_gc[name].set_vec_real(tmp_vec);
       }
     };
-    
+
     out_gc.clear();
     out_gc["zeta"].set_vec_real(_zeta);
     out_gc["target"].set_real(getTarget());
@@ -827,15 +833,15 @@ namespace Maverick {
           out_gc[std::get<2>(names_and_vec)(i)] = (*vec)[i];
     }
     insert_values_to_gc_on_zeta(out_gc, _zeta);
-    
-    GC::GenericContainer &gc_midpoint = out_gc["midpoint_vars"];
-    vec_1d_real zeta_center;
-    zeta_center.reserve(_zeta.size()-1);
+
+    GC::GenericContainer &gc_alpha_point = out_gc["alpha_point_vars"];
+    vec_1d_real zeta_alpha;
+    zeta_alpha.reserve(_zeta.size()-1);
     for (size index = 0; index < _zeta.size() - 1; index++) {
-      zeta_center.push_back((_zeta[index] + _zeta[index + 1]) / 2.0);
+      zeta_alpha.push_back( _zeta[index] * (1 - _alpha) + _zeta[index + 1] * _alpha);
     }
-    gc_midpoint["zeta"].set_vec_real(zeta_center);
-    insert_values_to_gc_on_zeta(gc_midpoint, zeta_center);
+    gc_alpha_point["zeta"].set_vec_real(zeta_alpha);
+    insert_values_to_gc_on_zeta(gc_alpha_point, zeta_alpha);
   }
 
   static std::vector<real>
@@ -852,12 +858,12 @@ namespace Maverick {
     return out;
   }
 
-  std::unique_ptr<MidpointOcpSolutionSinglePhase>
-  MidpointOcpSolutionSinglePhase::convertFromRealTable(real_table const &table, MaverickOcp const &ocp_problem,
+  std::unique_ptr<RK1OcpSolutionSinglePhase>
+  RK1OcpSolutionSinglePhase::convertFromRealTable(real_table const &table, MaverickOcp const &ocp_problem,
                                                        integer const i_phase,
                                                        std::vector<std::string> &found_variables) {
 
-    MidpointOcpSolutionSinglePhase *sol = new MidpointOcpSolutionSinglePhase();
+    RK1OcpSolutionSinglePhase *sol = new RK1OcpSolutionSinglePhase();
 
     vec_1d_real const &zeta = table.at("zeta");
     vec_1d_real zeta_center;
@@ -924,8 +930,8 @@ namespace Maverick {
     }
 
     //TODO: find multiplier in guess
-
-    sol->setSolution(0, //target
+    sol->setSolution(0.5,
+                     0, //target
                      zeta,
                      zeros_zeta_1d, zeros_zeta_center_1d, //cumulative and integrand target
                      states_controls, algebraic_states_controls, params,
@@ -933,6 +939,6 @@ namespace Maverick {
                      boundary_conditions,
                      post_processing, differential_post_processing, integral_post_processing);
 
-    return std::unique_ptr<MidpointOcpSolutionSinglePhase>(sol);
+    return std::unique_ptr<RK1OcpSolutionSinglePhase>(sol);
   }
 }

@@ -1,4 +1,4 @@
-#include "MidpointMeshSinglePhase.hh"
+#include "RK1MeshSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 
@@ -12,37 +12,48 @@ using namespace std;
 
 namespace Maverick {
 
-  MidpointMeshSinglePhase::MidpointMeshSinglePhase() {}
-
-  MidpointMeshSinglePhase::MidpointMeshSinglePhase(MidpointMeshSinglePhase const &mesh) {
-    _zeta = mesh.getDiscretisationPoints();
+  RK1MeshSinglePhase::RK1MeshSinglePhase(real const default_alpha) {
+    _default_alpha = default_alpha;
+    _alpha = _default_alpha;
   }
 
-  MidpointMeshSinglePhase::~MidpointMeshSinglePhase() {}
+  RK1MeshSinglePhase::RK1MeshSinglePhase(RK1MeshSinglePhase const &mesh) {
+    _zeta = mesh.getDiscretisationPoints();
+    _alpha = mesh._alpha;
+    _default_alpha = mesh._default_alpha;
+  }
 
-  // MidpointMeshSinglePhase interface
+  RK1MeshSinglePhase::RK1MeshSinglePhase(RK1MeshSinglePhase && mesh) {
+    _alpha = mesh._alpha;
+    _zeta = std::move(mesh._zeta);
+    _default_alpha = mesh._default_alpha;
+  }
 
-  real MidpointMeshSinglePhase::getInitialZeta() const {
+  RK1MeshSinglePhase::~RK1MeshSinglePhase() {}
+
+  // RK1MeshSinglePhase interface
+
+  real RK1MeshSinglePhase::getInitialZeta() const {
     MAVERICK_SKIPABLE_ASSERT(_number_of_mesh_points > 0,
-                             "MidpointMeshSinglePhase::getInitialZeta: mesh not initialized yet")
+                             "RK1MeshSinglePhase::getInitialZeta: mesh not initialized yet")
     return _zeta.front();
   }
 
-  real MidpointMeshSinglePhase::getFinalZeta() const {
+  real RK1MeshSinglePhase::getFinalZeta() const {
     MAVERICK_SKIPABLE_ASSERT(_number_of_mesh_points > 0,
-                             "MidpointMeshSinglePhase::getFinalZeta: mesh not initialized yet")
+                             "RK1MeshSinglePhase::getFinalZeta: mesh not initialized yet")
     return _zeta.back();
   }
 
-  integer MidpointMeshSinglePhase::getNumberOfDiscretisationPoints() const {
+  integer RK1MeshSinglePhase::getNumberOfDiscretisationPoints() const {
     return (integer) _zeta.size();
   }
 
-  vec_1d_real const &MidpointMeshSinglePhase::getDiscretisationPoints() const {
+  vec_1d_real const &RK1MeshSinglePhase::getDiscretisationPoints() const {
     return _zeta;
   }
 
-  void MidpointMeshSinglePhase::setup(GC::GenericContainer const &mesh_data) {
+  void RK1MeshSinglePhase::setup(GC::GenericContainer const &mesh_data) {
     //first check if zeta points are explicitely declared
     bool are_zeta_points_declared = findVecRealFromGenericContainer(mesh_data, "MeshPoints", _zeta);
     bool are_segments_declared = false;
@@ -57,9 +68,17 @@ namespace Maverick {
 
       if (are_segments_declared) {
         // first, find if the begin of the mesh is specified
-        real mesh_zeta0 = getExpectedMeshBegin();
-        findRealFromGenericContainer(mesh_data, "initial_zeta", mesh_zeta0);
-        setMeshBegin(mesh_zeta0);
+        {
+          real mesh_zeta0 = getExpectedMeshBegin();
+          findRealFromGenericContainer(mesh_data, "initial_zeta", mesh_zeta0);
+          setMeshBegin(mesh_zeta0);
+        }
+        
+        // find the value of alpha
+        {
+          _alpha = _default_alpha;
+          findRealFromGenericContainer(mesh_data, "alpha", _alpha);
+        }
 
         // now build the segments
         unsigned num_el = gc_segments->get_num_elements();
@@ -115,68 +134,68 @@ namespace Maverick {
     MAVERICK_ASSERT(getNumberOfDiscretisationPoints() > 2, "Mesh: number of mesh points must be grater than two.\n")
   }
 
-  unique_ptr<MeshSinglePhase> MidpointMeshSinglePhase::copy() const {
-    return unique_ptr<MeshSinglePhase>(new MidpointMeshSinglePhase(*this));
+  unique_ptr<MeshSinglePhase> RK1MeshSinglePhase::copy() const {
+    return unique_ptr<MeshSinglePhase>(new RK1MeshSinglePhase(*this));
   }
 
-  void MidpointMeshSinglePhase::writeContentToGC(GC::GenericContainer &out_gc) const {
+  void RK1MeshSinglePhase::writeContentToGC(GC::GenericContainer &out_gc) const {
     out_gc["zeta"].set_vec_real(_zeta);
   }
 
   // additional methods
 
-  void MidpointMeshSinglePhase::setDiscretisationPoints(vec_1d_real const &zeta) {
+  void RK1MeshSinglePhase::setDiscretisationPoints(vec_1d_real const &zeta) {
     _zeta = zeta;
   }
 
-  real MidpointMeshSinglePhase::getZeta(integer const mesh_point_index) const {
+  real RK1MeshSinglePhase::getZetaAtIndex(integer const mesh_point_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_point_index < _number_of_mesh_points,
-                             "MidpointMeshSinglePhase::getZeta: number of mesh point " << mesh_point_index
+                             "RK1MeshSinglePhase::getZeta: number of mesh point " << mesh_point_index
                                                                                        << " greater than "
                                                                                        << _number_of_mesh_points - 1
                                                                                        << ".")
     return _zeta[mesh_point_index];
   }
 
-  real MidpointMeshSinglePhase::getZetaLeft(integer const mesh_interval_index) const {
+  real RK1MeshSinglePhase::getZetaLeft(integer const mesh_interval_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
-                             "MidpointMeshSinglePhase::getZetaLeft: number of mesh interval " << mesh_interval_index
+                             "RK1MeshSinglePhase::getZetaLeft: number of mesh interval " << mesh_interval_index
                                                                                               << " greater than " <<
                                                                                               _number_of_mesh_points - 2
                                                                                               << ".")
     return _zeta[mesh_interval_index];
   }
 
-  real MidpointMeshSinglePhase::getZetaRight(integer const mesh_interval_index) const {
+  real RK1MeshSinglePhase::getZetaRight(integer const mesh_interval_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
-                             "MidpointMeshSinglePhase::getZetaRight: number of mesh interval " << mesh_interval_index
+                             "RK1MeshSinglePhase::getZetaRight: number of mesh interval " << mesh_interval_index
                                                                                                << " greater than " <<
                                                                                                _number_of_mesh_points -
                                                                                                2 << ".")
     return _zeta[mesh_interval_index + 1];
   }
 
-  real MidpointMeshSinglePhase::getZetaCenter(integer const mesh_interval_index) const {
+  real RK1MeshSinglePhase::getZetaAlpha(integer const mesh_interval_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
-                             "MidpointMeshSinglePhase::getZetaCenter: number of mesh interval " << mesh_interval_index
+                             "RK1MeshSinglePhase::getZetaCenter: number of mesh interval " << mesh_interval_index
                                                                                                 << " greater than " <<
                                                                                                 _number_of_mesh_points -
                                                                                                 2 << ".")
-    return (_zeta[mesh_interval_index + 1] + _zeta[mesh_interval_index]) / 2;
+    return _zeta[mesh_interval_index] * _alpha + _zeta[mesh_interval_index + 1] * (1 - _alpha);
   }
 
-  real MidpointMeshSinglePhase::getDz(integer const mesh_interval_index) const {
+  real RK1MeshSinglePhase::getDz(integer const mesh_interval_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
-                             "MidpointMeshSinglePhase::getDz: number of mesh interval " << mesh_interval_index
+                             "RK1MeshSinglePhase::getDz: number of mesh interval " << mesh_interval_index
                                                                                         << " greater than "
                                                                                         << _number_of_mesh_points - 2
                                                                                         << ".")
     return (_zeta[mesh_interval_index + 1] - _zeta[mesh_interval_index]);
   }
 
-  real MidpointMeshSinglePhase::getDzDual(integer const mesh_point_index) const {
+  real RK1MeshSinglePhase::getDzAverageAtIndex(integer const mesh_point_index) const {
     MAVERICK_SKIPABLE_ASSERT(mesh_point_index < _number_of_mesh_points,
-                             "MidpointMeshSinglePhase::getDzDual: number of mesh point " << mesh_point_index
+                             "RK1MeshSinglePhase::getDzDual: number of mesh point " << mesh_point_index
                                                                                          << " greater than "
                                                                                          << _number_of_mesh_points
                                                                                          << ".")
@@ -187,7 +206,7 @@ namespace Maverick {
     return (_zeta[mesh_point_index + 1] - _zeta[mesh_point_index - 1]) / 2.0;
   }
 
-  void MidpointMeshSinglePhase::addSegment(Segment const segment) {
+  void RK1MeshSinglePhase::addSegment(Segment const segment) {
     if (segment._segment_type == Segment::SegmentType::NumPoints) {
       integer num_intervals = segment._num_intervals;
       if (_number_of_mesh_points == 0) {
@@ -211,7 +230,7 @@ namespace Maverick {
     }
   }
 
-  void MidpointMeshSinglePhase::setMeshBegin(real zeta_0) {
+  void RK1MeshSinglePhase::setMeshBegin(real zeta_0) {
     if (_number_of_mesh_points == 0) {
       _zeta.push_back(zeta_0);
     } else {
@@ -219,23 +238,32 @@ namespace Maverick {
     }
   }
 
-  real MidpointMeshSinglePhase::getExpectedMeshBegin() const {
+  real RK1MeshSinglePhase::getExpectedMeshBegin() const {
     if (_number_of_mesh_points == 0)
       return 0;
     return _zeta[0];
   }
-
-  MidpointMeshSinglePhase &MidpointMeshSinglePhase::operator=(MidpointMeshSinglePhase const &mesh) {
-    _zeta = mesh.getDiscretisationPoints();
+  
+  RK1MeshSinglePhase &RK1MeshSinglePhase::operator=(RK1MeshSinglePhase const & mesh) {
+    _alpha = mesh._alpha;
+    _zeta = mesh._zeta;
+    _default_alpha = mesh._default_alpha;
     return *this;
   }
-
-  MidpointMeshSinglePhase &MidpointMeshSinglePhase::operator<<(Segment const &segment) {
+  
+  RK1MeshSinglePhase &RK1MeshSinglePhase::operator=(RK1MeshSinglePhase && mesh) {
+    _alpha = mesh._alpha;
+    _zeta = std::move(mesh._zeta);
+    _default_alpha = mesh._default_alpha;
+    return *this;
+  }
+  
+  RK1MeshSinglePhase &RK1MeshSinglePhase::operator<<(Segment const &segment) {
     addSegment(segment);
     return *this;
   }
 
-  MidpointMeshSinglePhase &MidpointMeshSinglePhase::operator<<(MidpointMeshSinglePhase const &mesh) {
+  RK1MeshSinglePhase &RK1MeshSinglePhase::operator<<(RK1MeshSinglePhase const &mesh) {
     vector<real> mesh_2_add = mesh.getDiscretisationPoints();
     MAVERICK_ASSERT(isVectorIncreasingValues(mesh_2_add.data(), (integer) mesh_2_add.size()),
                     "Mesh::operator << : non monotonically increasing zeta.\n")
@@ -245,27 +273,26 @@ namespace Maverick {
     return *this;
   }
 
-  MidpointMeshSinglePhase::Segment::Segment(real const length, real const grid_size) : _length(length),
+  RK1MeshSinglePhase::Segment::Segment(real const length, real const grid_size) : _length(length),
                                                                                        _num_intervals(0),
                                                                                        _grid_size(grid_size),
                                                                                        _segment_type(
-                                                                                           MidpointMeshSinglePhase::Segment::SegmentType::GridSize) {
-    MAVERICK_ASSERT(_length > 0, "MidpointMeshSinglePhase::Segment: nonpositive segment length not allowed.\n")
-    MAVERICK_ASSERT(_grid_size > 0, "MidpointMeshSinglePhase::Segment: nonpositive segment grid size not allowed.\n")
+                                                                                           RK1MeshSinglePhase::Segment::SegmentType::GridSize) {
+    MAVERICK_ASSERT(_length > 0, "RK1MeshSinglePhase::Segment: nonpositive segment length not allowed.\n")
+    MAVERICK_ASSERT(_grid_size > 0, "RK1MeshSinglePhase::Segment: nonpositive segment grid size not allowed.\n")
   }
 
-  MidpointMeshSinglePhase::Segment::Segment(real const length, integer const num_intervals) : _length(length),
-                                                                                              _num_intervals(
-                                                                                                  num_intervals),
+  RK1MeshSinglePhase::Segment::Segment(real const length, integer const num_intervals) : _length(length),
+                                                                                              _num_intervals(num_intervals),
                                                                                               _grid_size(0),
                                                                                               _segment_type(
-                                                                                                  MidpointMeshSinglePhase::Segment::SegmentType::NumPoints) {
-    MAVERICK_ASSERT(_length > 0, "MidpointMeshSinglePhase::Segment: nonpositive segment length not allowed.\n")
+                                                                                                  RK1MeshSinglePhase::Segment::SegmentType::NumPoints) {
+    MAVERICK_ASSERT(_length > 0, "RK1MeshSinglePhase::Segment: nonpositive segment length not allowed.\n")
     MAVERICK_ASSERT(_num_intervals > 0,
-                    "MidpointMeshSinglePhase::Segment: nonpositive segment number of intervals not allowed.\n")
+                    "RK1MeshSinglePhase::Segment: nonpositive segment number of intervals not allowed.\n")
   }
 
-  bool MidpointMeshSinglePhase::isVectorIncreasingValues(real const values[], integer const length) const {
+  bool RK1MeshSinglePhase::isVectorIncreasingValues(real const values[], integer const length) const {
     for (integer i = 0; i < length - 1; i++) {
       if (values[i + 1] <= values[i]) return false;
     }

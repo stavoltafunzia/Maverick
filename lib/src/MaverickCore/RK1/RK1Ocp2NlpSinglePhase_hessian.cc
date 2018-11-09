@@ -1,4 +1,4 @@
-#include "MidpointOcp2NlpSinglePhase.hh"
+#include "RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/MaverickFunctions.hh"
 
 using namespace Maverick;
@@ -12,7 +12,7 @@ using namespace Maverick;
 // |                                    |
 // +------------------------------------+
 
-void MidpointOcp2NlpSinglePhase::setupForNlpHessianMatrixes() {
+void RK1Ocp2NlpSinglePhase::setupForNlpHessianMatrixes() {
 
   // get all the required matrixes
 
@@ -942,8 +942,6 @@ void MidpointOcp2NlpSinglePhase::setupForNlpHessianMatrixes() {
                           tmp_dxu_xu_mat; // TODO: REMOVE THE NUMERICAL ZERO ENTRIES. TO MODIFY ALSO THE MATRIX CACLULATIONS IN SECTION BELOW
 
   _hess_yleft_yright_mat_nnz = (integer) hess_yleft_yright_mat.nonZeros();
-  // _p_hess_2_mat_outer_starts = new integer[hess_2_mat.outerSize() + 1];
-  // copyVectorTo( hess_2_mat.outerIndexPtr(), _p_hess_2_mat_outer_starts, (integer) hess_2_mat.outerSize() + 1);
   _p_scale_factor_hess_yleft_yright_mat = new real[_hess_yleft_yright_mat_nnz];
   counter = 0;
   for (integer k = 0; k < hess_yleft_yright_mat.outerSize(); ++k) {
@@ -1084,7 +1082,7 @@ void MidpointOcp2NlpSinglePhase::setupForNlpHessianMatrixes() {
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern(SparseMatrix const &hess_first_y_y_lower_mat,
+void RK1Ocp2NlpSinglePhase::calculateNlpHessianPattern(SparseMatrix const &hess_first_y_y_lower_mat,
                                                             SparseMatrix const &hess_y_ay_mat,
                                                             SparseMatrix const &hess_yleft_yright_mat,
                                                             SparseMatrix const &hess_xi_xf_mat,
@@ -1263,7 +1261,7 @@ void MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern(SparseMatrix const &
   }
 
 #ifdef MAVERICK_DEBUG
-  MAVERICK_ASSERT( index == getNlpHessianNnz(), "MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern: wrong number of hessian nnz. Counted " << index << ",expected, " << getNlpHessianNnz() << ".\n")
+  MAVERICK_ASSERT( index == getNlpHessianNnz(), "RK1Ocp2NlpSinglePhase::calculateNlpHessianPattern: wrong number of hessian nnz. Counted " << index << ",expected, " << getNlpHessianNnz() << ".\n")
 #endif
 }
 
@@ -1274,28 +1272,21 @@ void MidpointOcp2NlpSinglePhase::calculateNlpHessianPattern(SparseMatrix const &
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const ocp_left_state_control[],
-                                                                   real const ocp_state_control[],
-                                                                   real const ocp_state_control_derivative[],
-                                                                   real const ocp_algebraic_state_control[],
-                                                                   real const ocp_params[],
-                                                                   real const zeta_left,
-                                                                   real const zeta,
-                                                                   real const d_zeta,
-                                                                   real const d_zeta_dual,
+void RK1Ocp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(ocpStateAtInterval const & ocp_state,
                                                                    real const lambda_0_not_scaled,
                                                                    real const lambda_not_scaled[],
                                                                    real const int_constr_lambda_scaled[],
-                                                                   real hessian_y_y[],
-                                                                   real hessian_y_y_next[],
-                                                                   real hessian_y_p_next[],
+                                                                   real in_hessian_y_y[],
+                                                                   real in_hessian_y_y_next[],
+                                                                   real in_hessian_y_p_next[],
                                                                    SparseMatrix &hess_p_p_lower_mat) const {
 
   // at the mesh middle we have to consider: lagrrange target, fo_eqns, path constraints and constraints
-
-  real const *p_current_lambda = lambda_not_scaled;
-  real const d_zeta_inv = 1.0 / d_zeta;
-  real *p_current_hessian = hessian_y_y;
+  real const * p_current_lambda = lambda_not_scaled;
+  real const d_zeta_inv = 1.0 / ocp_state.d_zeta;
+  MAVERICK_RESTRICT real * p_current_hessian = in_hessian_y_y;
+  MAVERICK_RESTRICT real * hessian_y_y_next = in_hessian_y_y_next;
+  MAVERICK_RESTRICT real * hessian_y_p_next = in_hessian_y_p_next;
 
   // get lagrange hessian
   real lag_hess_xu_xu[_ocp_problem.lagrangeHessXuXuNnz(_i_phase)];
@@ -1308,8 +1299,8 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
   real lag_hess_axu_axu[_ocp_problem.lagrangeHessAxuAxuNnz(_i_phase)];
   real lag_hess_axu_p[_ocp_problem.lagrangeHessAxuPNnz(_i_phase)];
   real lag_hess_p_p[_ocp_problem.lagrangeHessPPNnz(_i_phase)];
-  _ocp_problem.lagrangeHess(_i_phase, ocp_state_control, ocp_state_control_derivative, ocp_algebraic_state_control,
-                            ocp_params, zeta, lambda_0_not_scaled * _inv_scaling_target,
+  _ocp_problem.lagrangeHess(_i_phase, ocp_state.state_control, ocp_state.state_control_derivative, ocp_state.algebraic_state_control,
+                            ocp_state.parameters, ocp_state.zeta_alpha, lambda_0_not_scaled * _inv_scaling_target,
                             lag_hess_xu_xu, lag_hess_xu_dxu, lag_hess_xu_axu, lag_hess_xu_p, lag_hess_dxu_dxu,
                             lag_hess_dxu_axu, lag_hess_dxu_p, lag_hess_axu_axu, lag_hess_axu_p, lag_hess_p_p);
 
@@ -1328,13 +1319,13 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
   real p_inv_scaling_fo_eqns[_dim_fo];
 
   if (_multiply_foeqns_by_dz)
-    multiplyAndCopyVectorTo(_p_inv_scaling_fo_eqns_global, p_inv_scaling_fo_eqns, d_zeta, _dim_fo);
+    multiplyAndCopyVectorTo(_p_inv_scaling_fo_eqns_global, p_inv_scaling_fo_eqns, ocp_state.d_zeta, _dim_fo);
   else
     copyVectorTo(_p_inv_scaling_fo_eqns_global, p_inv_scaling_fo_eqns, _dim_fo);
 
   multiplyAndCopyVectorTo(p_current_lambda, lambda_scaled, p_inv_scaling_fo_eqns, _dim_fo);
-  _ocp_problem.foEqnsHess(_i_phase, ocp_state_control, ocp_state_control_derivative, ocp_algebraic_state_control,
-                          ocp_params, zeta, lambda_scaled,
+  _ocp_problem.foEqnsHess(_i_phase, ocp_state.state_control, ocp_state.state_control_derivative, ocp_state.algebraic_state_control,
+                          ocp_state.parameters, ocp_state.zeta_alpha, lambda_scaled,
                           fo_eqns_hess_xu_xu, fo_eqns_hess_xu_dxu, fo_eqns_hess_xu_axu, fo_eqns_hess_xu_p,
                           fo_eqns_hess_dxu_dxu, fo_eqns_hess_dxu_axu, fo_eqns_hess_dxu_p, fo_eqns_hess_axu_axu,
                           fo_eqns_hess_axu_p, fo_eqns_hess_p_p);
@@ -1355,13 +1346,13 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
   lambda_scaled = new real[_dim_pc];
   real p_inv_scaling_path_constr[_dim_pc];
   if (_multiply_path_constr_by_dz)
-    multiplyAndCopyVectorTo(_p_inv_scaling_path_constr_global, p_inv_scaling_path_constr, d_zeta, _dim_pc);
+    multiplyAndCopyVectorTo(_p_inv_scaling_path_constr_global, p_inv_scaling_path_constr, ocp_state.d_zeta, _dim_pc);
   else
     copyVectorTo(_p_inv_scaling_path_constr_global, p_inv_scaling_path_constr, _dim_pc);
 
   multiplyAndCopyVectorTo(p_current_lambda, lambda_scaled, p_inv_scaling_path_constr, _dim_pc);
-  _ocp_problem.pathConstraintsHess(_i_phase, ocp_state_control, ocp_state_control_derivative,
-                                   ocp_algebraic_state_control, ocp_params, zeta, lambda_scaled,
+  _ocp_problem.pathConstraintsHess(_i_phase, ocp_state.state_control, ocp_state.state_control_derivative,
+                                   ocp_state.algebraic_state_control, ocp_state.parameters, ocp_state.zeta_alpha, lambda_scaled,
                                    path_constr_hess_xu_xu, path_constr_hess_xu_dxu, path_constr_hess_xu_axu,
                                    path_constr_hess_xu_p, path_constr_hess_dxu_dxu, path_constr_hess_dxu_axu,
                                    path_constr_hess_dxu_p, path_constr_hess_axu_axu, path_constr_hess_axu_p,
@@ -1380,8 +1371,8 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
   real int_constr_hess_axu_axu[_ocp_problem.intConstraintsHessAxuAxuNnz(_i_phase)];
   real int_constr_hess_axu_p[_ocp_problem.intConstraintsHessAxuPNnz(_i_phase)];
   real int_constr_hess_p_p[_ocp_problem.intConstraintsHessPPNnz(_i_phase)];
-  _ocp_problem.intConstraintsHess(_i_phase, ocp_state_control, ocp_state_control_derivative,
-                                  ocp_algebraic_state_control, ocp_params, zeta, int_constr_lambda_scaled,
+  _ocp_problem.intConstraintsHess(_i_phase, ocp_state.state_control, ocp_state.state_control_derivative,
+                                  ocp_state.algebraic_state_control, ocp_state.parameters, ocp_state.zeta_alpha, int_constr_lambda_scaled,
                                   int_constr_hess_xu_xu, int_constr_hess_xu_dxu, int_constr_hess_xu_axu,
                                   int_constr_hess_xu_p, int_constr_hess_dxu_dxu, int_constr_hess_dxu_axu,
                                   int_constr_hess_dxu_p, int_constr_hess_axu_axu, int_constr_hess_axu_p,
@@ -1394,20 +1385,22 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
   lambda_scaled = new real[_dim_poc];
   real p_inv_scaling_point_constr[_dim_poc];
   if (_multiply_point_constr_by_dz)
-    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, d_zeta_dual, _dim_poc);
+    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, ocp_state.d_zeta_average, _dim_poc);
   else
     copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
   multiplyAndCopyVectorTo(p_current_lambda, lambda_scaled, p_inv_scaling_point_constr, _dim_poc);
-  _ocp_problem.pointConstraintsHess(_i_phase, ocp_left_state_control, ocp_params, zeta_left, lambda_scaled,
+  _ocp_problem.pointConstraintsHess(_i_phase, ocp_state.left_state_control, ocp_state.parameters, ocp_state.zeta_left, lambda_scaled,
                                     point_constr_hess_xu_xu, point_constr_hess_xu_p, point_constr_hess_p_p);
   p_current_lambda += _dim_poc;
   delete[] lambda_scaled;
 
   // create lagrange matrixes
   integer lag_hess_xu_xu_rows[_ocp_problem.lagrangeHessXuXuNnz(_i_phase)];
-  integer lag_hess_xu_xu_cols[_ocp_problem.lagrangeHessXuXuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessXuXuPattern(_i_phase, lag_hess_xu_xu_rows, lag_hess_xu_xu_cols);
+  {
+    integer lag_hess_xu_xu_cols[_ocp_problem.lagrangeHessXuXuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessXuXuPattern(_i_phase, lag_hess_xu_xu_rows, lag_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_xu_xu_mat(_dim_xu, _dim_xu, _ocp_problem.lagrangeHessXuXuNnz(_i_phase),
                                               _p_lag_hess_xu_xu_outer_start,
                                               lag_hess_xu_xu_rows,
@@ -1415,8 +1408,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                               0);
 
   integer lag_hess_xu_dxu_rows[_ocp_problem.lagrangeHessXuDxuNnz(_i_phase)];
-  integer lag_hess_xu_dxu_cols[_ocp_problem.lagrangeHessXuDxuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessXuDxuPattern(_i_phase, lag_hess_xu_dxu_rows, lag_hess_xu_dxu_cols);
+  {
+    integer lag_hess_xu_dxu_cols[_ocp_problem.lagrangeHessXuDxuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessXuDxuPattern(_i_phase, lag_hess_xu_dxu_rows, lag_hess_xu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_xu_dxu_mat(_dim_xu, _dim_xu, _ocp_problem.lagrangeHessXuDxuNnz(_i_phase),
                                                _p_lag_hess_xu_dxu_outer_start,
                                                lag_hess_xu_dxu_rows,
@@ -1424,8 +1419,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                0);
 
   integer lag_hess_xu_axu_rows[_ocp_problem.lagrangeHessXuAxuNnz(_i_phase)];
-  integer lag_hess_xu_axu_cols[_ocp_problem.lagrangeHessXuAxuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessXuAxuPattern(_i_phase, lag_hess_xu_axu_rows, lag_hess_xu_axu_cols);
+  {
+    integer lag_hess_xu_axu_cols[_ocp_problem.lagrangeHessXuAxuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessXuAxuPattern(_i_phase, lag_hess_xu_axu_rows, lag_hess_xu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_xu_axu_mat(_dim_axu, _dim_xu, _ocp_problem.lagrangeHessXuAxuNnz(_i_phase),
                                                _p_lag_hess_xu_axu_outer_start,
                                                lag_hess_xu_axu_rows,
@@ -1433,8 +1430,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                0);
 
   integer lag_hess_xu_p_rows[_ocp_problem.lagrangeHessXuPNnz(_i_phase)];
-  integer lag_hess_xu_p_cols[_ocp_problem.lagrangeHessXuPNnz(_i_phase)];
-  _ocp_problem.lagrangeHessXuPPattern(_i_phase, lag_hess_xu_p_rows, lag_hess_xu_p_cols);
+  {
+    integer lag_hess_xu_p_cols[_ocp_problem.lagrangeHessXuPNnz(_i_phase)];
+    _ocp_problem.lagrangeHessXuPPattern(_i_phase, lag_hess_xu_p_rows, lag_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_xu_p_mat(_dim_p, _dim_xu, _ocp_problem.lagrangeHessXuPNnz(_i_phase),
                                              _p_lag_hess_xu_p_outer_start,
                                              lag_hess_xu_p_rows,
@@ -1442,8 +1441,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                              0);
 
   integer lag_hess_dxu_dxu_rows[_ocp_problem.lagrangeHessDxuDxuNnz(_i_phase)];
-  integer lag_hess_dxu_dxu_cols[_ocp_problem.lagrangeHessDxuDxuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessDxuDxuPattern(_i_phase, lag_hess_dxu_dxu_rows, lag_hess_dxu_dxu_cols);
+  {
+    integer lag_hess_dxu_dxu_cols[_ocp_problem.lagrangeHessDxuDxuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessDxuDxuPattern(_i_phase, lag_hess_dxu_dxu_rows, lag_hess_dxu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_dxu_dxu_mat(_dim_xu, _dim_xu, _ocp_problem.lagrangeHessDxuDxuNnz(_i_phase),
                                                 _p_lag_hess_dxu_dxu_outer_start,
                                                 lag_hess_dxu_dxu_rows,
@@ -1451,8 +1452,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                 0);
 
   integer lag_hess_dxu_axu_rows[_ocp_problem.lagrangeHessDxuAxuNnz(_i_phase)];
-  integer lag_hess_dxu_axu_cols[_ocp_problem.lagrangeHessDxuAxuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessDxuAxuPattern(_i_phase, lag_hess_dxu_axu_rows, lag_hess_dxu_axu_cols);
+  {
+    integer lag_hess_dxu_axu_cols[_ocp_problem.lagrangeHessDxuAxuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessDxuAxuPattern(_i_phase, lag_hess_dxu_axu_rows, lag_hess_dxu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_dxu_axu_mat(_dim_axu, _dim_xu, _ocp_problem.lagrangeHessDxuAxuNnz(_i_phase),
                                                 _p_lag_hess_dxu_axu_outer_start,
                                                 lag_hess_dxu_axu_rows,
@@ -1460,8 +1463,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                 0);
 
   integer lag_hess_dxu_p_rows[_ocp_problem.lagrangeHessDxuPNnz(_i_phase)];
-  integer lag_hess_dxu_p_cols[_ocp_problem.lagrangeHessDxuPNnz(_i_phase)];
-  _ocp_problem.lagrangeHessDxuPPattern(_i_phase, lag_hess_dxu_p_rows, lag_hess_dxu_p_cols);
+  {
+    integer lag_hess_dxu_p_cols[_ocp_problem.lagrangeHessDxuPNnz(_i_phase)];
+    _ocp_problem.lagrangeHessDxuPPattern(_i_phase, lag_hess_dxu_p_rows, lag_hess_dxu_p_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_dxu_p_mat(_dim_p, _dim_xu, _ocp_problem.lagrangeHessDxuPNnz(_i_phase),
                                               _p_lag_hess_dxu_p_outer_start,
                                               lag_hess_dxu_p_rows,
@@ -1469,8 +1474,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                               0);
 
   integer lag_hess_axu_axu_rows[_ocp_problem.lagrangeHessAxuAxuNnz(_i_phase)];
-  integer lag_hess_axu_axu_cols[_ocp_problem.lagrangeHessAxuAxuNnz(_i_phase)];
-  _ocp_problem.lagrangeHessAxuAxuPattern(_i_phase, lag_hess_axu_axu_rows, lag_hess_axu_axu_cols);
+  {
+    integer lag_hess_axu_axu_cols[_ocp_problem.lagrangeHessAxuAxuNnz(_i_phase)];
+    _ocp_problem.lagrangeHessAxuAxuPattern(_i_phase, lag_hess_axu_axu_rows, lag_hess_axu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_axu_axu_mat(_dim_axu, _dim_axu, _ocp_problem.lagrangeHessAxuAxuNnz(_i_phase),
                                                 _p_lag_hess_axu_axu_outer_start,
                                                 lag_hess_axu_axu_rows,
@@ -1478,8 +1485,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                 0);
 
   integer lag_hess_axu_p_rows[_ocp_problem.lagrangeHessAxuPNnz(_i_phase)];
-  integer lag_hess_axu_p_cols[_ocp_problem.lagrangeHessAxuPNnz(_i_phase)];
-  _ocp_problem.lagrangeHessAxuAxuPattern(_i_phase, lag_hess_axu_p_rows, lag_hess_axu_p_cols);
+  {
+    integer lag_hess_axu_p_cols[_ocp_problem.lagrangeHessAxuPNnz(_i_phase)];
+    _ocp_problem.lagrangeHessAxuAxuPattern(_i_phase, lag_hess_axu_p_rows, lag_hess_axu_p_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_axu_p_mat(_dim_p, _dim_axu, _ocp_problem.lagrangeHessAxuPNnz(_i_phase),
                                               _p_lag_hess_axu_p_outer_start,
                                               lag_hess_axu_p_rows,
@@ -1487,8 +1496,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                               0);
 
   integer lag_hess_p_p_rows[_ocp_problem.lagrangeHessPPNnz(_i_phase)];
-  integer lag_hess_p_p_cols[_ocp_problem.lagrangeHessPPNnz(_i_phase)];
-  _ocp_problem.lagrangeHessPPPattern(_i_phase, lag_hess_p_p_rows, lag_hess_p_p_cols);
+  {
+    integer lag_hess_p_p_cols[_ocp_problem.lagrangeHessPPNnz(_i_phase)];
+    _ocp_problem.lagrangeHessPPPattern(_i_phase, lag_hess_p_p_rows, lag_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> lag_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.lagrangeHessPPNnz(_i_phase),
                                             _p_lag_hess_p_p_outer_start,
                                             lag_hess_p_p_rows,
@@ -1497,8 +1508,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 
   // create fo_eqns matrixes
   integer fo_eqns_hess_xu_xu_rows[_ocp_problem.foEqnsHessXuXuNnz(_i_phase)];
-  integer fo_eqns_hess_xu_xu_cols[_ocp_problem.foEqnsHessXuXuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessXuXuPattern(_i_phase, fo_eqns_hess_xu_xu_rows, fo_eqns_hess_xu_xu_cols);
+  {
+    integer fo_eqns_hess_xu_xu_cols[_ocp_problem.foEqnsHessXuXuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessXuXuPattern(_i_phase, fo_eqns_hess_xu_xu_rows, fo_eqns_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_xu_xu_mat(_dim_xu, _dim_xu, _ocp_problem.foEqnsHessXuXuNnz(_i_phase),
                                                   _p_fo_eqns_hess_xu_xu_outer_start,
                                                   fo_eqns_hess_xu_xu_rows,
@@ -1506,8 +1519,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                   0);
 
   integer fo_eqns_hess_xu_dxu_rows[_ocp_problem.foEqnsHessXuDxuNnz(_i_phase)];
-  integer fo_eqns_hess_xu_dxu_cols[_ocp_problem.foEqnsHessXuDxuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessXuDxuPattern(_i_phase, fo_eqns_hess_xu_dxu_rows, fo_eqns_hess_xu_dxu_cols);
+  {
+    integer fo_eqns_hess_xu_dxu_cols[_ocp_problem.foEqnsHessXuDxuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessXuDxuPattern(_i_phase, fo_eqns_hess_xu_dxu_rows, fo_eqns_hess_xu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_xu_dxu_mat(_dim_xu, _dim_xu, _ocp_problem.foEqnsHessXuDxuNnz(_i_phase),
                                                    _p_fo_eqns_hess_xu_dxu_outer_start,
                                                    fo_eqns_hess_xu_dxu_rows,
@@ -1515,8 +1530,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                    0);
 
   integer fo_eqns_hess_xu_axu_rows[_ocp_problem.foEqnsHessXuAxuNnz(_i_phase)];
-  integer fo_eqns_hess_xu_axu_cols[_ocp_problem.foEqnsHessXuAxuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessXuAxuPattern(_i_phase, fo_eqns_hess_xu_axu_rows, fo_eqns_hess_xu_axu_cols);
+  {
+    integer fo_eqns_hess_xu_axu_cols[_ocp_problem.foEqnsHessXuAxuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessXuAxuPattern(_i_phase, fo_eqns_hess_xu_axu_rows, fo_eqns_hess_xu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_xu_axu_mat(_dim_axu, _dim_xu, _ocp_problem.foEqnsHessXuAxuNnz(_i_phase),
                                                    _p_fo_eqns_hess_xu_axu_outer_start,
                                                    fo_eqns_hess_xu_axu_rows,
@@ -1524,8 +1541,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                    0);
 
   integer fo_eqns_hess_xu_p_rows[_ocp_problem.foEqnsHessXuPNnz(_i_phase)];
-  integer fo_eqns_hess_xu_p_cols[_ocp_problem.foEqnsHessXuPNnz(_i_phase)];
-  _ocp_problem.foEqnsHessXuPPattern(_i_phase, fo_eqns_hess_xu_p_rows, fo_eqns_hess_xu_p_cols);
+  {
+    integer fo_eqns_hess_xu_p_cols[_ocp_problem.foEqnsHessXuPNnz(_i_phase)];
+    _ocp_problem.foEqnsHessXuPPattern(_i_phase, fo_eqns_hess_xu_p_rows, fo_eqns_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_xu_p_mat(_dim_p, _dim_xu, _ocp_problem.foEqnsHessXuPNnz(_i_phase),
                                                  _p_fo_eqns_hess_xu_p_outer_start,
                                                  fo_eqns_hess_xu_p_rows,
@@ -1533,8 +1552,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                  0);
 
   integer fo_eqns_hess_dxu_dxu_rows[_ocp_problem.foEqnsHessDxuDxuNnz(_i_phase)];
-  integer fo_eqns_hess_dxu_dxu_cols[_ocp_problem.foEqnsHessDxuDxuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessDxuDxuPattern(_i_phase, fo_eqns_hess_dxu_dxu_rows, fo_eqns_hess_dxu_dxu_cols);
+  {
+    integer fo_eqns_hess_dxu_dxu_cols[_ocp_problem.foEqnsHessDxuDxuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessDxuDxuPattern(_i_phase, fo_eqns_hess_dxu_dxu_rows, fo_eqns_hess_dxu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_dxu_dxu_mat(_dim_xu, _dim_xu, _ocp_problem.foEqnsHessDxuDxuNnz(_i_phase),
                                                     _p_fo_eqns_hess_dxu_dxu_outer_start,
                                                     fo_eqns_hess_dxu_dxu_rows,
@@ -1542,8 +1563,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                     0);
 
   integer fo_eqns_hess_dxu_axu_rows[_ocp_problem.foEqnsHessDxuAxuNnz(_i_phase)];
-  integer fo_eqns_hess_dxu_axu_cols[_ocp_problem.foEqnsHessDxuAxuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessDxuAxuPattern(_i_phase, fo_eqns_hess_dxu_axu_rows, fo_eqns_hess_dxu_axu_cols);
+  {
+    integer fo_eqns_hess_dxu_axu_cols[_ocp_problem.foEqnsHessDxuAxuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessDxuAxuPattern(_i_phase, fo_eqns_hess_dxu_axu_rows, fo_eqns_hess_dxu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_dxu_axu_mat(_dim_axu, _dim_xu, _ocp_problem.foEqnsHessDxuAxuNnz(_i_phase),
                                                     _p_fo_eqns_hess_dxu_axu_outer_start,
                                                     fo_eqns_hess_dxu_axu_rows,
@@ -1551,8 +1574,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                     0);
 
   integer fo_eqns_hess_dxu_p_rows[_ocp_problem.foEqnsHessDxuPNnz(_i_phase)];
-  integer fo_eqns_hess_dxu_p_cols[_ocp_problem.foEqnsHessDxuPNnz(_i_phase)];
-  _ocp_problem.foEqnsHessDxuPPattern(_i_phase, fo_eqns_hess_dxu_p_rows, fo_eqns_hess_dxu_p_cols);
+  {
+    integer fo_eqns_hess_dxu_p_cols[_ocp_problem.foEqnsHessDxuPNnz(_i_phase)];
+    _ocp_problem.foEqnsHessDxuPPattern(_i_phase, fo_eqns_hess_dxu_p_rows, fo_eqns_hess_dxu_p_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_dxu_p_mat(_dim_p, _dim_xu, _ocp_problem.foEqnsHessDxuPNnz(_i_phase),
                                                   _p_fo_eqns_hess_dxu_p_outer_start,
                                                   fo_eqns_hess_dxu_p_rows,
@@ -1560,8 +1585,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                   0);
 
   integer fo_eqns_hess_axu_axu_rows[_ocp_problem.foEqnsHessAxuAxuNnz(_i_phase)];
-  integer fo_eqns_hess_axu_axu_cols[_ocp_problem.foEqnsHessAxuAxuNnz(_i_phase)];
-  _ocp_problem.foEqnsHessAxuAxuPattern(_i_phase, fo_eqns_hess_axu_axu_rows, fo_eqns_hess_axu_axu_cols);
+  {
+    integer fo_eqns_hess_axu_axu_cols[_ocp_problem.foEqnsHessAxuAxuNnz(_i_phase)];
+    _ocp_problem.foEqnsHessAxuAxuPattern(_i_phase, fo_eqns_hess_axu_axu_rows, fo_eqns_hess_axu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_axu_axu_mat(_dim_axu, _dim_axu, _ocp_problem.foEqnsHessAxuAxuNnz(_i_phase),
                                                     _p_fo_eqns_hess_axu_axu_outer_start,
                                                     fo_eqns_hess_axu_axu_rows,
@@ -1569,8 +1596,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                     0);
 
   integer fo_eqns_hess_axu_p_rows[_ocp_problem.foEqnsHessAxuPNnz(_i_phase)];
-  integer fo_eqns_hess_axu_p_cols[_ocp_problem.foEqnsHessAxuPNnz(_i_phase)];
-  _ocp_problem.foEqnsHessAxuAxuPattern(_i_phase, fo_eqns_hess_axu_p_rows, fo_eqns_hess_axu_p_cols);
+  {
+    integer fo_eqns_hess_axu_p_cols[_ocp_problem.foEqnsHessAxuPNnz(_i_phase)];
+    _ocp_problem.foEqnsHessAxuAxuPattern(_i_phase, fo_eqns_hess_axu_p_rows, fo_eqns_hess_axu_p_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_axu_p_mat(_dim_p, _dim_axu, _ocp_problem.foEqnsHessAxuPNnz(_i_phase),
                                                   _p_fo_eqns_hess_axu_p_outer_start,
                                                   fo_eqns_hess_axu_p_rows,
@@ -1578,8 +1607,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                   0);
 
   integer fo_eqns_hess_p_p_rows[_ocp_problem.foEqnsHessPPNnz(_i_phase)];
-  integer fo_eqns_hess_p_p_cols[_ocp_problem.foEqnsHessPPNnz(_i_phase)];
-  _ocp_problem.foEqnsHessPPPattern(_i_phase, fo_eqns_hess_p_p_rows, fo_eqns_hess_p_p_cols);
+  {
+    integer fo_eqns_hess_p_p_cols[_ocp_problem.foEqnsHessPPNnz(_i_phase)];
+    _ocp_problem.foEqnsHessPPPattern(_i_phase, fo_eqns_hess_p_p_rows, fo_eqns_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> fo_eqns_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.foEqnsHessPPNnz(_i_phase),
                                                 _p_fo_eqns_hess_p_p_outer_start,
                                                 fo_eqns_hess_p_p_rows,
@@ -1588,8 +1619,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 
   // create path_constr matrixes
   integer path_constr_hess_xu_xu_rows[_ocp_problem.pathConstraintsHessXuXuNnz(_i_phase)];
-  integer path_constr_hess_xu_xu_cols[_ocp_problem.pathConstraintsHessXuXuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessXuXuPattern(_i_phase, path_constr_hess_xu_xu_rows, path_constr_hess_xu_xu_cols);
+  {
+    integer path_constr_hess_xu_xu_cols[_ocp_problem.pathConstraintsHessXuXuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessXuXuPattern(_i_phase, path_constr_hess_xu_xu_rows, path_constr_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_xu_xu_mat(_dim_xu, _dim_xu,
                                                       _ocp_problem.pathConstraintsHessXuXuNnz(_i_phase),
                                                       _p_path_constr_hess_xu_xu_outer_start,
@@ -1598,8 +1631,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer path_constr_hess_xu_dxu_rows[_ocp_problem.pathConstraintsHessXuDxuNnz(_i_phase)];
-  integer path_constr_hess_xu_dxu_cols[_ocp_problem.pathConstraintsHessXuDxuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessXuDxuPattern(_i_phase, path_constr_hess_xu_dxu_rows, path_constr_hess_xu_dxu_cols);
+  {
+    integer path_constr_hess_xu_dxu_cols[_ocp_problem.pathConstraintsHessXuDxuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessXuDxuPattern(_i_phase, path_constr_hess_xu_dxu_rows, path_constr_hess_xu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_xu_dxu_mat(_dim_xu, _dim_xu,
                                                        _ocp_problem.pathConstraintsHessXuDxuNnz(_i_phase),
                                                        _p_path_constr_hess_xu_dxu_outer_start,
@@ -1608,8 +1643,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer path_constr_hess_xu_axu_rows[_ocp_problem.pathConstraintsHessXuAxuNnz(_i_phase)];
-  integer path_constr_hess_xu_axu_cols[_ocp_problem.pathConstraintsHessXuAxuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessXuAxuPattern(_i_phase, path_constr_hess_xu_axu_rows, path_constr_hess_xu_axu_cols);
+  {
+    integer path_constr_hess_xu_axu_cols[_ocp_problem.pathConstraintsHessXuAxuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessXuAxuPattern(_i_phase, path_constr_hess_xu_axu_rows, path_constr_hess_xu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_xu_axu_mat(_dim_axu, _dim_xu,
                                                        _ocp_problem.pathConstraintsHessXuAxuNnz(_i_phase),
                                                        _p_path_constr_hess_xu_axu_outer_start,
@@ -1618,8 +1655,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer path_constr_hess_xu_p_rows[_ocp_problem.pathConstraintsHessXuPNnz(_i_phase)];
-  integer path_constr_hess_xu_p_cols[_ocp_problem.pathConstraintsHessXuPNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessXuPPattern(_i_phase, path_constr_hess_xu_p_rows, path_constr_hess_xu_p_cols);
+  {
+    integer path_constr_hess_xu_p_cols[_ocp_problem.pathConstraintsHessXuPNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessXuPPattern(_i_phase, path_constr_hess_xu_p_rows, path_constr_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_xu_p_mat(_dim_p, _dim_xu, _ocp_problem.pathConstraintsHessXuPNnz(_i_phase),
                                                      _p_path_constr_hess_xu_p_outer_start,
                                                      path_constr_hess_xu_p_rows,
@@ -1627,8 +1666,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                      0);
 
   integer path_constr_hess_dxu_dxu_rows[_ocp_problem.pathConstraintsHessDxuDxuNnz(_i_phase)];
-  integer path_constr_hess_dxu_dxu_cols[_ocp_problem.pathConstraintsHessDxuDxuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessDxuDxuPattern(_i_phase, path_constr_hess_dxu_dxu_rows, path_constr_hess_dxu_dxu_cols);
+  {
+    integer path_constr_hess_dxu_dxu_cols[_ocp_problem.pathConstraintsHessDxuDxuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessDxuDxuPattern(_i_phase, path_constr_hess_dxu_dxu_rows, path_constr_hess_dxu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_dxu_dxu_mat(_dim_xu, _dim_xu,
                                                         _ocp_problem.pathConstraintsHessDxuDxuNnz(_i_phase),
                                                         _p_path_constr_hess_dxu_dxu_outer_start,
@@ -1637,8 +1678,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                         0);
 
   integer path_constr_hess_dxu_axu_rows[_ocp_problem.pathConstraintsHessDxuAxuNnz(_i_phase)];
-  integer path_constr_hess_dxu_axu_cols[_ocp_problem.pathConstraintsHessDxuAxuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessDxuAxuPattern(_i_phase, path_constr_hess_dxu_axu_rows, path_constr_hess_dxu_axu_cols);
+  {
+    integer path_constr_hess_dxu_axu_cols[_ocp_problem.pathConstraintsHessDxuAxuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessDxuAxuPattern(_i_phase, path_constr_hess_dxu_axu_rows, path_constr_hess_dxu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_dxu_axu_mat(_dim_axu, _dim_xu,
                                                         _ocp_problem.pathConstraintsHessDxuAxuNnz(_i_phase),
                                                         _p_path_constr_hess_dxu_axu_outer_start,
@@ -1647,8 +1690,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                         0);
 
   integer path_constr_hess_dxu_p_rows[_ocp_problem.pathConstraintsHessDxuPNnz(_i_phase)];
-  integer path_constr_hess_dxu_p_cols[_ocp_problem.pathConstraintsHessDxuPNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessDxuPPattern(_i_phase, path_constr_hess_dxu_p_rows, path_constr_hess_dxu_p_cols);
+  {
+    integer path_constr_hess_dxu_p_cols[_ocp_problem.pathConstraintsHessDxuPNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessDxuPPattern(_i_phase, path_constr_hess_dxu_p_rows, path_constr_hess_dxu_p_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_dxu_p_mat(_dim_p, _dim_xu,
                                                       _ocp_problem.pathConstraintsHessDxuPNnz(_i_phase),
                                                       _p_path_constr_hess_dxu_p_outer_start,
@@ -1657,8 +1702,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer path_constr_hess_axu_axu_rows[_ocp_problem.pathConstraintsHessAxuAxuNnz(_i_phase)];
-  integer path_constr_hess_axu_axu_cols[_ocp_problem.pathConstraintsHessAxuAxuNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessAxuAxuPattern(_i_phase, path_constr_hess_axu_axu_rows, path_constr_hess_axu_axu_cols);
+  {
+    integer path_constr_hess_axu_axu_cols[_ocp_problem.pathConstraintsHessAxuAxuNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessAxuAxuPattern(_i_phase, path_constr_hess_axu_axu_rows, path_constr_hess_axu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_axu_axu_mat(_dim_axu, _dim_axu,
                                                         _ocp_problem.pathConstraintsHessAxuAxuNnz(_i_phase),
                                                         _p_path_constr_hess_axu_axu_outer_start,
@@ -1667,8 +1714,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                         0);
 
   integer path_constr_hess_axu_p_rows[_ocp_problem.pathConstraintsHessAxuPNnz(_i_phase)];
-  integer path_constr_hess_axu_p_cols[_ocp_problem.pathConstraintsHessAxuPNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessAxuAxuPattern(_i_phase, path_constr_hess_axu_p_rows, path_constr_hess_axu_p_cols);
+  {
+    integer path_constr_hess_axu_p_cols[_ocp_problem.pathConstraintsHessAxuPNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessAxuAxuPattern(_i_phase, path_constr_hess_axu_p_rows, path_constr_hess_axu_p_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_axu_p_mat(_dim_p, _dim_axu,
                                                       _ocp_problem.pathConstraintsHessAxuPNnz(_i_phase),
                                                       _p_path_constr_hess_axu_p_outer_start,
@@ -1677,8 +1726,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer path_constr_hess_p_p_rows[_ocp_problem.pathConstraintsHessPPNnz(_i_phase)];
-  integer path_constr_hess_p_p_cols[_ocp_problem.pathConstraintsHessPPNnz(_i_phase)];
-  _ocp_problem.pathConstraintsHessPPPattern(_i_phase, path_constr_hess_p_p_rows, path_constr_hess_p_p_cols);
+  {
+    integer path_constr_hess_p_p_cols[_ocp_problem.pathConstraintsHessPPNnz(_i_phase)];
+    _ocp_problem.pathConstraintsHessPPPattern(_i_phase, path_constr_hess_p_p_rows, path_constr_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> path_constr_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.pathConstraintsHessPPNnz(_i_phase),
                                                     _p_path_constr_hess_p_p_outer_start,
                                                     path_constr_hess_p_p_rows,
@@ -1687,8 +1738,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 
   // create integral constraints matrixes
   integer int_constr_hess_xu_xu_rows[_ocp_problem.intConstraintsHessXuXuNnz(_i_phase)];
-  integer int_constr_hess_xu_xu_cols[_ocp_problem.intConstraintsHessXuXuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessXuXuPattern(_i_phase, int_constr_hess_xu_xu_rows, int_constr_hess_xu_xu_cols);
+  {
+    integer int_constr_hess_xu_xu_cols[_ocp_problem.intConstraintsHessXuXuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessXuXuPattern(_i_phase, int_constr_hess_xu_xu_rows, int_constr_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_xu_xu_mat(_dim_xu, _dim_xu, _ocp_problem.intConstraintsHessXuXuNnz(_i_phase),
                                                      _p_int_constr_hess_xu_xu_outer_start,
                                                      int_constr_hess_xu_xu_rows,
@@ -1696,8 +1749,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                      0);
 
   integer int_constr_hess_xu_dxu_rows[_ocp_problem.intConstraintsHessXuDxuNnz(_i_phase)];
-  integer int_constr_hess_xu_dxu_cols[_ocp_problem.intConstraintsHessXuDxuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessXuDxuPattern(_i_phase, int_constr_hess_xu_dxu_rows, int_constr_hess_xu_dxu_cols);
+  {
+    integer int_constr_hess_xu_dxu_cols[_ocp_problem.intConstraintsHessXuDxuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessXuDxuPattern(_i_phase, int_constr_hess_xu_dxu_rows, int_constr_hess_xu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_xu_dxu_mat(_dim_xu, _dim_xu,
                                                       _ocp_problem.intConstraintsHessXuDxuNnz(_i_phase),
                                                       _p_int_constr_hess_xu_dxu_outer_start,
@@ -1706,8 +1761,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer int_constr_hess_xu_axu_rows[_ocp_problem.intConstraintsHessXuAxuNnz(_i_phase)];
-  integer int_constr_hess_xu_axu_cols[_ocp_problem.intConstraintsHessXuAxuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessXuAxuPattern(_i_phase, int_constr_hess_xu_axu_rows, int_constr_hess_xu_axu_cols);
+  {
+    integer int_constr_hess_xu_axu_cols[_ocp_problem.intConstraintsHessXuAxuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessXuAxuPattern(_i_phase, int_constr_hess_xu_axu_rows, int_constr_hess_xu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_xu_axu_mat(_dim_axu, _dim_xu,
                                                       _ocp_problem.intConstraintsHessXuAxuNnz(_i_phase),
                                                       _p_int_constr_hess_xu_axu_outer_start,
@@ -1716,8 +1773,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer int_constr_hess_xu_p_rows[_ocp_problem.intConstraintsHessXuPNnz(_i_phase)];
-  integer int_constr_hess_xu_p_cols[_ocp_problem.intConstraintsHessXuPNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessXuPPattern(_i_phase, int_constr_hess_xu_p_rows, int_constr_hess_xu_p_cols);
+  {
+    integer int_constr_hess_xu_p_cols[_ocp_problem.intConstraintsHessXuPNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessXuPPattern(_i_phase, int_constr_hess_xu_p_rows, int_constr_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_xu_p_mat(_dim_p, _dim_xu, _ocp_problem.intConstraintsHessXuPNnz(_i_phase),
                                                     _p_int_constr_hess_xu_p_outer_start,
                                                     int_constr_hess_xu_p_rows,
@@ -1725,8 +1784,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                     0);
 
   integer int_constr_hess_dxu_dxu_rows[_ocp_problem.intConstraintsHessDxuDxuNnz(_i_phase)];
-  integer int_constr_hess_dxu_dxu_cols[_ocp_problem.intConstraintsHessDxuDxuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessDxuDxuPattern(_i_phase, int_constr_hess_dxu_dxu_rows, int_constr_hess_dxu_dxu_cols);
+  {
+    integer int_constr_hess_dxu_dxu_cols[_ocp_problem.intConstraintsHessDxuDxuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessDxuDxuPattern(_i_phase, int_constr_hess_dxu_dxu_rows, int_constr_hess_dxu_dxu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_dxu_dxu_mat(_dim_xu, _dim_xu,
                                                        _ocp_problem.intConstraintsHessDxuDxuNnz(_i_phase),
                                                        _p_int_constr_hess_dxu_dxu_outer_start,
@@ -1735,8 +1796,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer int_constr_hess_dxu_axu_rows[_ocp_problem.intConstraintsHessDxuAxuNnz(_i_phase)];
-  integer int_constr_hess_dxu_axu_cols[_ocp_problem.intConstraintsHessDxuAxuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessDxuAxuPattern(_i_phase, int_constr_hess_dxu_axu_rows, int_constr_hess_dxu_axu_cols);
+  {
+    integer int_constr_hess_dxu_axu_cols[_ocp_problem.intConstraintsHessDxuAxuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessDxuAxuPattern(_i_phase, int_constr_hess_dxu_axu_rows, int_constr_hess_dxu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_dxu_axu_mat(_dim_axu, _dim_xu,
                                                        _ocp_problem.intConstraintsHessDxuAxuNnz(_i_phase),
                                                        _p_int_constr_hess_dxu_axu_outer_start,
@@ -1745,8 +1808,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer int_constr_hess_dxu_p_rows[_ocp_problem.intConstraintsHessDxuPNnz(_i_phase)];
-  integer int_constr_hess_dxu_p_cols[_ocp_problem.intConstraintsHessDxuPNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessDxuPPattern(_i_phase, int_constr_hess_dxu_p_rows, int_constr_hess_dxu_p_cols);
+  {
+    integer int_constr_hess_dxu_p_cols[_ocp_problem.intConstraintsHessDxuPNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessDxuPPattern(_i_phase, int_constr_hess_dxu_p_rows, int_constr_hess_dxu_p_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_dxu_p_mat(_dim_p, _dim_xu, _ocp_problem.intConstraintsHessDxuPNnz(_i_phase),
                                                      _p_int_constr_hess_dxu_p_outer_start,
                                                      int_constr_hess_dxu_p_rows,
@@ -1754,8 +1819,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                      0);
 
   integer int_constr_hess_axu_axu_rows[_ocp_problem.intConstraintsHessAxuAxuNnz(_i_phase)];
-  integer int_constr_hess_axu_axu_cols[_ocp_problem.intConstraintsHessAxuAxuNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessAxuAxuPattern(_i_phase, int_constr_hess_axu_axu_rows, int_constr_hess_axu_axu_cols);
+  {
+    integer int_constr_hess_axu_axu_cols[_ocp_problem.intConstraintsHessAxuAxuNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessAxuAxuPattern(_i_phase, int_constr_hess_axu_axu_rows, int_constr_hess_axu_axu_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_axu_axu_mat(_dim_axu, _dim_axu,
                                                        _ocp_problem.intConstraintsHessAxuAxuNnz(_i_phase),
                                                        _p_int_constr_hess_axu_axu_outer_start,
@@ -1764,8 +1831,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer int_constr_hess_axu_p_rows[_ocp_problem.intConstraintsHessAxuPNnz(_i_phase)];
-  integer int_constr_hess_axu_p_cols[_ocp_problem.intConstraintsHessAxuPNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessAxuAxuPattern(_i_phase, int_constr_hess_axu_p_rows, int_constr_hess_axu_p_cols);
+  {
+    integer int_constr_hess_axu_p_cols[_ocp_problem.intConstraintsHessAxuPNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessAxuAxuPattern(_i_phase, int_constr_hess_axu_p_rows, int_constr_hess_axu_p_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_axu_p_mat(_dim_p, _dim_axu, _ocp_problem.intConstraintsHessAxuPNnz(_i_phase),
                                                      _p_int_constr_hess_axu_p_outer_start,
                                                      int_constr_hess_axu_p_rows,
@@ -1773,8 +1842,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                      0);
 
   integer int_constr_hess_p_p_rows[_ocp_problem.intConstraintsHessPPNnz(_i_phase)];
-  integer int_constr_hess_p_p_cols[_ocp_problem.intConstraintsHessPPNnz(_i_phase)];
-  _ocp_problem.intConstraintsHessPPPattern(_i_phase, int_constr_hess_p_p_rows, int_constr_hess_p_p_cols);
+  {
+    integer int_constr_hess_p_p_cols[_ocp_problem.intConstraintsHessPPNnz(_i_phase)];
+    _ocp_problem.intConstraintsHessPPPattern(_i_phase, int_constr_hess_p_p_rows, int_constr_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> int_constr_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.intConstraintsHessPPNnz(_i_phase),
                                                    _p_int_constr_hess_p_p_outer_start,
                                                    int_constr_hess_p_p_rows,
@@ -1783,8 +1854,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 
   // create point_constr matrixes
   integer point_constr_hess_xu_xu_rows[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
-  integer point_constr_hess_xu_xu_cols[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessXuXuPattern(_i_phase, point_constr_hess_xu_xu_rows, point_constr_hess_xu_xu_cols);
+  {
+    integer point_constr_hess_xu_xu_cols[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessXuXuPattern(_i_phase, point_constr_hess_xu_xu_rows, point_constr_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_xu_xu_mat(_dim_xu, _dim_xu,
                                                        _ocp_problem.pointConstraintsHessXuXuNnz(_i_phase),
                                                        _p_point_constr_hess_xu_xu_outer_start,
@@ -1793,8 +1866,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                        0);
 
   integer point_constr_hess_xu_p_rows[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
-  integer point_constr_hess_xu_p_cols[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessXuPPattern(_i_phase, point_constr_hess_xu_p_rows, point_constr_hess_xu_p_cols);
+  {
+    integer point_constr_hess_xu_p_cols[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessXuPPattern(_i_phase, point_constr_hess_xu_p_rows, point_constr_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_xu_p_mat(_dim_p, _dim_xu,
                                                       _ocp_problem.pointConstraintsHessXuPNnz(_i_phase),
                                                       _p_point_constr_hess_xu_p_outer_start,
@@ -1803,8 +1878,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
                                                       0);
 
   integer point_constr_hess_p_p_rows[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
-  integer point_constr_hess_p_p_cols[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessPPPattern(_i_phase, point_constr_hess_p_p_rows, point_constr_hess_p_p_cols);
+  {
+    integer point_constr_hess_p_p_cols[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessPPPattern(_i_phase, point_constr_hess_p_p_rows, point_constr_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.pointConstraintsHessPPNnz(_i_phase),
                                                      _p_point_constr_hess_p_p_outer_start,
                                                      point_constr_hess_p_p_rows,
@@ -1816,15 +1893,15 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   tmp_xu_xu_mat.reserve(_hess_y_y_lower_mat_nnz*2);
 #endif
-  tmp_xu_xu_mat = (lag_hess_xu_xu_mat * d_zeta + fo_eqns_hess_xu_xu_mat + path_constr_hess_xu_xu_mat
-                   + int_constr_hess_xu_xu_mat * d_zeta) * 0.25;
+  tmp_xu_xu_mat = (lag_hess_xu_xu_mat * ocp_state.d_zeta + fo_eqns_hess_xu_xu_mat + path_constr_hess_xu_xu_mat
+                   + int_constr_hess_xu_xu_mat * ocp_state.d_zeta);
 
   SparseMatrix tmp_dxu_dxu_mat(_dim_xu, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   tmp_dxu_dxu_mat.reserve(_hess_y_y_lower_mat_nnz*2);
 #endif
-  tmp_dxu_dxu_mat = (lag_hess_dxu_dxu_mat * d_zeta + fo_eqns_hess_dxu_dxu_mat + path_constr_hess_dxu_dxu_mat
-                     + int_constr_hess_dxu_dxu_mat * d_zeta) * (d_zeta_inv * d_zeta_inv);
+  tmp_dxu_dxu_mat = (lag_hess_dxu_dxu_mat * ocp_state.d_zeta + fo_eqns_hess_dxu_dxu_mat + path_constr_hess_dxu_dxu_mat
+                     + int_constr_hess_dxu_dxu_mat * ocp_state.d_zeta) * (d_zeta_inv * d_zeta_inv);
 
   SparseMatrix tmp_xu_dxu_mat(_dim_xu, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
@@ -1832,7 +1909,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #endif
   tmp_xu_dxu_mat = (lag_hess_xu_dxu_mat
                     + (fo_eqns_hess_xu_dxu_mat + path_constr_hess_xu_dxu_mat) * d_zeta_inv
-                    + int_constr_hess_xu_dxu_mat) * 0.5;
+                    + int_constr_hess_xu_dxu_mat);
 
   SparseMatrix tmp_dxu_xu_mat(_dim_xu, _dim_xu);
   tmp_dxu_xu_mat = tmp_xu_dxu_mat.transpose();
@@ -1842,29 +1919,29 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_y_y_lower_mat.reserve(_hess_y_y_lower_mat_nnz);
 #endif
-  hess_y_y_lower_mat = tmp_xu_xu_mat.triangularView<Eigen::Lower>() + tmp_dxu_dxu_mat.triangularView<Eigen::Lower>()
-                       - tmp_xu_dxu_mat.triangularView<Eigen::Lower>() - tmp_dxu_xu_mat.triangularView<Eigen::Lower>()
+  hess_y_y_lower_mat = tmp_xu_xu_mat.triangularView<Eigen::Lower>() * (1-ocp_state.alpha) * (1-ocp_state.alpha) + tmp_dxu_dxu_mat.triangularView<Eigen::Lower>()
+                       - tmp_xu_dxu_mat.triangularView<Eigen::Lower>() * (1-ocp_state.alpha) - tmp_dxu_xu_mat.triangularView<Eigen::Lower>() * (1-ocp_state.alpha)
                        + point_constr_hess_xu_xu_mat.triangularView<Eigen::Lower>();
   multiplyAndSumVectorTo((real *) hess_y_y_lower_mat.valuePtr(), p_current_hessian, _p_scale_factor_hess_y_y_lower_mat,
                          _hess_y_y_lower_mat_nnz);
   p_current_hessian += _hess_y_y_lower_mat_nnz;
 
-  // EIGHT BLOCK: it is very similar to the first, except for a sign
+  // EIGHT BLOCK: it is very similar to the first, except for a sign and alpha
   SparseMatrix hess_y_y_next_lower_mat(_dim_xu, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_y_y_next_lower_mat.reserve(_hess_y_y_lower_mat_nnz);
 #endif
   hess_y_y_next_lower_mat =
-      tmp_xu_xu_mat.triangularView<Eigen::Lower>() + tmp_dxu_dxu_mat.triangularView<Eigen::Lower>()
-      + tmp_xu_dxu_mat.triangularView<Eigen::Lower>() + tmp_dxu_xu_mat.triangularView<Eigen::Lower>()
+      tmp_xu_xu_mat.triangularView<Eigen::Lower>() * ocp_state.alpha * ocp_state.alpha + tmp_dxu_dxu_mat.triangularView<Eigen::Lower>()
+      + tmp_xu_dxu_mat.triangularView<Eigen::Lower>() * ocp_state.alpha+ tmp_dxu_xu_mat.triangularView<Eigen::Lower>() * ocp_state.alpha
       + 0 * point_constr_hess_xu_xu_mat.triangularView<Eigen::Lower>();
   multiplyAndCopyVectorTo((real *) hess_y_y_next_lower_mat.valuePtr(), hessian_y_y_next,
                           _p_scale_factor_hess_y_y_lower_mat, _hess_y_y_lower_mat_nnz);
 
   // SECOND BLOCK: _y_ay
   SparseMatrix tmp_xu_axu_mat(_dim_axu, _dim_xu);
-  tmp_xu_axu_mat = (lag_hess_xu_axu_mat * d_zeta + fo_eqns_hess_xu_axu_mat + path_constr_hess_xu_axu_mat
-                    + int_constr_hess_xu_axu_mat * d_zeta) * 0.5;
+  tmp_xu_axu_mat = lag_hess_xu_axu_mat * ocp_state.d_zeta + fo_eqns_hess_xu_axu_mat + path_constr_hess_xu_axu_mat
+                    + int_constr_hess_xu_axu_mat * ocp_state.d_zeta;
 
   SparseMatrix tmp_dxu_axu_mat(_dim_axu, _dim_xu);
   tmp_dxu_axu_mat = lag_hess_dxu_axu_mat
@@ -1876,7 +1953,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_y_ay_mat.reserve(_hess_y_ay_mat_nnz);
 #endif
-  hess_y_ay_mat = tmp_xu_axu_mat - tmp_dxu_axu_mat;
+  hess_y_ay_mat = tmp_xu_axu_mat * (1 - ocp_state.alpha) - tmp_dxu_axu_mat;
   multiplyAndCopyVectorTo((real *) hess_y_ay_mat.valuePtr(), p_current_hessian, _p_scale_factor_hess_y_ay_mat,
                           _hess_y_ay_mat_nnz);
   p_current_hessian += _hess_y_ay_mat_nnz;
@@ -1886,25 +1963,20 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_yleft_yright_mat.reserve(_hess_yleft_yright_mat_nnz);
 #endif
-  hess_yleft_yright_mat = tmp_xu_xu_mat - tmp_dxu_dxu_mat
-                          + tmp_xu_dxu_mat
-                          -
-                          tmp_dxu_xu_mat; // TODO: REMOVE THE NUMERICAL ZERO ENTRIES. TO MODIFY ALSO THE PATTERN CACLULATIONS
+  hess_yleft_yright_mat = tmp_xu_xu_mat * ocp_state.alpha * (1-ocp_state.alpha) - tmp_dxu_dxu_mat
+                          + tmp_xu_dxu_mat * (1-ocp_state.alpha)
+                          - tmp_dxu_xu_mat * ocp_state.alpha; // TODO: REMOVE THE NUMERICAL ZERO ENTRIES. TO MODIFY ALSO THE PATTERN CACLULATIONS
   multiplyAndCopyVectorTo((real *) hess_yleft_yright_mat.valuePtr(), p_current_hessian,
                           _p_scale_factor_hess_yleft_yright_mat, _hess_yleft_yright_mat_nnz);
   p_current_hessian += _hess_yleft_yright_mat_nnz;
-  //    cout << *(p_current_hessian - _hess_2_mat_nnz) <<  "\t" << *(p_current_hessian - _hess_2_mat_nnz +1 ) <<  "\t" << *(p_current_hessian - _hess_2_mat_nnz + 2) <<  "\t";
-  //    cout << "heess 2 mat:\n";
-  //    cout << hess_2_mat;
-  //    cout << "\n";
 
-  // FOURTH BLOCK: _y_p
+  // FOURTH BLOCK: _y_left_p
   SparseMatrix tmp_xu_p_mat(_dim_p, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   tmp_xu_p_mat.reserve(_hess_y_p_mat_nnz);
 #endif
-  tmp_xu_p_mat = (lag_hess_xu_p_mat * d_zeta + fo_eqns_hess_xu_p_mat + path_constr_hess_xu_p_mat +
-                  int_constr_hess_xu_p_mat * d_zeta) * 0.5;
+  tmp_xu_p_mat = lag_hess_xu_p_mat * ocp_state.d_zeta + fo_eqns_hess_xu_p_mat + path_constr_hess_xu_p_mat +
+                 int_constr_hess_xu_p_mat * ocp_state.d_zeta;
 
   SparseMatrix tmp_dxu_p_mat(_dim_p, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
@@ -1918,23 +1990,20 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_y_p_mat.reserve(_hess_y_p_mat_nnz);
 #endif
-  hess_y_p_mat = tmp_xu_p_mat - tmp_dxu_p_mat + point_constr_hess_xu_p_mat;
+  hess_y_p_mat = tmp_xu_p_mat * (1-ocp_state.alpha) - tmp_dxu_p_mat + point_constr_hess_xu_p_mat;
   multiplyAndSumVectorTo((real *) hess_y_p_mat.valuePtr(), p_current_hessian, _p_scale_factor_hess_y_p_mat,
                          _hess_y_p_mat_nnz);
   p_current_hessian += _hess_y_p_mat_nnz;
-  //    cout << "heess 3 mat:\n";
-  //    cout << hess_3_mat;
-  //    cout << "\n";
 
   // FIFTH BLOCK: _ay_ay
   SparseMatrix hess_ay_ay_lower_mat(_dim_axu, _dim_axu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_ay_ay_mat.reserve(_hess_ay_ay_lower_mat_nnz);
 #endif
-  hess_ay_ay_lower_mat = lag_hess_axu_axu_mat.triangularView<Eigen::Lower>() * d_zeta +
+  hess_ay_ay_lower_mat = lag_hess_axu_axu_mat.triangularView<Eigen::Lower>() * ocp_state.d_zeta +
                          fo_eqns_hess_axu_axu_mat.triangularView<Eigen::Lower>() +
                          path_constr_hess_axu_axu_mat.triangularView<Eigen::Lower>()
-                         + int_constr_hess_axu_axu_mat.triangularView<Eigen::Lower>() * d_zeta;
+                         + int_constr_hess_axu_axu_mat.triangularView<Eigen::Lower>() * ocp_state.d_zeta;
   multiplyAndCopyVectorTo((real *) hess_ay_ay_lower_mat.valuePtr(), p_current_hessian,
                           _p_scale_factor_hess_ay_ay_lower_mat, _hess_ay_ay_lower_mat_nnz);
   p_current_hessian += _hess_ay_ay_lower_mat_nnz;
@@ -1944,7 +2013,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_ay_y_mat.reserve(_hess_y_ay_mat_nnz);
 #endif
-  hess_ay_y_mat = (tmp_xu_axu_mat + tmp_dxu_axu_mat).transpose();
+  hess_ay_y_mat = (tmp_xu_axu_mat * ocp_state.alpha + tmp_dxu_axu_mat).transpose();
   multiplyAndCopyVectorTo((real *) hess_ay_y_mat.valuePtr(), p_current_hessian, _p_scale_factor_hess_ay_y_mat,
                           _hess_y_ay_mat_nnz);
   p_current_hessian += _hess_y_ay_mat_nnz;
@@ -1954,38 +2023,34 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_ay_p_mat.reserve(_hess_ay_p_mat_nnz);
 #endif
-  hess_ay_p_mat = lag_hess_axu_p_mat * d_zeta + fo_eqns_hess_axu_p_mat + path_constr_hess_axu_p_mat +
-                  int_constr_hess_axu_p_mat * d_zeta;
+  hess_ay_p_mat = lag_hess_axu_p_mat * ocp_state.d_zeta + fo_eqns_hess_axu_p_mat + path_constr_hess_axu_p_mat +
+                  int_constr_hess_axu_p_mat * ocp_state.d_zeta;
   multiplyAndCopyVectorTo((real *) hess_ay_p_mat.valuePtr(), p_current_hessian, _p_scale_factor_hess_ay_p_mat,
                           _hess_ay_p_mat_nnz);
   p_current_hessian += _hess_ay_p_mat_nnz;
 
   //EIGHT BLOCK already done
 
-  // NINETH BLOCK: it is very similar to the FOURTH, except for a sign
+  // NINETH BLOCK: _y_right_p, it is very similar to the FOURTH, except for a sign and alpha
   SparseMatrix hess_y_p_next_mat(_dim_p, _dim_xu);
 #ifdef MAVERICK_RESERVE_MATRIX_SPACE
   hess_y_p_next_mat.reserve(_hess_y_p_mat_nnz);
 #endif
-  hess_y_p_next_mat = tmp_xu_p_mat + tmp_dxu_p_mat + 0 * point_constr_hess_xu_p_mat;
+  hess_y_p_next_mat = tmp_xu_p_mat * ocp_state.alpha + tmp_dxu_p_mat + 0 * point_constr_hess_xu_p_mat;
   multiplyAndCopyVectorTo((real *) hess_y_p_next_mat.valuePtr(), hessian_y_p_next, _p_scale_factor_hess_y_p_mat,
                           _hess_y_p_mat_nnz);
 
-  //    cout << "heess 5 mat:\n";
-  //    cout << hess_5_mat;
-  //    cout << "\n";
-
 #ifdef MAVERICK_DEBUG
-  real * p_expected = hessian_y_y + getNlpHessianLeftColumnBlockNnz() + getNlpHessianCentreColumnBlockNnz();
-  MAVERICK_ASSERT( p_current_hessian == p_expected, "MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle: wrong pointer to first half hessian. Current: " << p_current_hessian << ", expected: " << p_expected << " difference is " << p_current_hessian - p_expected << ".\n")
+  real * p_expected = in_hessian_y_y + getNlpHessianLeftColumnBlockNnz() + getNlpHessianCentreColumnBlockNnz();
+  MAVERICK_ASSERT( p_current_hessian == p_expected, "RK1Ocp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle: wrong pointer to first half hessian. Current: " << p_current_hessian << ", expected: " << p_expected << " difference is " << p_current_hessian - p_expected << ".\n")
 #endif
 
   // SIXTH BLOCK
-  hess_p_p_lower_mat += lag_hess_p_p_mat.triangularView<Eigen::Lower>() * d_zeta
+  hess_p_p_lower_mat += lag_hess_p_p_mat.triangularView<Eigen::Lower>() * ocp_state.d_zeta
                         + fo_eqns_hess_p_p_mat.triangularView<Eigen::Lower>()
                         + path_constr_hess_p_p_mat.triangularView<Eigen::Lower>()
                         + point_constr_hess_p_p_mat.triangularView<Eigen::Lower>()
-                        + int_constr_hess_p_p_mat.triangularView<Eigen::Lower>() * d_zeta;
+                        + int_constr_hess_p_p_mat.triangularView<Eigen::Lower>() * ocp_state.d_zeta;
 
 }
 
@@ -1995,12 +2060,12 @@ void MidpointOcp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(real const oc
 //_______________________________________________________________________________________________________________________________________
 //_______________________________________________________________________________________________________________________________________
 
-void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const initial_state_control[],
+void RK1Ocp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const initial_state_control[],
                                                                     real const final_state_control[],
                                                                     real const ocp_params[],
                                                                     real const initial_zeta,
                                                                     real const final_zeta,
-                                                                    real const last_d_z_dual,
+                                                                    real const last_d_z_average,
                                                                     real const lambda_not_scaled[],
                                                                     real const last_constr_lambda_not_scaled[],
                                                                     real const lambda_0_not_scaled,
@@ -2023,7 +2088,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
 #ifdef MAVERICK_DEBUG
   real const * exp_lambda = lambda_not_scaled + getNlpConstraintsPtrIndexForInterval( _p_mesh->getNumberOfIntervals() );
 
-  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong lambda pointer for last point constraints. Current " << p_current_constraint_lambda << ", expected " << exp_lambda << ".\n")
+  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong lambda pointer for last point constraints. Current " << p_current_constraint_lambda << ", expected " << exp_lambda << ".\n")
 #endif
   // get last point constr hessian
   real point_constr_hess_xu_xu[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
@@ -2032,7 +2097,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   real *lambda_scaled = new real[_dim_poc];
   real p_inv_scaling_point_constr[_dim_poc];
   if (_multiply_point_constr_by_dz)
-    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, last_d_z_dual, _dim_poc);
+    multiplyAndCopyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, last_d_z_average, _dim_poc);
   else
     copyVectorTo(_p_inv_scaling_point_constr_global, p_inv_scaling_point_constr, _dim_poc);
 
@@ -2044,8 +2109,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
 
   // create last point_constr matrixes
   integer point_constr_hess_xu_xu_rows[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
-  integer point_constr_hess_xu_xu_cols[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessXuXuPattern(_i_phase, point_constr_hess_xu_xu_rows, point_constr_hess_xu_xu_cols);
+  {
+    integer point_constr_hess_xu_xu_cols[_ocp_problem.pointConstraintsHessXuXuNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessXuXuPattern(_i_phase, point_constr_hess_xu_xu_rows, point_constr_hess_xu_xu_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_xu_xu_mat(_dim_xu, _dim_xu,
                                                        _ocp_problem.pointConstraintsHessXuXuNnz(_i_phase),
                                                        _p_point_constr_hess_xu_xu_outer_start,
@@ -2055,8 +2122,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_last_point_constr_hess_xu_xu_lower_mat = point_constr_hess_xu_xu_mat.triangularView<Eigen::Lower>();
 
   integer point_constr_hess_xu_p_rows[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
-  integer point_constr_hess_xu_p_cols[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessXuPPattern(_i_phase, point_constr_hess_xu_p_rows, point_constr_hess_xu_p_cols);
+  {
+    integer point_constr_hess_xu_p_cols[_ocp_problem.pointConstraintsHessXuPNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessXuPPattern(_i_phase, point_constr_hess_xu_p_rows, point_constr_hess_xu_p_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_xu_p_mat(_dim_p, _dim_xu,
                                                       _ocp_problem.pointConstraintsHessXuPNnz(_i_phase),
                                                       _p_point_constr_hess_xu_p_outer_start,
@@ -2066,8 +2135,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_last_point_constr_hess_xu_p_mat = point_constr_hess_xu_p_mat;
 
   integer point_constr_hess_p_p_rows[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
-  integer point_constr_hess_p_p_cols[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
-  _ocp_problem.pointConstraintsHessPPPattern(_i_phase, point_constr_hess_p_p_rows, point_constr_hess_p_p_cols);
+  {
+    integer point_constr_hess_p_p_cols[_ocp_problem.pointConstraintsHessPPNnz(_i_phase)];
+    _ocp_problem.pointConstraintsHessPPPattern(_i_phase, point_constr_hess_p_p_rows, point_constr_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> point_constr_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.pointConstraintsHessPPNnz(_i_phase),
                                                      _p_point_constr_hess_p_p_outer_start,
                                                      point_constr_hess_p_p_rows,
@@ -2079,7 +2150,7 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
 #ifdef MAVERICK_DEBUG
   exp_lambda = lambda_not_scaled + getNlpConstraintsSize() - _dim_ic - _dim_bc;
 
-  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong lambda pointer for boundary conditions.\n")
+  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong lambda pointer for boundary conditions.\n")
 #endif
   real bcs_hess_xu_init_xu_init[_ocp_problem.boundaryConditionsHessXuInitXuInitNnz(_i_phase)];
   real bcs_hess_xu_init_xu_fin[_ocp_problem.boundaryConditionsHessXuInitXuFinNnz(_i_phase)];
@@ -2098,13 +2169,15 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
 #ifdef MAVERICK_DEBUG
   exp_lambda = lambda_not_scaled + getNlpConstraintsSize() - _dim_ic ;
 
-  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "MidpointOcp2NlpSinglePhase::calculateNLPQuantities: wrong final lambda pointer.\n")
+  MAVERICK_ASSERT(p_current_constraint_lambda == exp_lambda, "RK1Ocp2NlpSinglePhase::calculateNLPQuantities: wrong final lambda pointer.\n")
 #endif
   //create matrixes
   integer bcs_hess_xu_init_xu_init_rows[_ocp_problem.boundaryConditionsHessXuInitXuInitNnz(_i_phase)];
-  integer bcs_hess_xu_init_xu_init_cols[_ocp_problem.boundaryConditionsHessXuInitXuInitNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessXuInitXuInitPattern(_i_phase, bcs_hess_xu_init_xu_init_rows,
-                                                         bcs_hess_xu_init_xu_init_cols);
+  {
+    integer bcs_hess_xu_init_xu_init_cols[_ocp_problem.boundaryConditionsHessXuInitXuInitNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessXuInitXuInitPattern(_i_phase, bcs_hess_xu_init_xu_init_rows,
+                                                           bcs_hess_xu_init_xu_init_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_xu_init_xu_init_mat(_dim_xu, _dim_xu,
                                                         _ocp_problem.boundaryConditionsHessXuInitXuInitNnz(_i_phase),
                                                         _p_bcs_hess_xu_init_xu_init_outer_start,
@@ -2114,9 +2187,11 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_bcs_hess_xu_init_xu_init_lower_mat = bcs_hess_xu_init_xu_init_mat.triangularView<Eigen::Lower>();
 
   integer bcs_hess_xu_init_xu_fin_rows[_ocp_problem.boundaryConditionsHessXuInitXuFinNnz(_i_phase)];
-  integer bcs_hess_xu_init_xu_fin_cols[_ocp_problem.boundaryConditionsHessXuInitXuFinNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessXuInitXuFinPattern(_i_phase, bcs_hess_xu_init_xu_fin_rows,
-                                                        bcs_hess_xu_init_xu_fin_cols);
+  {
+    integer bcs_hess_xu_init_xu_fin_cols[_ocp_problem.boundaryConditionsHessXuInitXuFinNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessXuInitXuFinPattern(_i_phase, bcs_hess_xu_init_xu_fin_rows,
+                                                          bcs_hess_xu_init_xu_fin_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_xu_init_xu_fin_mat(_dim_xu, _dim_xu,
                                                        _ocp_problem.boundaryConditionsHessXuInitXuFinNnz(_i_phase),
                                                        _p_bcs_hess_xu_init_xu_fin_outer_start,
@@ -2126,8 +2201,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_bcs_hess_xu_init_xu_fin_mat = bcs_hess_xu_init_xu_fin_mat;
 
   integer bcs_hess_xu_init_p_rows[_ocp_problem.boundaryConditionsHessXuInitPNnz(_i_phase)];
-  integer bcs_hess_xu_init_p_cols[_ocp_problem.boundaryConditionsHessXuInitPNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessXuInitPPattern(_i_phase, bcs_hess_xu_init_p_rows, bcs_hess_xu_init_p_cols);
+  {
+    integer bcs_hess_xu_init_p_cols[_ocp_problem.boundaryConditionsHessXuInitPNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessXuInitPPattern(_i_phase, bcs_hess_xu_init_p_rows, bcs_hess_xu_init_p_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_xu_init_p_mat(_dim_p, _dim_xu,
                                                   _ocp_problem.boundaryConditionsHessXuInitPNnz(_i_phase),
                                                   _p_bcs_hess_xu_init_p_outer_start,
@@ -2137,9 +2214,11 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_bcs_hess_xu_init_p_mat = bcs_hess_xu_init_p_mat;
 
   integer bcs_hess_xu_fin_xu_fin_rows[_ocp_problem.boundaryConditionsHessXuFinXuFinNnz(_i_phase)];
-  integer bcs_hess_xu_fin_xu_fin_cols[_ocp_problem.boundaryConditionsHessXuFinXuFinNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessXuFinXuFinPattern(_i_phase, bcs_hess_xu_fin_xu_fin_rows,
-                                                       bcs_hess_xu_fin_xu_fin_cols);
+  {
+    integer bcs_hess_xu_fin_xu_fin_cols[_ocp_problem.boundaryConditionsHessXuFinXuFinNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessXuFinXuFinPattern(_i_phase, bcs_hess_xu_fin_xu_fin_rows,
+                                                         bcs_hess_xu_fin_xu_fin_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_xu_fin_xu_fin_mat(_dim_xu, _dim_xu,
                                                       _ocp_problem.boundaryConditionsHessXuFinXuFinNnz(_i_phase),
                                                       _p_bcs_hess_xu_fin_xu_fin_outer_start,
@@ -2149,8 +2228,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_bcs_hess_xu_fin_xu_fin_lower_mat = bcs_hess_xu_fin_xu_fin_mat.triangularView<Eigen::Lower>();
 
   integer bcs_hess_xu_fin_p_rows[_ocp_problem.boundaryConditionsHessXuFinPNnz(_i_phase)];
-  integer bcs_hess_xu_fin_p_cols[_ocp_problem.boundaryConditionsHessXuFinPNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessXuFinPPattern(_i_phase, bcs_hess_xu_fin_p_rows, bcs_hess_xu_fin_p_cols);
+  {
+    integer bcs_hess_xu_fin_p_cols[_ocp_problem.boundaryConditionsHessXuFinPNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessXuFinPPattern(_i_phase, bcs_hess_xu_fin_p_rows, bcs_hess_xu_fin_p_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_xu_fin_p_mat(_dim_p, _dim_xu,
                                                  _ocp_problem.boundaryConditionsHessXuFinPNnz(_i_phase),
                                                  _p_bcs_hess_xu_fin_p_outer_start,
@@ -2160,8 +2241,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_bcs_hess_xu_fin_p_mat = bcs_hess_xu_fin_p_mat;
 
   integer bcs_hess_p_p_rows[_ocp_problem.boundaryConditionsHessPPNnz(_i_phase)];
-  integer bcs_hess_p_p_cols[_ocp_problem.boundaryConditionsHessPPNnz(_i_phase)];
-  _ocp_problem.boundaryConditionsHessPPPattern(_i_phase, bcs_hess_p_p_rows, bcs_hess_p_p_cols);
+  {
+    integer bcs_hess_p_p_cols[_ocp_problem.boundaryConditionsHessPPNnz(_i_phase)];
+    _ocp_problem.boundaryConditionsHessPPPattern(_i_phase, bcs_hess_p_p_rows, bcs_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> bcs_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.boundaryConditionsHessPPNnz(_i_phase),
                                             _p_bcs_hess_p_p_outer_start,
                                             bcs_hess_p_p_rows,
@@ -2183,8 +2266,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
 
   //create matrixes
   integer mayer_hess_xu_init_xu_init_rows[_ocp_problem.mayerHessXuInitXuInitNnz(_i_phase)];
-  integer mayer_hess_xu_init_xu_init_cols[_ocp_problem.mayerHessXuInitXuInitNnz(_i_phase)];
-  _ocp_problem.mayerHessXuInitXuInitPattern(_i_phase, mayer_hess_xu_init_xu_init_rows, mayer_hess_xu_init_xu_init_cols);
+  {
+    integer mayer_hess_xu_init_xu_init_cols[_ocp_problem.mayerHessXuInitXuInitNnz(_i_phase)];
+    _ocp_problem.mayerHessXuInitXuInitPattern(_i_phase, mayer_hess_xu_init_xu_init_rows, mayer_hess_xu_init_xu_init_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_xu_init_xu_init_mat(_dim_xu, _dim_xu,
                                                           _ocp_problem.mayerHessXuInitXuInitNnz(_i_phase),
                                                           _p_mayer_hess_xu_init_xu_init_outer_start,
@@ -2194,8 +2279,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_mayer_hess_xu_init_xu_init_lower_mat = mayer_hess_xu_init_xu_init_mat.triangularView<Eigen::Lower>();
 
   integer mayer_hess_xu_init_xu_fin_rows[_ocp_problem.mayerHessXuInitXuFinNnz(_i_phase)];
-  integer mayer_hess_xu_init_xu_fin_cols[_ocp_problem.mayerHessXuInitXuFinNnz(_i_phase)];
-  _ocp_problem.mayerHessXuInitXuFinPattern(_i_phase, mayer_hess_xu_init_xu_fin_rows, mayer_hess_xu_init_xu_fin_cols);
+  {
+    integer mayer_hess_xu_init_xu_fin_cols[_ocp_problem.mayerHessXuInitXuFinNnz(_i_phase)];
+    _ocp_problem.mayerHessXuInitXuFinPattern(_i_phase, mayer_hess_xu_init_xu_fin_rows, mayer_hess_xu_init_xu_fin_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_xu_init_xu_fin_mat(_dim_xu, _dim_xu,
                                                          _ocp_problem.mayerHessXuInitXuFinNnz(_i_phase),
                                                          _p_mayer_hess_xu_init_xu_fin_outer_start,
@@ -2205,8 +2292,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_mayer_hess_xu_init_xu_fin_mat = mayer_hess_xu_init_xu_fin_mat;
 
   integer mayer_hess_xu_init_p_rows[_ocp_problem.mayerHessXuInitPNnz(_i_phase)];
-  integer mayer_hess_xu_init_p_cols[_ocp_problem.mayerHessXuInitPNnz(_i_phase)];
-  _ocp_problem.mayerHessXuInitPPattern(_i_phase, mayer_hess_xu_init_p_rows, mayer_hess_xu_init_p_cols);
+  {
+    integer mayer_hess_xu_init_p_cols[_ocp_problem.mayerHessXuInitPNnz(_i_phase)];
+    _ocp_problem.mayerHessXuInitPPattern(_i_phase, mayer_hess_xu_init_p_rows, mayer_hess_xu_init_p_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_xu_init_p_mat(_dim_p, _dim_xu, _ocp_problem.mayerHessXuInitPNnz(_i_phase),
                                                     _p_mayer_hess_xu_init_p_outer_start,
                                                     mayer_hess_xu_init_p_rows,
@@ -2215,8 +2304,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_mayer_hess_xu_init_p_mat = mayer_hess_xu_init_p_mat;
 
   integer mayer_hess_xu_fin_xu_fin_rows[_ocp_problem.mayerHessXuFinXuFinNnz(_i_phase)];
-  integer mayer_hess_xu_fin_xu_fin_cols[_ocp_problem.mayerHessXuFinXuFinNnz(_i_phase)];
-  _ocp_problem.mayerHessXuFinXuFinPattern(_i_phase, mayer_hess_xu_fin_xu_fin_rows, mayer_hess_xu_fin_xu_fin_cols);
+  {
+    integer mayer_hess_xu_fin_xu_fin_cols[_ocp_problem.mayerHessXuFinXuFinNnz(_i_phase)];
+    _ocp_problem.mayerHessXuFinXuFinPattern(_i_phase, mayer_hess_xu_fin_xu_fin_rows, mayer_hess_xu_fin_xu_fin_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_xu_fin_xu_fin_mat(_dim_xu, _dim_xu, _ocp_problem.mayerHessXuFinXuFinNnz(_i_phase),
                                                         _p_mayer_hess_xu_fin_xu_fin_outer_start,
                                                         mayer_hess_xu_fin_xu_fin_rows,
@@ -2225,8 +2316,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_mayer_hess_xu_fin_xu_fin_lower_mat = mayer_hess_xu_fin_xu_fin_mat.triangularView<Eigen::Lower>();
 
   integer mayer_hess_xu_fin_p_rows[_ocp_problem.mayerHessXuFinPNnz(_i_phase)];
-  integer mayer_hess_xu_fin_p_cols[_ocp_problem.mayerHessXuFinPNnz(_i_phase)];
-  _ocp_problem.mayerHessXuFinPPattern(_i_phase, mayer_hess_xu_fin_p_rows, mayer_hess_xu_fin_p_cols);
+  {
+    integer mayer_hess_xu_fin_p_cols[_ocp_problem.mayerHessXuFinPNnz(_i_phase)];
+    _ocp_problem.mayerHessXuFinPPattern(_i_phase, mayer_hess_xu_fin_p_rows, mayer_hess_xu_fin_p_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_xu_fin_p_mat(_dim_p, _dim_xu, _ocp_problem.mayerHessXuFinPNnz(_i_phase),
                                                    _p_mayer_hess_xu_fin_p_outer_start,
                                                    mayer_hess_xu_fin_p_rows,
@@ -2235,8 +2328,10 @@ void MidpointOcp2NlpSinglePhase::calculateHessianLastConstrBcsMayer(real const i
   out_mayer_hess_xu_fin_p_mat = mayer_hess_xu_fin_p_mat;
 
   integer mayer_hess_p_p_rows[_ocp_problem.mayerHessPPNnz(_i_phase)];
-  integer mayer_hess_p_p_cols[_ocp_problem.mayerHessPPNnz(_i_phase)];
-  _ocp_problem.mayerHessPPPattern(_i_phase, mayer_hess_p_p_rows, mayer_hess_p_p_cols);
+  {
+    integer mayer_hess_p_p_cols[_ocp_problem.mayerHessPPNnz(_i_phase)];
+    _ocp_problem.mayerHessPPPattern(_i_phase, mayer_hess_p_p_rows, mayer_hess_p_p_cols);
+  }
   Eigen::Map<SparseMatrix> mayer_hess_p_p_mat(_dim_p, _dim_p, _ocp_problem.mayerHessPPNnz(_i_phase),
                                               _p_mayer_hess_p_p_outer_start,
                                               mayer_hess_p_p_rows,

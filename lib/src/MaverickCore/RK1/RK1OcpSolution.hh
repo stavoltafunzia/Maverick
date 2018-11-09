@@ -5,31 +5,31 @@
 *                                                     *
 ******************************************************/
 
-#ifndef MAVERICK_MIDPOINT_OCP_SOLUTION_HH
-#define MAVERICK_MIDPOINT_OCP_SOLUTION_HH
+#ifndef MAVERICK_RK1_OCP_SOLUTION_HH
+#define MAVERICK_RK1_OCP_SOLUTION_HH
 
 #include "MaverickCore/OcpSolution.hh"
 #include "MaverickCore/OcpGuess.hh"
-#include "MaverickCore/Midpoint/MidpointOcpSolutionSinglePhase.hh"
+#include "MaverickCore/RK1/RK1OcpSolutionSinglePhase.hh"
 #include <iostream>
 
 namespace Maverick {
 
-  class MidpointOcpSolution : public OcpSolution {
+  class RK1OcpSolution : public OcpSolution {
 
   public:
 
-    MidpointOcpSolution();
+    RK1OcpSolution();
 
-    static std::unique_ptr<MidpointOcpSolution>
+    static std::unique_ptr<RK1OcpSolution>
     getFromGuessTablesForOcpProblem(std::vector<real_table> const &guess_table, MaverickOcp const &ocp_problem,
                                     std::vector<std::vector<std::string>> &found_variables);
 
     // copy constructor
-    MidpointOcpSolution(MidpointOcpSolution const &ocp_solution);
+    RK1OcpSolution(RK1OcpSolution const &ocp_solution);
 
     // destructor
-    ~MidpointOcpSolution() {}
+    ~RK1OcpSolution() {}
 
     // OcpGuess interface
     void evalAtMesh(integer const i_phase,
@@ -56,7 +56,7 @@ namespace Maverick {
 
     // OcpSolution interface
 
-    virtual Mesh::DiscretisationType discretisationType() const { return Mesh::DiscretisationType::midpoint; }
+    virtual Mesh::DiscretisationType discretisationType() const { return Mesh::DiscretisationType::runge_kutta_1; }
 
     void evalAtMesh(integer const i_phase,
                     real zeta,
@@ -117,21 +117,21 @@ namespace Maverick {
     // additional methods
 
     // set a specific solution for a phase
-    void setSolutionAtPhase(integer const i_phase, MidpointOcpSolutionSinglePhase const &ocp_solution);
+    void setSolutionAtPhase(integer const i_phase, RK1OcpSolutionSinglePhase const &ocp_solution);
 
     // opertators
 
-    MidpointOcpSolutionSinglePhase const &operator()(integer const i_phase) const;
+    RK1OcpSolutionSinglePhase const &operator()(integer const i_phase) const;
 
-    MidpointOcpSolutionSinglePhase &operator()(integer const i_phase);
+    RK1OcpSolutionSinglePhase &operator()(integer const i_phase);
 
-    MidpointOcpSolution &operator=(MidpointOcpSolution const &ocp_solution);
+    RK1OcpSolution &operator=(RK1OcpSolution const &ocp_solution);
 
-    MidpointOcpSolution &operator<<(MidpointOcpSolutionSinglePhase const &ocp_solution);
+    RK1OcpSolution &operator<<(RK1OcpSolutionSinglePhase const &ocp_solution);
 
   protected:
 
-    std::vector<MidpointOcpSolutionSinglePhase> _solutions;
+    std::vector<RK1OcpSolutionSinglePhase> _solutions;
 
   };
 }

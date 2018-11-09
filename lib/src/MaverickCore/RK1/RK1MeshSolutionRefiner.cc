@@ -1,5 +1,5 @@
-#include "MaverickCore/Midpoint/MidpointMeshSolutionRefiner.hh"
-#include "MaverickCore/Midpoint/MidpointIntegrator.hh"
+#include "MaverickCore/RK1/RK1MeshSolutionRefiner.hh"
+#include "MaverickCore/RK1/RK1Integrator.hh"
 #include "MaverickCore/MaverickSingleton.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 #include <iomanip>
@@ -10,14 +10,13 @@ using namespace std;
 
 namespace Maverick {
 
-  MidpointMeshSolutionRefiner::MidpointMeshSolutionRefiner(MaverickOcp const &ocp_problem,
-                                                           OcpScaling const &ocp_scaling) : MeshSolutionRefiner(
-      ocp_problem, ocp_scaling) {};
+  RK1MeshSolutionRefiner::RK1MeshSolutionRefiner(MaverickOcp const &ocp_problem, OcpScaling const &ocp_scaling) :
+                                                 MeshSolutionRefiner(ocp_problem, ocp_scaling) {};
 
-  MidpointMeshSolutionRefiner::~MidpointMeshSolutionRefiner() {}
+  RK1MeshSolutionRefiner::~RK1MeshSolutionRefiner() {}
 
 
-  std::unique_ptr<Mesh> MidpointMeshSolutionRefiner::calculateMeshErrors(real const mesh_error_threshold,
+  std::unique_ptr<Mesh> RK1MeshSolutionRefiner::calculateMeshErrors(real const mesh_error_threshold,
                                                                          bool const calculate_new_mesh,
                                                                          bool const log_mesh,
                                                                          OcpSolution const &sol,
@@ -27,14 +26,14 @@ namespace Maverick {
 
     MaverickSingleton const &_maverick = MaverickSingleton::getInstance();
 
-    if (solution_mesh.discretisationType() != Mesh::DiscretisationType::midpoint)
+    if (solution_mesh.discretisationType() != Mesh::DiscretisationType::runge_kutta_1)
       throw std::runtime_error(
-          "MidpointMeshSolutionRefiner::calculateMeshErrors: only a midpoint mesh can be anallysed");
-    if (sol.discretisationType() != Mesh::DiscretisationType::midpoint)
+          "RK1MeshSolutionRefiner::calculateMeshErrors: only a RK1 mesh can be anallysed");
+    if (sol.discretisationType() != Mesh::DiscretisationType::runge_kutta_1)
       throw std::runtime_error(
-          "MidpointMeshSolutionRefiner::calculateMeshErrors: only a midpoint solution can be anallysed");
+          "RK1MeshSolutionRefiner::calculateMeshErrors: only a RK1 solution can be anallysed");
 
-    MidpointMesh const *mesh = (MidpointMesh *) &solution_mesh;
+    RK1Mesh const *mesh = (RK1Mesh *) &solution_mesh;
 
     all_mesh_errors.clear();
 
@@ -51,19 +50,19 @@ namespace Maverick {
     }
 
     // loop over phases
-    MidpointMesh *new_mesh = nullptr;
+    RK1Mesh *new_mesh = nullptr;
     if (calculate_new_mesh)
-      new_mesh = new MidpointMesh(*mesh);
+      new_mesh = new RK1Mesh(*mesh);
 
     for (integer i_phase = 0; i_phase < _ocp_problem.numberOfPhases(); i_phase++) {
-      MidpointMeshSinglePhase const &c_mesh = mesh->operator()(i_phase);
+      RK1MeshSinglePhase const &c_mesh = mesh->operator()(i_phase);
 
       all_mesh_errors.push_back(vec_1d_real());
       vec_1d_real &mesh_errors = all_mesh_errors[i_phase];
       mesh_errors.reserve(c_mesh.getNumberOfIntervals());
 
       // calculate the mesh errors for this phase
-      MidpointOcpSolution const &solution = *((MidpointOcpSolution *) &sol);
+      RK1OcpSolution const &solution = *((RK1OcpSolution *) &sol);
       getMeshErrorsForSinglePhase(i_phase, *mesh, solution, mesh_errors);
 
       // analyse the errors and, eventually, increase the mesh size
@@ -75,7 +74,7 @@ namespace Maverick {
       //loop over mesh intervals
       for (integer i_interval = 0; i_interval < mesh_errors.size(); i_interval++) {
         if (mesh_errors[i_interval] <
-            0) // in this case, an error occure, therefore we consider it to be greater than the mesh_error_threshold
+            0) // in this case, an error occurred, therefore we consider it to be greater than the mesh_error_threshold
           mesh_errors[i_interval] = mesh_error_threshold * (1.01);
 
         max_error = max(max_error, mesh_errors[i_interval]);
@@ -126,16 +125,16 @@ namespace Maverick {
       }
       if (calculate_new_mesh) {
         new_zeta.shrink_to_fit();
-        new_mesh->setMeshForPhase(i_phase, MidpointMeshSinglePhase(mesh->operator()(i_phase)));
+        new_mesh->setMeshForPhase(i_phase, RK1MeshSinglePhase(mesh->operator()(i_phase)));
         new_mesh->operator()(i_phase).setDiscretisationPoints(new_zeta);
       }
     }
-    return std::unique_ptr<MidpointMesh>(new_mesh);
+    return std::unique_ptr<RK1Mesh>(new_mesh);
   }
 
-  void MidpointMeshSolutionRefiner::getMeshErrorsForSinglePhase(integer const i_phase, MidpointMesh const &mesh,
-                                                                MidpointOcpSolution const &sol,
-                                                                vec_1d_real &mesh_errors) const {
+  void RK1MeshSolutionRefiner::getMeshErrorsForSinglePhase(integer const i_phase, RK1Mesh const &mesh,
+                                                           RK1OcpSolution const &sol, vec_1d_real &mesh_errors) const
+  {
     integer const num_mesh_points = mesh(i_phase).getNumberOfDiscretisationPoints();
     integer const num_threads_to_use = (integer) _th_affinity.size();
     integer num_mesh_points_per_thread = ceil(num_mesh_points / real(num_threads_to_use));
@@ -158,7 +157,8 @@ namespace Maverick {
 
     for (integer i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
       real *mesh_error_ptr = &mesh_errors[thread_mesh_points[i_phase]];
-      threads[i_thread] = new std::thread(&MidpointMeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints, this,
+      threads[i_thread] = new std::thread(&RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints, this,
+                                          mesh(i_phase).getAlpha(),
                                           i_phase,
                                           thread_mesh_points[i_thread],
                                           thread_mesh_points[i_thread + 1],
@@ -178,11 +178,12 @@ namespace Maverick {
 
   }
 
-  void MidpointMeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints(integer const i_phase,
+  void RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints(real const alpha,
+                                                                   integer const i_phase,
                                                                         integer const first_mesh_point,
                                                                         integer const last_mesh_point,
-                                                                        MidpointMesh const &mesh,
-                                                                        MidpointOcpSolution const &sol,
+                                                                        RK1Mesh const &mesh,
+                                                                        RK1OcpSolution const &sol,
                                                                         real mesh_error[]) const {
     vec_2d_real const &state_control = sol(i_phase).getStatesControls();
     vec_2d_real const &algebraic_state_control = sol(i_phase).getAlgebraicStatesControls();
@@ -193,7 +194,7 @@ namespace Maverick {
     integer const dim_au = (integer) algebraic_state_control.size() - dim_ax;
     integer const dim_p = _ocp_problem.numberOfParameters(i_phase);
 
-    MidpointIntegrator calculator(_ocp_problem, _scaling, i_phase, _integrator_type);
+    RK1Integrator calculator(_ocp_problem, _scaling, i_phase, _integrator_type);
 
     real x_left[dim_x];
     real x_right[dim_x];
@@ -212,40 +213,39 @@ namespace Maverick {
     integer return_code;
 
     real x_tmp[dim_x];
-    real u_center[dim_u];
+    real u_alpha[dim_u];
 
     for (integer i_interval = first_mesh_point; i_interval < last_mesh_point; i_interval++) {
       MAVERICK_DEBUG_ASSERT(i_interval < state_control[0].size() - 1,
-                            "MidpointMeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints: index of interval exceeds solution size\n")
+                            "RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints: index of interval exceeds solution size\n")
 
-      // write the states and controls (store in x_tmp and u_tmp the middle point)
+      // write the states and controls (store in x_tmp and u_tmp the alpha point)
       for (integer i = 0; i < dim_x; i++) {
         x_left[i] = state_control[i][i_interval];
         x_right[i] = state_control[i][i_interval + 1];
-        x_tmp[i] = (x_right[i] + x_left[i]) / 2.0;
+        x_tmp[i] = x_left[i] * alpha + x_right[i] * (1 - alpha);
       }
       for (integer i = 0; i < dim_u; i++) {
         u_left[i] = state_control[dim_x + i][i_interval];
         u_right[i] = state_control[dim_x + i][i_interval + 1];
-        u_center[i] = (u_right[i] + u_left[i]) / 2.0;
+        u_alpha[i] = u_left[i] * alpha + u_right[i] * (1 - alpha);
       }
       for (integer i = 0; i < dim_ax; i++)
         ax[i] = algebraic_state_control[i][i_interval];
       for (integer i = 0; i < dim_au; i++)
         au[i] = algebraic_state_control[dim_ax + i][i_interval];
 
-      // one step integration (as OCP solution)
-
       real const dz_half = (zeta[i_interval + 1] - zeta[i_interval]) / 2.f;
 
       // integrate the first half
-      return_code = calculator.integrateForward(dim_x, x_left, x_tmp,   //solution will be in x_tmp
-                                                dim_u, u_left, u_center,
+      return_code = calculator.integrateForward(mesh(i_phase).getAlpha(),
+                                                dim_x, x_left, x_tmp,   //solution will be in x_tmp
+                                                dim_u, u_left, u_alpha,
                                                 dim_ax, ax_solution, // solution will be in ax
                                                 dim_au, au,
                                                 dim_p, params,
                                                 zeta[i_interval], dz_half,
-                                                x_tmp,  // x_tmp is the x_center and is the guess
+                                                x_tmp,  // guess
                                                 ax, // guess
                                                 solution_error);
 
@@ -260,8 +260,9 @@ namespace Maverick {
       real first_solution_error = solution_error;
 #endif
       // integrate the second half
-      return_code = calculator.integrateForward(dim_x, x_tmp, x_solution,   //solution will be in x_solution
-                                                dim_u, u_center, u_right,
+      return_code = calculator.integrateForward(mesh(i_phase).getAlpha(),
+                                                dim_x, x_tmp, x_solution,   //solution will be in x_solution
+                                                dim_u, u_alpha, u_right,
                                                 dim_ax, ax_solution, // solution will be in ax
                                                 dim_au, au,
                                                 dim_p, params,
