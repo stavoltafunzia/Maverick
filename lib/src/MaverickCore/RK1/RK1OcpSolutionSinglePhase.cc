@@ -493,7 +493,7 @@ namespace Maverick {
 
     for (auto & name_and_constant : names_and_constants)
       for (auto i = 0; i < name_and_constant.second->size(); i++)
-        header << "parameter" << i << StreamChars::separator;
+        header << name_and_constant.first << i << StreamChars::separator;
 
     //target
     header << "integrand_target" << StreamChars::separator
@@ -511,11 +511,11 @@ namespace Maverick {
 
       for (auto & name_and_spline : names_and_splines)
         for (auto i = 0; i < name_and_spline.second->size(); i++)
-          header << (*name_and_spline.second)[i]->funcEval(zeta) << StreamChars::separator;
+          body << (*name_and_spline.second)[i]->funcEval(zeta) << StreamChars::separator;
 
       for (auto & name_and_constant : names_and_constants)
         for (auto i = 0; i < name_and_constant.second->size(); i++)
-          header << (*name_and_constant.second)[i] << StreamChars::separator;
+          body << (*name_and_constant.second)[i] << StreamChars::separator;
 
       //target
       body << _gf1a_integrand_target->funcEval(zeta) << StreamChars::separator
