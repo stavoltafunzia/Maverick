@@ -181,7 +181,7 @@ namespace Maverick {
                                                                                                 << " greater than " <<
                                                                                                 _number_of_mesh_points -
                                                                                                 2 << ".")
-    return _zeta[mesh_interval_index] * _alpha + _zeta[mesh_interval_index + 1] * (1 - _alpha);
+    return _zeta[mesh_interval_index] * (1 - _alpha) + _zeta[mesh_interval_index + 1] * _alpha;
   }
 
   real RK1MeshSinglePhase::getDz(integer const mesh_interval_index) const {

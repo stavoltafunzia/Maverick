@@ -158,7 +158,6 @@ namespace Maverick {
     for (integer i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
       real *mesh_error_ptr = &mesh_errors[thread_mesh_points[i_phase]];
       threads[i_thread] = new std::thread(&RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints, this,
-                                          mesh(i_phase).getAlpha(),
                                           i_phase,
                                           thread_mesh_points[i_thread],
                                           thread_mesh_points[i_thread + 1],
@@ -178,13 +177,12 @@ namespace Maverick {
 
   }
 
-  void RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints(real const alpha,
-                                                                   integer const i_phase,
-                                                                        integer const first_mesh_point,
-                                                                        integer const last_mesh_point,
-                                                                        RK1Mesh const &mesh,
-                                                                        RK1OcpSolution const &sol,
-                                                                        real mesh_error[]) const {
+  void RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints(integer const i_phase,
+                                                                   integer const first_mesh_point,
+                                                                   integer const last_mesh_point,
+                                                                   RK1Mesh const &mesh,
+                                                                   RK1OcpSolution const &sol,
+                                                                   real mesh_error[]) const {
     vec_2d_real const &state_control = sol(i_phase).getStatesControls();
     vec_2d_real const &algebraic_state_control = sol(i_phase).getAlgebraicStatesControls();
 
@@ -196,6 +194,7 @@ namespace Maverick {
 
     RK1Integrator calculator(_ocp_problem, _scaling, i_phase, _integrator_type);
 
+    real const alpha = mesh(i_phase).getAlpha();
     real x_left[dim_x];
     real x_right[dim_x];
     real u_left[dim_u];
@@ -223,12 +222,12 @@ namespace Maverick {
       for (integer i = 0; i < dim_x; i++) {
         x_left[i] = state_control[i][i_interval];
         x_right[i] = state_control[i][i_interval + 1];
-        x_tmp[i] = x_left[i] * alpha + x_right[i] * (1 - alpha);
+        x_tmp[i] = x_left[i] * (1 - alpha) + x_right[i] * alpha;
       }
       for (integer i = 0; i < dim_u; i++) {
         u_left[i] = state_control[dim_x + i][i_interval];
         u_right[i] = state_control[dim_x + i][i_interval + 1];
-        u_alpha[i] = u_left[i] * alpha + u_right[i] * (1 - alpha);
+        u_alpha[i] = u_left[i] * (1 - alpha) + u_right[i] * alpha;
       }
       for (integer i = 0; i < dim_ax; i++)
         ax[i] = algebraic_state_control[i][i_interval];
@@ -238,7 +237,7 @@ namespace Maverick {
       real const dz_half = (zeta[i_interval + 1] - zeta[i_interval]) / 2.f;
 
       // integrate the first half
-      return_code = calculator.integrateForward(mesh(i_phase).getAlpha(),
+      return_code = calculator.integrateForward(alpha,
                                                 dim_x, x_left, x_tmp,   //solution will be in x_tmp
                                                 dim_u, u_left, u_alpha,
                                                 dim_ax, ax_solution, // solution will be in ax
@@ -260,7 +259,7 @@ namespace Maverick {
       real first_solution_error = solution_error;
 #endif
       // integrate the second half
-      return_code = calculator.integrateForward(mesh(i_phase).getAlpha(),
+      return_code = calculator.integrateForward(alpha,
                                                 dim_x, x_tmp, x_solution,   //solution will be in x_solution
                                                 dim_u, u_alpha, u_right,
                                                 dim_ax, ax_solution, // solution will be in ax

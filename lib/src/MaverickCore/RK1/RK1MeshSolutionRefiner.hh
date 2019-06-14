@@ -38,8 +38,7 @@ namespace Maverick {
     void getMeshErrorsForSinglePhase(integer const i_phase, RK1Mesh const &mesh, RK1OcpSolution const &sol,
                                      vec_1d_real &mesh_errors) const;
 
-    void calculateMeshErrorBetweenMeshPoints(real const alpha,
-                                             integer const i_phase,
+    void calculateMeshErrorBetweenMeshPoints(integer const i_phase,
                                              integer const first_mesh_point, integer const last_mesh_point,
                                              RK1Mesh const &mesh, RK1OcpSolution const &sol,
                                              real mesh_error[]) const;
