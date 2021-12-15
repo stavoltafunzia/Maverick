@@ -1598,7 +1598,7 @@ void RK1Ocp2NlpSinglePhase::calculateHessianBlockAtMeshMiddle(ocpStateAtInterval
   integer fo_eqns_hess_axu_p_rows[_ocp_problem.foEqnsHessAxuPNnz(_i_phase)];
   {
     integer fo_eqns_hess_axu_p_cols[_ocp_problem.foEqnsHessAxuPNnz(_i_phase)];
-    _ocp_problem.foEqnsHessAxuAxuPattern(_i_phase, fo_eqns_hess_axu_p_rows, fo_eqns_hess_axu_p_cols);
+    _ocp_problem.foEqnsHessAxuPPattern(_i_phase, fo_eqns_hess_axu_p_rows, fo_eqns_hess_axu_p_cols);
   }
   Eigen::Map<SparseMatrix> fo_eqns_hess_axu_p_mat(_dim_p, _dim_axu, _ocp_problem.foEqnsHessAxuPNnz(_i_phase),
                                                   _p_fo_eqns_hess_axu_p_outer_start,

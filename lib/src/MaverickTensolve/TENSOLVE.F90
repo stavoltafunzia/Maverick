@@ -3438,7 +3438,7 @@ END SUBROUTINE tensolve_tsnesi
 
 
 SUBROUTINE tsnesv(maxm, xc, m, n, typx, typf, itnlim, jacflg,  &
-                  gradtl, steptl, ftol, method, global, stepmx, dlt, ipr,  &
+                  gradtl, steptl, ftol, method_in, global, stepmx, dlt, ipr,  &
                   dfn, dxn, epsm, sqrn, fvec, jac, msg, xp, fp, gp, termcd)
 
 INTEGER, INTENT(IN)        :: maxm
@@ -3452,7 +3452,7 @@ INTEGER, INTENT(IN)        :: jacflg
 REAL (dp), INTENT(IN)      :: gradtl
 REAL (dp), INTENT(IN OUT)  :: steptl
 REAL (dp), INTENT(IN)      :: ftol
-INTEGER, INTENT(IN)        :: method
+INTEGER, INTENT(IN)        :: method_in
 INTEGER, INTENT(IN)        :: global
 REAL (dp), INTENT(IN OUT)  :: stepmx
 REAL (dp), INTENT(IN OUT)  :: dlt
@@ -3564,7 +3564,7 @@ REAL (dp) :: x(n), typxu(n), xpls(n), gpls(n), dn(n), dt(n), shat(m+2,sqrn)
 INTEGER   :: curpos(n), pivot(n), pbar(n)
 REAL (dp) :: df(n), gbar(n), fq(m), fqq(m+n), fhat(m), fv(m,n)
 
-INTEGER              :: p, itn, flag, retcd, zero1, ierr, itrmcd, icscmx
+INTEGER              :: p, itn, flag, retcd, zero1, ierr, itrmcd, icscmx, method
 REAL (dp)            :: fpls, fnorm, restns, resnew
 REAL (dp), PARAMETER :: half = 0.5_dp
 LOGICAL              :: nwtake, mxtake
@@ -3578,6 +3578,8 @@ REAL (dp), ALLOCATABLE  :: fc(:), anls(:,:), aja(:,:), s(:,:)
 INTEGER                    :: qrank
 INTEGER                    :: meqns
 INTEGER                    :: nvars
+
+method = method_in
 
 !-----------------
 ! initialization
@@ -3726,6 +3728,12 @@ IF(method == 1) THEN
 ! select the past linearly independent directions
 
   CALL tsmgsa(s, n, sqrn, itn, shat, p, curpos)
+
+! modified by nicola: tsfrmt writes out of bounds if p==0
+  IF(p == 0) THEN
+    method = 0
+    GO TO 80
+  END IF
 
 ! form the tensor term
 
