@@ -257,12 +257,12 @@ void MaverickOcp::printInfo(std::ostream &out, InfoLevel info_level) const {
   MAVERICK_ASSERT(_model_params, "MaverickOcp::printInfo: called when the pointer to the parameters is still nullptr\n")
 
   if (info_level >= info_level_more) {
-    integer max_length = 0;
+    size_t max_length = 0;
     for (std::vector<string>::const_iterator it = _model_params_names.begin(); it != _model_params_names.end(); it++)
-      max_length = std::max(max_length, (integer) it->length());
+      max_length = std::max(max_length, it->length());
 
     max_length++;
-    for (integer i = 0; i < _model_params_names.size(); i++) {
+    for (size_t i = 0; i < _model_params_names.size(); i++) {
       out << std::setw(max_length) << _model_params_names[i] << "   ";
       if (_model_params[i] < 0)
         out << std::scientific << _model_params[i];
@@ -431,10 +431,10 @@ void MaverickOcp::writeMeshHistoryToFile(OcpSolverOutput const &solver_output, s
   vec_3d_real working_mesh_history = solver_output.getMeshHistory();
 
   // find the max length
-  integer max_length = 0;
+  size_t max_length = 0;
   for (vec_3d_real::iterator it = working_mesh_history.begin(); it != working_mesh_history.end(); it++) {
     for (vec_2d_real::iterator it2 = it->begin(); it2 != it->end(); it2++) {
-      max_length = std::max(max_length, (integer) it2->size());
+      max_length = std::max(max_length, it2->size());
     }
   }
 
@@ -443,7 +443,7 @@ void MaverickOcp::writeMeshHistoryToFile(OcpSolverOutput const &solver_output, s
     for (vec_2d_real::iterator it2 = it->begin(); it2 != it->end(); it2++) {
       real to_add = it2->back();
       it2->reserve(max_length);
-      for (integer i = (integer) it2->size(); i < max_length; i++) {
+      for (size_t i = it2->size(); i < max_length; i++) {
         it2->push_back(to_add);
       }
 
@@ -455,7 +455,7 @@ void MaverickOcp::writeMeshHistoryToFile(OcpSolverOutput const &solver_output, s
   ss.open(filename, ios::out);
 
   //first, the header
-  for (integer i_run = 0; i_run < working_mesh_history.size(); i_run++) {
+  for (size_t i_run = 0; i_run < working_mesh_history.size(); i_run++) {
     for (integer i_phase = 0; i_phase < numberOfPhases(); i_phase++) {
       ss << "phase" << i_phase << "_it" << i_run;
       if (i_phase < (numberOfPhases() - 1)) {
@@ -469,7 +469,7 @@ void MaverickOcp::writeMeshHistoryToFile(OcpSolverOutput const &solver_output, s
   ss << StreamChars::new_line;
 
   //then, the length of each mesh
-  for (integer i_run = 0; i_run < working_mesh_history.size(); i_run++) {
+  for (size_t i_run = 0; i_run < working_mesh_history.size(); i_run++) {
     for (integer i_phase = 0; i_phase < numberOfPhases(); i_phase++) {
       ss << mesh_history[i_run][i_phase].size();
       if (i_phase < (numberOfPhases() - 1)) {
@@ -483,8 +483,8 @@ void MaverickOcp::writeMeshHistoryToFile(OcpSolverOutput const &solver_output, s
   ss << StreamChars::new_line;
 
   //finally, the zeta
-  for (integer i_zeta = 0; i_zeta < max_length; i_zeta++) {
-    for (integer i_run = 0; i_run < working_mesh_history.size(); i_run++) {
+  for (size_t i_zeta = 0; i_zeta < max_length; i_zeta++) {
+    for (size_t i_run = 0; i_run < working_mesh_history.size(); i_run++) {
       for (integer i_phase = 0; i_phase < numberOfPhases(); i_phase++) {
         ss << std::scientific << working_mesh_history[i_run][i_phase][i_zeta];
         if (i_phase < (numberOfPhases() - 1)) {

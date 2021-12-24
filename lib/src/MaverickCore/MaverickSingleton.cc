@@ -58,19 +58,10 @@ Maverick::InfoLevel MaverickSingleton::getInfoLevel() const {
 void MaverickSingleton::loadMavericktoipSharedLibHandle() {
   if (_p_mavericktoip == nullptr) {
     string sl_name = "libmavericktoip." + string(SHARED_LIB_EXTENSION);
-#ifndef MAVERICK_DEBUG_VERSION_LIB
-    string sl_name_and_path = "/usr/local/maverick/lib/" + sl_name;
-#else
-    string sl_name_and_path = "/usr/local/maverick_debug/lib/" + sl_name;
-#endif
-
-    _p_mavericktoip = dlopen(sl_name_and_path.c_str(), RTLD_LAZY);
+    _p_mavericktoip = dlopen(sl_name.c_str(), RTLD_LAZY);
 
     if (!_p_mavericktoip) {
-      _p_mavericktoip = dlopen(sl_name.c_str(), RTLD_LAZY);
-    }
-    if (!_p_mavericktoip) {
-      string message = "error while loading shared library: " + sl_name_and_path + ": " + string(dlerror()) + "\n";
+      string message = "error while loading shared library: " + sl_name + ": " + string(dlerror()) + "\n";
       throw std::runtime_error(message);
     }
   }
@@ -80,9 +71,9 @@ void MaverickSingleton::loadMavericktsSharedLibHandle() {
   if (_p_maverickts == nullptr) {
     string sl_name = "libmaverickts." + string(SHARED_LIB_EXTENSION);
 #ifndef MAVERICK_DEBUG_VERSION_LIB
-    string sl_name_and_path = "/usr/local/maverick/lib/" + sl_name;
+    string sl_name_and_path = "/opt/maverick/lib/" + sl_name;
 #else
-    string sl_name_and_path = "/usr/local/maverick_debug/lib/" + sl_name;
+    string sl_name_and_path = "/opt/maverick_debug/lib/" + sl_name;
 #endif
 
 

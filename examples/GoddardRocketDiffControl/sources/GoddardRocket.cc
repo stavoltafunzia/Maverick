@@ -85,7 +85,7 @@ void GoddardRocket::printDerivedInfo(std::ostream & out, InfoLevel info_level) c
 //   |                                     |
 //   +-------------------------------------+
 
-integer GoddardRocket::getStatesControlsBounds(integer const i_phase,
+void GoddardRocket::getStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -103,19 +103,17 @@ integer GoddardRocket::getStatesControlsBounds(integer const i_phase,
     upper[3] = _model_params[MOD_PAR_INDEX_Fmax];
     }
 
-    return 0;
 }
 
-integer GoddardRocket::getAlgebraicStatesControlsBounds(integer const i_phase,
+void GoddardRocket::getAlgebraicStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer GoddardRocket::getParametersBounds(integer const i_phase,
+void GoddardRocket::getParametersBounds(integer const i_phase,
                                                         real          lower[],
                                                         real          upper[] ) const {
     {
@@ -126,29 +124,26 @@ integer GoddardRocket::getParametersBounds(integer const i_phase,
     upper[0] = _model_params[MOD_PAR_INDEX_Tmax];
     }
 
-    return 0;
 }
 
-integer GoddardRocket::getPathConstraintsBounds(integer const i_phase,
+void GoddardRocket::getPathConstraintsBounds(integer const i_phase,
                                                              real    const __zeta,
                                                              real          lower[],
                                                              real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer GoddardRocket::getIntConstraintsBounds(integer const i_phase,
+void GoddardRocket::getIntConstraintsBounds(integer const i_phase,
                                                             real    const __zeta_i,
                                                             real    const __zeta_f,
                                                             real          lower[],
                                                             real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer GoddardRocket::getBoundaryConditionsBounds(integer const i_phase,
+void GoddardRocket::getBoundaryConditionsBounds(integer const i_phase,
                                                                 real    const __zeta_i,
                                                                 real    const __zeta_f,
                                                                 real          lower[],
@@ -165,26 +160,23 @@ integer GoddardRocket::getBoundaryConditionsBounds(integer const i_phase,
     upper[2] = _model_params[MOD_PAR_INDEX_mi];
     }
 
-    return 0;
 }
 
-integer GoddardRocket::getPointConstraintsBounds(integer const i_phase,
+void GoddardRocket::getPointConstraintsBounds(integer const i_phase,
                                                               real    const __zeta,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer GoddardRocket::getEventConstraintsBounds(integer const i_phase,
+void GoddardRocket::getEventConstraintsBounds(integer const i_phase,
                                                               real    const __zeta_i,
                                                               real    const __zeta_f,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
 // +----------------------------+
@@ -224,6 +216,10 @@ void GoddardRocket::evalAtMesh(integer const i_phase,
     __states_controls[2] = _model_params[MOD_PAR_INDEX_mguess];
 
     }
+    if (__algebraic_states_controls) {
+    
+
+    }
 }
 
 void GoddardRocket::eval(integer const i_phase,
@@ -261,17 +257,16 @@ void GoddardRocket::eval(integer const i_phase,
 //   |                  |___/            |
 //   +-----------------------------------+
 
-integer GoddardRocket::mayer ( integer const i_phase,
+void GoddardRocket::mayer ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
                real     & __value ) const {
         __value = -_model_params[MOD_PAR_INDEX_wm] * __final_state_control[1];
 
-    return 0;
 }
 
-integer GoddardRocket::mayerJac ( integer const i_phase,
+void GoddardRocket::mayerJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -280,7 +275,6 @@ integer GoddardRocket::mayerJac ( integer const i_phase,
                              real       __jac_p[] ) const {
         __jac_xu_fin[0] = -_model_params[MOD_PAR_INDEX_wm];
 
-    return 0;
 }
 
 integer GoddardRocket::mayerJacXuInitNnz ( integer const i_phase ) const {
@@ -310,7 +304,7 @@ void GoddardRocket::mayerJacPPattern ( integer const i_phase, integer cols[] ) c
 
 }
 
-integer GoddardRocket::mayerHess ( integer const i_phase,
+void GoddardRocket::mayerHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -323,7 +317,6 @@ integer GoddardRocket::mayerHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer GoddardRocket::mayerHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -402,7 +395,7 @@ void GoddardRocket::mayerHessPPPattern ( integer const i_phase, integer rows[], 
 //   |          |___/                 |___/       |
 //   +--------------------------------------------+
 
- integer GoddardRocket::lagrange ( integer const i_phase,
+ void GoddardRocket::lagrange ( integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -413,10 +406,9 @@ void GoddardRocket::mayerHessPPPattern ( integer const i_phase, integer rows[], 
     real t10 = pow(__state_control_derivatives[3], 0.2e1);
     __value = __parameters[0] * (_model_params[MOD_PAR_INDEX_wl2] * t10 + _model_params[MOD_PAR_INDEX_wl1] * t5 - _model_params[MOD_PAR_INDEX_wlt] * __states_controls[0]);
 
-   return 0;
 }
 
- integer GoddardRocket::lagrangeJac ( integer const i_phase,
+ void GoddardRocket::lagrangeJac ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -439,7 +431,6 @@ void GoddardRocket::mayerHessPPPattern ( integer const i_phase, integer rows[], 
     real t17 = t13 * t13;
     __jac_p[0] = t11 * t17 + t6 * t15 - t3 * __states_controls[0];
 
-    return 0;
 }
 
 integer GoddardRocket::lagrangeJacXuNnz ( integer const i_phase ) const {
@@ -479,7 +470,7 @@ void GoddardRocket::lagrangeJacPPattern ( integer const i_phase, integer cols[] 
 
 }
 
- integer GoddardRocket::lagrangeHess ( integer const i_phase,
+ void GoddardRocket::lagrangeHess ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -505,7 +496,6 @@ void GoddardRocket::lagrangeJacPPattern ( integer const i_phase, integer cols[] 
     __hess_dxu_dxu[0] = 2 * t1 * t13 * __lambda_0;
     __hess_dxu_p[0] = 2 * t13 * __state_control_derivatives[3] * __lambda_0;
 
-     return 0;
 }
 
 integer GoddardRocket::lagrangeHessXuXuNnz ( integer const i_phase ) const {
@@ -629,7 +619,7 @@ return 0;
 //   |                       |_|                                   |
 //   +-------------------------------------------------------------+
 
-integer GoddardRocket::foEqns ( integer const i_phase,
+void GoddardRocket::foEqns ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -645,10 +635,9 @@ integer GoddardRocket::foEqns ( integer const i_phase,
     __values[1] = __state_control_derivatives[1] * t3 - t8;
     __values[2] = __state_control_derivatives[2] * t3 + t5 / _model_params[MOD_PAR_INDEX_c];
 
-    return 0;
 }
 
-integer GoddardRocket::foEqnsJac (integer const i_phase,
+void GoddardRocket::foEqnsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -683,7 +672,6 @@ integer GoddardRocket::foEqnsJac (integer const i_phase,
     __jac_p[1] = -__state_control_derivatives[1] * t30;
     __jac_p[2] = -__state_control_derivatives[2] * t30;
 
-    return 0;
 }
 
 integer GoddardRocket::foEqnsJacXuNnz ( integer const i_phase ) const {
@@ -748,7 +736,7 @@ void GoddardRocket::foEqnsJacPPattern ( integer const i_phase, integer rows[], i
 
 }
 
-integer GoddardRocket::foEqnsHess(integer const i_phase,
+void GoddardRocket::foEqnsHess(integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -802,7 +790,6 @@ integer GoddardRocket::foEqnsHess(integer const i_phase,
     real t54 = 0.1e1 / t44 / t43;
     __hess_p_p[0] = 0.2e1 * t1 * __state_control_derivatives[0] * t54 + 0.2e1 * t47 * __state_control_derivatives[1] * t54 + 0.2e1 * t49 * __state_control_derivatives[2] * t54;
 
-    return 0;
 }
 
 integer GoddardRocket::foEqnsHessXuXuNnz ( integer const i_phase ) const {
@@ -948,7 +935,7 @@ void GoddardRocket::foEqnsHessPPPattern ( integer const i_phase, integer rows[],
 // |                                                                       |
 // +-----------------------------------------------------------------------+
 
-integer GoddardRocket::pathConstraints ( integer const i_phase,
+void GoddardRocket::pathConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -956,10 +943,9 @@ integer GoddardRocket::pathConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer GoddardRocket::pathConstraintsJac (integer const i_phase,
+void GoddardRocket::pathConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -971,7 +957,6 @@ integer GoddardRocket::pathConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer GoddardRocket::pathConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1018,7 +1003,7 @@ void GoddardRocket::pathConstraintsJacPPattern ( integer const i_phase, integer 
 
 }
 
-integer GoddardRocket::pathConstraintsHess(integer const i_phase,
+void GoddardRocket::pathConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1037,7 +1022,6 @@ integer GoddardRocket::pathConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer GoddardRocket::pathConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1160,16 +1144,15 @@ void GoddardRocket::pathConstraintsHessPPPattern ( integer const i_phase, intege
 // +----------------------------------------------------------------------------+
 
 
-integer GoddardRocket::pointConstraints ( integer const i_phase,
+void GoddardRocket::pointConstraints ( integer const i_phase,
                      real    const __states_controls[],
                      real    const __parameters[],
                      real          __zeta,
                      real          __values[] ) const {
     
-    return 0;
 }
 
-integer GoddardRocket::pointConstraintsJac (integer const i_phase,
+void GoddardRocket::pointConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __parameters[],
                           real       __zeta,
@@ -1177,7 +1160,6 @@ integer GoddardRocket::pointConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer GoddardRocket::pointConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1202,7 +1184,7 @@ void GoddardRocket::pointConstraintsJacPPattern ( integer const i_phase, integer
 
 }
 
-integer GoddardRocket::pointConstraintsHess (integer const i_phase,
+void GoddardRocket::pointConstraintsHess (integer const i_phase,
                                  real    const __states_controls[],
                                  real    const __parameters[],
                                  real          __zeta,
@@ -1212,7 +1194,6 @@ integer GoddardRocket::pointConstraintsHess (integer const i_phase,
                                  real          __hess_p_p[] ) const {
         
 
-    return 0;
  }
 integer GoddardRocket::pointConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1256,7 +1237,7 @@ void GoddardRocket::pointConstraintsHessPPPattern ( integer const i_phase, integ
 // |                  |___/                                                                  |
 // +-----------------------------------------------------------------------------------------+
 
-integer GoddardRocket::intConstraints ( integer const i_phase,
+void GoddardRocket::intConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1264,10 +1245,9 @@ integer GoddardRocket::intConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer GoddardRocket::intConstraintsJac (integer const i_phase,
+void GoddardRocket::intConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1279,7 +1259,6 @@ integer GoddardRocket::intConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer GoddardRocket::intConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1326,7 +1305,7 @@ void GoddardRocket::intConstraintsJacPPattern ( integer const i_phase, integer r
 
 }
 
-integer GoddardRocket::intConstraintsHess(integer const i_phase,
+void GoddardRocket::intConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1345,7 +1324,6 @@ integer GoddardRocket::intConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer GoddardRocket::intConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1466,7 +1444,7 @@ void GoddardRocket::intConstraintsHessPPPattern ( integer const i_phase, integer
 //   |                                           |___/                                                  |
 //   +--------------------------------------------------------------------------------------------------+
 
-integer GoddardRocket::boundaryConditions ( integer const i_phase,
+void GoddardRocket::boundaryConditions ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
@@ -1477,10 +1455,9 @@ integer GoddardRocket::boundaryConditions ( integer const i_phase,
     __values[1] = __initial_state_control[1];
     __values[2] = __initial_state_control[2];
 
-    return 0;
 }
 
-integer GoddardRocket::boundaryConditionsJac ( integer const i_phase,
+void GoddardRocket::boundaryConditionsJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -1493,7 +1470,6 @@ integer GoddardRocket::boundaryConditionsJac ( integer const i_phase,
     __jac_xu_init[1] = 1;
     __jac_xu_init[2] = 1;
 
-    return 0;
 }
 
 integer GoddardRocket::boundaryConditionsJacXuInitNnz ( integer const i_phase ) const {
@@ -1533,7 +1509,7 @@ void GoddardRocket::boundaryConditionsJacPPattern ( integer const i_phase, integ
 
 }
 
-integer GoddardRocket::boundaryConditionsHess ( integer const i_phase,
+void GoddardRocket::boundaryConditionsHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -1548,7 +1524,6 @@ integer GoddardRocket::boundaryConditionsHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer GoddardRocket::boundaryConditionsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -1626,17 +1601,16 @@ void GoddardRocket::boundaryConditionsHessPPPattern ( integer const i_phase, int
 // |                                                                                |
 // +--------------------------------------------------------------------------------+
 
-integer GoddardRocket::eventConstraints ( integer const i_phase,
+void GoddardRocket::eventConstraints ( integer const i_phase,
                       real const left_state_control[],
                       real const right_state_control[],
                       real const parameters[],
                       real const __zeta_l,
                       real const __zeta_r,
                       real       __values[] ) const {
-    return 0;
 }
 
-integer GoddardRocket::eventConstraintsJac ( integer const i_phase,
+void GoddardRocket::eventConstraintsJac ( integer const i_phase,
                              real const left_state_control[],
                              real const right_state_control[],
                              real const parameters[],
@@ -1645,7 +1619,6 @@ integer GoddardRocket::eventConstraintsJac ( integer const i_phase,
                              real       __jac_xu_init[],
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
-    return 0;
 }
 
 integer GoddardRocket::eventConstraintsJacXuInitNnz ( integer const i_phase ) const {
@@ -1675,7 +1648,7 @@ void GoddardRocket::eventConstraintsJacPPattern ( integer const i_phase,
 
 }
 
-integer GoddardRocket::eventConstraintsHess ( integer const i_phase,
+void GoddardRocket::eventConstraintsHess ( integer const i_phase,
                                   real const left_state_control[],
                                   real const right_state_control[],
                                   real const parameters[],
@@ -1688,7 +1661,6 @@ integer GoddardRocket::eventConstraintsHess ( integer const i_phase,
                                   real       __hess_xu_fin_xu_fin[],
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
-    return 0;
 }
 
 integer GoddardRocket::eventConstraintsHessXuInitXuInitNnz ( integer const i_phase ) const {

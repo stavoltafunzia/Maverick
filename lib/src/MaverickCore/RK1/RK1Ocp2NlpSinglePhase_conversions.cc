@@ -21,9 +21,9 @@ std::unique_ptr<OcpSolution> RK1Ocp2NlpSinglePhase::translateNlp2OcpSolution(Nlp
 std::unique_ptr<RK1OcpSolutionSinglePhase>
 RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
 
-  MAVERICK_ASSERT(nlp_input.getNlpSize() == getNlpSize(),
+  MAVERICK_ASSERT(safeCastToInt(nlp_input.getNlpSize()) == getNlpSize(),
                   "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong nlp size.\n");
-  MAVERICK_ASSERT(nlp_input.getNlpConstraintsSize() == getNlpConstraintsSize(),
+  MAVERICK_ASSERT(safeCastToInt(nlp_input.getNlpConstraintsSize()) == getNlpConstraintsSize(),
                   "RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution: wrong nlp constraints size.\n");
 
   // convert multipliers from nlp to ocp first
@@ -43,7 +43,7 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
   vec_2d_real states_controls(_dim_xu);
   vec_2d_real states_controls_lower_bound_mult(_dim_xu);
   vec_2d_real states_controls_upper_bound_mult(_dim_xu);
-  for (size i = 0; i < _dim_xu; i++) {
+  for (integer i = 0; i < _dim_xu; i++) {
     states_controls[i] = vec_1d_real(num_mesh_point);
     states_controls_lower_bound_mult[i] = vec_1d_real(num_mesh_point);
     states_controls_upper_bound_mult[i] = vec_1d_real(num_mesh_point);
@@ -52,7 +52,7 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
   vec_2d_real algebraic_states_controls(_dim_axu);
   vec_2d_real algebraic_states_controls_lower_bound_mult(_dim_axu);
   vec_2d_real algebraic_states_controls_upper_bound_mult(_dim_axu);
-  for (size i = 0; i < _dim_axu; i++) {
+  for (integer i = 0; i < _dim_axu; i++) {
     algebraic_states_controls[i] = vec_1d_real(num_mesh_point - 1);
     algebraic_states_controls_lower_bound_mult[i] = vec_1d_real(num_mesh_point - 1);
     algebraic_states_controls_upper_bound_mult[i] = vec_1d_real(num_mesh_point - 1);
@@ -60,44 +60,44 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
 
   vec_2d_real states_constr(_dim_poc);
   vec_2d_real states_constr_mult(_dim_poc);
-  for (size i = 0; i < _dim_poc; i++) {
+  for (integer i = 0; i < _dim_poc; i++) {
     states_constr[i] = vec_1d_real(num_mesh_point);
     states_constr_mult[i] = vec_1d_real(num_mesh_point);
   }
 
   vec_2d_real path_constr(_dim_pc);
   vec_2d_real path_constr_mult(_dim_pc);
-  for (size i = 0; i < _dim_pc; i++) {
+  for (integer i = 0; i < _dim_pc; i++) {
     path_constr[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
     path_constr_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real int_constr(_dim_ic);
   vec_1d_real int_constr_mult(_dim_ic);
-  for (size i = 0; i < _dim_ic; i++) {
+  for (integer i = 0; i < _dim_ic; i++) {
     int_constr[i] = vec_1d_real(num_mesh_point);
     int_constr[i][0] = 0;
   }
 
   vec_2d_real fo_eqns(_dim_fo);
   vec_2d_real fo_eqns_mult(_dim_fo);
-  for (size i = 0; i < _dim_fo; i++) {
+  for (integer i = 0; i < _dim_fo; i++) {
     fo_eqns[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
     fo_eqns_mult[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real post_proc(_ocp_problem.numberOfPostProcessing(_i_phase));
-  for (size i = 0; i < post_proc.size(); i++) {
+  for (size_t i = 0; i < post_proc.size(); i++) {
     post_proc[i] = vec_1d_real(num_mesh_point);
   }
 
   vec_2d_real diff_post_proc(_ocp_problem.numberOfDifferentialPostProcessing(_i_phase));
-  for (size i = 0; i < diff_post_proc.size(); i++) {
+  for (size_t i = 0; i < diff_post_proc.size(); i++) {
     diff_post_proc[i] = vec_1d_real(num_mesh_point - 1); // evaluated at alpha mesh point
   }
 
   vec_2d_real int_post_proc(_ocp_problem.numberOfIntegralPostProcessing(_i_phase));
-  for (size i = 0; i < int_post_proc.size(); i++) {
+  for (size_t i = 0; i < int_post_proc.size(); i++) {
     int_post_proc[i] = vec_1d_real(num_mesh_point);
     int_post_proc[i][0] = 0;
   }
@@ -129,7 +129,7 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
     real const *left_xu = current_nlp_y;
 
     //states and controls
-    for (integer j = 0; j < states_controls.size(); j++) {
+    for (size_t j = 0; j < states_controls.size(); j++) {
       states_controls[j][c_mesh_point] = *(current_nlp_y + j);
       states_controls_upper_bound_mult[j][c_mesh_point] = *(current_nlp_z_u + j);
       states_controls_lower_bound_mult[j][c_mesh_point] = *(current_nlp_z_l + j);
@@ -138,20 +138,20 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
     //post processing
     real tmp_post_proc[post_proc.size()];
     _ocp_problem.postProcessing(_i_phase, left_xu, nlp_params, zeta_left, tmp_post_proc);
-    for (integer j = 0; j < post_proc.size(); j++)
+    for (size_t j = 0; j < post_proc.size(); j++)
       post_proc[j][c_mesh_point] = tmp_post_proc[j];
 
     if (c_mesh_point < num_mesh_point - 1) {
 
       //algebraic states and controls
-      for (integer j = 0; j < algebraic_states_controls.size(); j++) {
+      for (size_t j = 0; j < algebraic_states_controls.size(); j++) {
         algebraic_states_controls[j][c_mesh_point] = *(current_nlp_y + _dim_y + j);
         algebraic_states_controls_upper_bound_mult[j][c_mesh_point] = *(current_nlp_z_u + _dim_y + j);
         algebraic_states_controls_lower_bound_mult[j][c_mesh_point] = *(current_nlp_z_l + _dim_y + j);
       }
 
       //states constraints
-      for (integer j = 0; j < states_constr.size(); j++) {
+      for (size_t j = 0; j < states_constr.size(); j++) {
         states_constr[j][c_mesh_point] = *(current_nlp_constr + _dim_fo + _dim_pc + j);
         states_constr_mult[j][c_mesh_point] = *(current_nlp_constr_mult + _dim_fo + _dim_pc + j);
       }
@@ -177,7 +177,7 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
       cumulative_target[c_mesh_point + 1] = cumulative_target[c_mesh_point] + integrand_target[c_mesh_point] * c_d_zeta;
 
       //fo equations
-      for (integer j = 0; j < fo_eqns.size(); j++) {
+      for (size_t j = 0; j < fo_eqns.size(); j++) {
         fo_eqns[j][c_mesh_point] = *(current_nlp_constr + j);
         fo_eqns_mult[j][c_mesh_point] = *(current_nlp_constr_mult + j);
       }
@@ -191,7 +191,7 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
 #endif
 
       //path constraints
-      for (integer j = 0; j < path_constr.size(); j++) {
+      for (size_t j = 0; j < path_constr.size(); j++) {
         path_constr[j][c_mesh_point] = *(current_nlp_constr + _dim_fo + j);
         path_constr_mult[j][c_mesh_point] = *(current_nlp_constr_mult + _dim_fo + j);
       }
@@ -207,26 +207,26 @@ RK1Ocp2NlpSinglePhase::translateNlp2RK1OcpSolution(Nlp const &nlp_input) const {
       //integral constraints
       real tmp_int_constr[_dim_ic];
       _ocp_problem.intConstraints(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha, tmp_int_constr);
-      for (integer j = 0; j < int_constr.size(); j++)
+      for (size_t j = 0; j < int_constr.size(); j++)
         int_constr[j][c_mesh_point + 1] = int_constr[j][c_mesh_point] + tmp_int_constr[j] * c_d_zeta;
 
       //differential post processing
       real tmp_diff_post_proc[diff_post_proc.size()];
       _ocp_problem.differentialPostProcessing(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha,
                                               tmp_diff_post_proc);
-      for (integer j = 0; j < diff_post_proc.size(); j++)
+      for (size_t j = 0; j < diff_post_proc.size(); j++)
         diff_post_proc[j][c_mesh_point] = tmp_diff_post_proc[j];
 
       //integral post processing
       real tmp_int_post_proc[int_post_proc.size()];
       _ocp_problem.integralPostProcessing(_i_phase, alpha_xu, diff_xu, alg_xu, nlp_params, zeta_alpha,
                                           tmp_int_post_proc);
-      for (integer j = 0; j < int_post_proc.size(); j++)
+      for (size_t j = 0; j < int_post_proc.size(); j++)
         int_post_proc[j][c_mesh_point + 1] = int_post_proc[j][c_mesh_point] + tmp_int_post_proc[j] * c_d_zeta;
 
     } else {
       //states constraints
-      for (integer j = 0; j < states_constr.size(); j++) {
+      for (size_t j = 0; j < states_constr.size(); j++) {
         states_constr[j][c_mesh_point] = *(current_nlp_constr + j);
         states_constr_mult[j][c_mesh_point] = *(current_nlp_constr_mult + j);
       }

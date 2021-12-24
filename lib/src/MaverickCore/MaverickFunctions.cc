@@ -45,12 +45,12 @@ namespace Maverick {
 
   void
   centerStringInStream(std::ostream &out, std::string const &stringa, integer const total_width, char const filler) {
-    integer left_margin = (total_width - (integer) stringa.size()) / 2;
+    integer left_margin = (total_width - safeCastBetweenTypes<integer, size_t>(stringa.size())) / 2;
 
     if (left_margin > 0) { // if the string is short enough
       out << std::setfill(filler) << std::setw(left_margin) << "";
       out << stringa;
-      out << std::setfill(filler) << std::setw(total_width - (integer) stringa.size() - left_margin) << "";
+      out << std::setfill(filler) << std::setw(total_width - safeCastBetweenTypes<integer, size_t>(stringa.size()) - left_margin) << "";
     } else { //if the string is too long cut the string
       out << stringa.substr(0, total_width);
     }
@@ -65,8 +65,9 @@ namespace Maverick {
   }
 
   std::string getStringNumberOfLength(long const number, integer const length) {
+    if (length <= 0) return "";
     string out = std::to_string(number);
-    for (size_t i = out.length(); i < length; i++) {
+    for (size_t i = out.length(); i < (unsigned) length; i++) {
       out = "0" + out;
     }
     return out;
@@ -170,7 +171,7 @@ namespace Maverick {
       GenericContainerNamespace::vec_long_type vec = gc.get_vec_long();
       out.clear();
       out.reserve(vec.size());
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         if (vec[i] < std::numeric_limits<integer>::max())
           out.push_back((integer) vec[i]);
         else
@@ -198,7 +199,7 @@ namespace Maverick {
       GenericContainerNamespace::vec_int_type vec = gc.get_vec_int();
       out.clear();
       out.reserve(vec.size());
-      for (integer i = 0; i < vec.size(); i++)
+      for (size_t i = 0; i < vec.size(); i++)
         out.push_back(vec[i]);
       out.shrink_to_fit();
       return true;
@@ -208,7 +209,7 @@ namespace Maverick {
       GenericContainerNamespace::vec_long_type vec = gc.get_vec_long();
       out.clear();
       out.reserve(vec.size());
-      for (integer i = 0; i < vec.size(); i++)
+      for (size_t i = 0; i < vec.size(); i++)
         out.push_back(vec[i]);
       out.shrink_to_fit();
       return true;
@@ -291,18 +292,10 @@ namespace Maverick {
       outputValues[i] = leftValues[i] * (1 - alpha) + rightValues[i] * alpha;
   }
 
-  void copyVectorTo(real const from[], real to[], integer const length) {
-    std::memcpy(to, from, length * sizeof(real));
-  }
-
   void copyVectorToMT(real const from[], real to[], integer const length) {
     for (integer i = 0; i < length; i++) {
       to[i] = from[i];
     }
-  }
-
-  void copyVectorTo(integer const from[], integer to[], integer const length) {
-    std::memcpy(to, from, length * sizeof(integer));
   }
 
   void multiplyAndCopyVectorTo(real const from[], real to[], const real multiplier, integer const length) {

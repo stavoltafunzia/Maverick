@@ -85,78 +85,70 @@ _MAVERICK_ENTER_DERIVED_INFO
 //   |                                     |
 //   +-------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::getStatesControlsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
     _MAVERICK_ENTER_STATE_CONTROL_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_STATE_CONTROL_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getAlgebraicStatesControlsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getAlgebraicStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
     _MAVERICK_ENTER_ALG_STATE_CONTROL_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_ALG_STATE_CONTROL_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getParametersBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getParametersBounds(integer const i_phase,
                                                         real          lower[],
                                                         real          upper[] ) const {
     _MAVERICK_ENTER_PARAMETER_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_PARAMETER_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getPathConstraintsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getPathConstraintsBounds(integer const i_phase,
                                                              real    const __zeta,
                                                              real          lower[],
                                                              real          upper[] ) const {
     _MAVERICK_ENTER_PATH_CONSTR_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_PATH_CONSTR_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getIntConstraintsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getIntConstraintsBounds(integer const i_phase,
                                                             real    const __zeta_i,
                                                             real    const __zeta_f,
                                                             real          lower[],
                                                             real          upper[] ) const {
     _MAVERICK_ENTER_INT_CONSTR_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_INT_CONSTR_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getBoundaryConditionsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getBoundaryConditionsBounds(integer const i_phase,
                                                                 real    const __zeta_i,
                                                                 real    const __zeta_f,
                                                                 real          lower[],
                                                                 real          upper[] ) const {
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getPointConstraintsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getPointConstraintsBounds(integer const i_phase,
                                                               real    const __zeta,
                                                               real          lower[],
                                                               real          upper[] ) const {
     _MAVERICK_ENTER_STATE_CONSTRAINTS_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_STATE_CONSTRAINTS_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::getEventConstraintsBounds(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::getEventConstraintsBounds(integer const i_phase,
                                                               real    const __zeta_i,
                                                               real    const __zeta_f,
                                                               real          lower[],
                                                               real          upper[] ) const {
     _MAVERICK_ENTER_EVENT_CONSTRAINTS_BOUNDS_LOWER_VECTOR
     _MAVERICK_ENTER_EVENT_CONSTRAINTS_BOUNDS_UPPER_VECTOR
-    return 0;
 }
 
 _MAVERICK_ENTER_GUESS
@@ -170,16 +162,15 @@ _MAVERICK_ENTER_GUESS
 //   |                  |___/            |
 //   +-----------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::mayer ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::mayer ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
                real     & __value ) const {
     _MAVERICK_ENTER_MAYER_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::mayerJac ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::mayerJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -187,7 +178,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::mayerJac ( integer const i_phase,
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
     _MAVERICK_ENTER_MAYER_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::mayerJacXuInitNnz ( integer const i_phase ) const {
@@ -211,7 +201,7 @@ void _MAVERICK_ENTER_CLASS_NAME::mayerJacPPattern ( integer const i_phase, integ
     _MAVERICK_ENTER_MAYER_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::mayerHess ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::mayerHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -223,7 +213,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::mayerHess ( integer const i_phase,
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
     _MAVERICK_ENTER_MAYER_H_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::mayerHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -284,7 +273,7 @@ void _MAVERICK_ENTER_CLASS_NAME::mayerHessPPPattern ( integer const i_phase, int
 //   |          |___/                 |___/       |
 //   +--------------------------------------------+
 
- integer _MAVERICK_ENTER_CLASS_NAME::lagrange ( integer const i_phase,
+ void _MAVERICK_ENTER_CLASS_NAME::lagrange ( integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -292,10 +281,9 @@ void _MAVERICK_ENTER_CLASS_NAME::mayerHessPPPattern ( integer const i_phase, int
                            real          __zeta,
                            real        & __value ) const {
    _MAVERICK_ENTER_LAGRANGE_BODY
-   return 0;
 }
 
- integer _MAVERICK_ENTER_CLASS_NAME::lagrangeJac ( integer const i_phase,
+ void _MAVERICK_ENTER_CLASS_NAME::lagrangeJac ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -306,7 +294,6 @@ void _MAVERICK_ENTER_CLASS_NAME::mayerHessPPPattern ( integer const i_phase, int
                                 real          __jac_axu[],
                                 real          __jac_p[] ) const {
     _MAVERICK_ENTER_LAGRANGE_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::lagrangeJacXuNnz ( integer const i_phase ) const {
@@ -337,7 +324,7 @@ void _MAVERICK_ENTER_CLASS_NAME::lagrangeJacPPattern ( integer const i_phase, in
     _MAVERICK_ENTER_LAGRANGE_J_P_COL_PATTERN
 }
 
- integer _MAVERICK_ENTER_CLASS_NAME::lagrangeHess ( integer const i_phase,
+ void _MAVERICK_ENTER_CLASS_NAME::lagrangeHess ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -355,7 +342,6 @@ void _MAVERICK_ENTER_CLASS_NAME::lagrangeJacPPattern ( integer const i_phase, in
                                 real          __hess_axu_p[],
                                 real          __hess_p_p[] ) const {
      _MAVERICK_ENTER_LAGRANGE_H_BODY
-     return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::lagrangeHessXuXuNnz ( integer const i_phase ) const {
@@ -447,7 +433,7 @@ integer _MAVERICK_ENTER_CLASS_NAME::lagrangeHessXuPNnz ( integer const i_phase )
 //   |                       |_|                                   |
 //   +-------------------------------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::foEqns ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::foEqns ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -455,10 +441,9 @@ integer _MAVERICK_ENTER_CLASS_NAME::foEqns ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     _MAVERICK_ENTER_FO_EQNS_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::foEqnsJac (integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::foEqnsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -469,7 +454,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::foEqnsJac (integer const i_phase,
                           real       __jac_axu[],
                           real       __jac_p[] ) const {
     _MAVERICK_ENTER_FO_EQNS_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::foEqnsJacXuNnz ( integer const i_phase ) const {
@@ -504,7 +488,7 @@ void _MAVERICK_ENTER_CLASS_NAME::foEqnsJacPPattern ( integer const i_phase, inte
     _MAVERICK_ENTER_FO_EQNS_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::foEqnsHess(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::foEqnsHess(integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -522,7 +506,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::foEqnsHess(integer const i_phase,
                            real          __hess_axu_p[],
                            real          __hess_p_p[] ) const {
     _MAVERICK_ENTER_FO_EQNS_H_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::foEqnsHessXuXuNnz ( integer const i_phase ) const {
@@ -614,7 +597,7 @@ void _MAVERICK_ENTER_CLASS_NAME::foEqnsHessPPPattern ( integer const i_phase, in
 // |                                                                       |
 // +-----------------------------------------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::pathConstraints ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pathConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -622,10 +605,9 @@ integer _MAVERICK_ENTER_CLASS_NAME::pathConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     _MAVERICK_ENTER_PATH_CONSTR_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsJac (integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pathConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -636,7 +618,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsJac (integer const i_phase,
                           real       __jac_axu[],
                           real       __jac_p[] ) const {
     _MAVERICK_ENTER_PATH_CONSTR_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -671,7 +652,7 @@ void _MAVERICK_ENTER_CLASS_NAME::pathConstraintsJacPPattern ( integer const i_ph
     _MAVERICK_ENTER_PATH_CONSTR_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsHess(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pathConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -689,7 +670,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsHess(integer const i_phase,
                                     real          __hess_axu_p[],
                                     real          __hess_p_p[] ) const {
     _MAVERICK_ENTER_PATH_CONSTR_H_BODY
-    return 0;
 }
 integer _MAVERICK_ENTER_CLASS_NAME::pathConstraintsHessXuXuNnz ( integer const i_phase ) const {
     _MAVERICK_ENTER_PATH_CONSTR_H_XU_XU_NNZ
@@ -782,23 +762,21 @@ void _MAVERICK_ENTER_CLASS_NAME::pathConstraintsHessPPPattern ( integer const i_
 // +----------------------------------------------------------------------------+
 
 
-integer _MAVERICK_ENTER_CLASS_NAME::pointConstraints ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pointConstraints ( integer const i_phase,
                      real    const __states_controls[],
                      real    const __parameters[],
                      real          __zeta,
                      real          __values[] ) const {
     _MAVERICK_ENTER_STATE_CONSTRAINTS_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::pointConstraintsJac (integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pointConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __parameters[],
                           real       __zeta,
                           real       __jac_xu[],
                           real       __jac_p[] ) const {
     _MAVERICK_ENTER_STATE_CONSTRAINTS_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::pointConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -817,7 +795,7 @@ void _MAVERICK_ENTER_CLASS_NAME::pointConstraintsJacPPattern ( integer const i_p
     _MAVERICK_ENTER_STATE_CONSTRAINTS_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::pointConstraintsHess (integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::pointConstraintsHess (integer const i_phase,
                                  real    const __states_controls[],
                                  real    const __parameters[],
                                  real          __zeta,
@@ -826,7 +804,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::pointConstraintsHess (integer const i_phase,
                                  real          __hess_xu_p[],
                                  real          __hess_p_p[] ) const {
     _MAVERICK_ENTER_STATE_CONSTRAINTS_H_BODY
-    return 0;
  }
 integer _MAVERICK_ENTER_CLASS_NAME::pointConstraintsHessXuXuNnz ( integer const i_phase ) const {
     _MAVERICK_ENTER_STATE_CONSTRAINTS_H_XU_XU_NNZ
@@ -861,7 +838,7 @@ void _MAVERICK_ENTER_CLASS_NAME::pointConstraintsHessPPPattern ( integer const i
 // |                  |___/                                                                  |
 // +-----------------------------------------------------------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::intConstraints ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::intConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -869,10 +846,9 @@ integer _MAVERICK_ENTER_CLASS_NAME::intConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     _MAVERICK_ENTER_INT_CONSTR_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsJac (integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::intConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -883,7 +859,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsJac (integer const i_phase,
                           real       __jac_axu[],
                           real       __jac_p[] ) const {
     _MAVERICK_ENTER_INT_CONSTR_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -918,7 +893,7 @@ void _MAVERICK_ENTER_CLASS_NAME::intConstraintsJacPPattern ( integer const i_pha
     _MAVERICK_ENTER_INT_CONSTR_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsHess(integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::intConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -936,7 +911,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsHess(integer const i_phase,
                                     real          __hess_axu_p[],
                                     real          __hess_p_p[] ) const {
     _MAVERICK_ENTER_INT_CONSTR_H_BODY
-    return 0;
 }
 integer _MAVERICK_ENTER_CLASS_NAME::intConstraintsHessXuXuNnz ( integer const i_phase ) const {
     _MAVERICK_ENTER_INT_CONSTR_H_XU_XU_NNZ
@@ -1027,7 +1001,7 @@ void _MAVERICK_ENTER_CLASS_NAME::intConstraintsHessPPPattern ( integer const i_p
 //   |                                           |___/                                                  |
 //   +--------------------------------------------------------------------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditions ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::boundaryConditions ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
@@ -1035,10 +1009,9 @@ integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditions ( integer const i_phase,
                real       __zeta_f,
                real       __values[] ) const {
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_BODY
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsJac ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -1048,7 +1021,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsJac ( integer const i_phas
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_J_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsJacXuInitNnz ( integer const i_phase ) const {
@@ -1075,7 +1047,7 @@ void _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsJacPPattern ( integer const i
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_J_P_COL_PATTERN
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsHess ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -1089,7 +1061,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsHess ( integer const i_pha
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
     _MAVERICK_ENTER_BOUNDARY_CONDITIONS_H_BODY
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -1149,17 +1120,16 @@ void _MAVERICK_ENTER_CLASS_NAME::boundaryConditionsHessPPPattern ( integer const
 // |                                                                                |
 // +--------------------------------------------------------------------------------+
 
-integer _MAVERICK_ENTER_CLASS_NAME::eventConstraints ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::eventConstraints ( integer const i_phase,
                       real const left_state_control[],
                       real const right_state_control[],
                       real const parameters[],
                       real const __zeta_l,
                       real const __zeta_r,
                       real       __values[] ) const {
-    return 0;
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsJac ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::eventConstraintsJac ( integer const i_phase,
                              real const left_state_control[],
                              real const right_state_control[],
                              real const parameters[],
@@ -1168,7 +1138,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsJac ( integer const i_phase,
                              real       __jac_xu_init[],
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsJacXuInitNnz ( integer const i_phase ) const {
@@ -1198,7 +1167,7 @@ void _MAVERICK_ENTER_CLASS_NAME::eventConstraintsJacPPattern ( integer const i_p
 
 }
 
-integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsHess ( integer const i_phase,
+void _MAVERICK_ENTER_CLASS_NAME::eventConstraintsHess ( integer const i_phase,
                                   real const left_state_control[],
                                   real const right_state_control[],
                                   real const parameters[],
@@ -1211,7 +1180,6 @@ integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsHess ( integer const i_phase
                                   real       __hess_xu_fin_xu_fin[],
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
-    return 0;
 }
 
 integer _MAVERICK_ENTER_CLASS_NAME::eventConstraintsHessXuInitXuInitNnz ( integer const i_phase ) const {

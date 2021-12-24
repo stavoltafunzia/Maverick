@@ -45,17 +45,17 @@ namespace SingleMassPointENamespace {
         bool _is_model_param_set[NUM_MODEL_PARAMS];
 
         //external objects
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadHeading = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadLeftWidth = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadXR = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadRightWidth = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadYL = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RegularizedPositive = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadXL = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadYL = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadHeading = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadY = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadCurvature = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadLeftWidth = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadX = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadYR = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RoadXR = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_RegularizedPositive = nullptr;
 
 
         // setup
@@ -75,43 +75,43 @@ namespace SingleMassPointENamespace {
     //   |                                     |
     //   +-------------------------------------+
 
-        virtual integer getStatesControlsBounds(integer const i_phase,
+        virtual void getStatesControlsBounds(integer const i_phase,
                                                 real    const __zeta,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getAlgebraicStatesControlsBounds(integer const i_phase,
+        virtual void getAlgebraicStatesControlsBounds(integer const i_phase,
                                                 real    const __zeta,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getParametersBounds(integer const i_phase,
+        virtual void getParametersBounds(integer const i_phase,
                                             real          lower[],
                                             real          upper[] ) const;
 
-        virtual integer getPointConstraintsBounds(integer const i_phase,
+        virtual void getPointConstraintsBounds(integer const i_phase,
                                                   real    const __zeta,
                                                   real          lower[],
                                                   real          upper[] ) const;
 
-        virtual integer getPathConstraintsBounds(integer const i_phase,
+        virtual void getPathConstraintsBounds(integer const i_phase,
                                                  real    const __zeta,
                                                  real          lower[],
                                                  real          upper[] ) const;
 
-        virtual integer getIntConstraintsBounds(integer const i_phase,
+        virtual void getIntConstraintsBounds(integer const i_phase,
                                                 real    const __zeta_i,
                                                 real    const __zeta_f,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getBoundaryConditionsBounds(integer const i_phase,
+        virtual void getBoundaryConditionsBounds(integer const i_phase,
                                                     real    const __zeta_i,
                                                     real    const __zeta_f,
                                                     real          lower[],
                                                     real          upper[] ) const;
 
-        virtual integer getEventConstraintsBounds(integer const i_phase,
+        virtual void getEventConstraintsBounds(integer const i_phase,
                                                   real    const __zeta_l,
                                                   real    const __zeta_r,
                                                   real          lower[],
@@ -154,13 +154,13 @@ namespace SingleMassPointENamespace {
     //   |                  |___/            |
     //   +-----------------------------------+
 
-    virtual integer mayer ( integer const i_phase,
+    virtual void mayer ( integer const i_phase,
                            real const initial_state_control[],
                            real const final_state_control[],
                            real const parameters[],
                            real       &value ) const;
 
-    virtual integer mayerJac ( integer const i_phase,
+    virtual void mayerJac ( integer const i_phase,
                               real const initial_state_control[],
                               real const final_state_control[],
                               real const parameters[],
@@ -177,7 +177,7 @@ namespace SingleMassPointENamespace {
     virtual integer mayerJacPNnz ( integer const i_phase ) const;
     virtual void mayerJacPPattern ( integer const i_phase, integer cols[] ) const;
 
-    virtual integer mayerHess ( integer const i_phase,
+    virtual void mayerHess ( integer const i_phase,
                                real const initial_state_control[],
                                real const final_state_control[],
                                real const parameters[],
@@ -228,7 +228,7 @@ namespace SingleMassPointENamespace {
     //   |          |___/                 |___/       |
     //   +--------------------------------------------+
 
-    virtual integer lagrange ( integer const i_phase,
+    virtual void lagrange ( integer const i_phase,
                               real    const state_control[],
                               real    const state_control_derivative[],
                               real    const algebraic_state_control[],
@@ -236,7 +236,7 @@ namespace SingleMassPointENamespace {
                               real           __zeta,
                               real          &value ) const;
 
-    virtual integer lagrangeJac ( integer const i_phase,
+    virtual void lagrangeJac ( integer const i_phase,
                                  real    const state_control[],
                                  real    const state_control_derivative[],
                                  real    const algebraic_state_control[],
@@ -259,7 +259,7 @@ namespace SingleMassPointENamespace {
     virtual integer lagrangeJacPNnz ( integer const i_phase ) const;
     virtual void lagrangeJacPPattern ( integer const i_phase, integer cols[] ) const;
 
-    virtual integer lagrangeHess ( integer const i_phase,
+    virtual void lagrangeHess ( integer const i_phase,
                                   real    const state_control[],
                                   real    const state_control_derivative[],
                                   real    const algebraic_state_control[],
@@ -316,7 +316,7 @@ namespace SingleMassPointENamespace {
     //   |                       |_|                                   |
     //   +-------------------------------------------------------------+
 
-    virtual integer foEqns (integer const i_phase,
+    virtual void foEqns (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -324,7 +324,7 @@ namespace SingleMassPointENamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer foEqnsJac (integer const i_phase,
+    virtual void foEqnsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -347,7 +347,7 @@ namespace SingleMassPointENamespace {
      virtual integer foEqnsJacPNnz ( integer const i_phase ) const;
      virtual void foEqnsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer foEqnsHess ( integer const i_phase,
+     virtual void foEqnsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -405,7 +405,7 @@ namespace SingleMassPointENamespace {
     // +-----------------------------------------------------------------------+
 
 
-    virtual integer pathConstraints (integer const i_phase,
+    virtual void pathConstraints (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -413,7 +413,7 @@ namespace SingleMassPointENamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer pathConstraintsJac (integer const i_phase,
+    virtual void pathConstraintsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -436,7 +436,7 @@ namespace SingleMassPointENamespace {
      virtual integer pathConstraintsJacPNnz ( integer const i_phase ) const;
      virtual void pathConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer pathConstraintsHess ( integer const i_phase,
+     virtual void pathConstraintsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -494,13 +494,13 @@ namespace SingleMassPointENamespace {
     // +----------------------------------------------------------------------------+
 
 
-    virtual integer pointConstraints ( integer const i_phase,
+    virtual void pointConstraints ( integer const i_phase,
                                  real    const state_control[],
                                  real    const parameters[],
                                  real           __zeta,
                                  real          values[] ) const;
 
-    virtual integer pointConstraintsJac (integer const i_phase,
+    virtual void pointConstraintsJac (integer const i_phase,
                                         real const state_control[],
                                         real const parameters[],
                                         real       __zeta,
@@ -513,7 +513,7 @@ namespace SingleMassPointENamespace {
     virtual integer pointConstraintsJacPNnz ( integer const i_phase ) const;
     virtual void pointConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-    virtual integer pointConstraintsHess (integer const i_phase,
+    virtual void pointConstraintsHess (integer const i_phase,
                                      real    const state_control[],
                                      real    const parameters[],
                                      real           __zeta,
@@ -540,7 +540,7 @@ namespace SingleMassPointENamespace {
     // +-----------------------------------------------------------------------------------------+
 
 
-    virtual integer intConstraints (integer const i_phase,
+    virtual void intConstraints (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -548,7 +548,7 @@ namespace SingleMassPointENamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer intConstraintsJac (integer const i_phase,
+    virtual void intConstraintsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -571,7 +571,7 @@ namespace SingleMassPointENamespace {
      virtual integer intConstraintsJacPNnz ( integer const i_phase ) const;
      virtual void intConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer intConstraintsHess ( integer const i_phase,
+     virtual void intConstraintsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -628,7 +628,7 @@ namespace SingleMassPointENamespace {
     //   |                                           |___/                                                  |
     //   +--------------------------------------------------------------------------------------------------+
 
-    virtual integer boundaryConditions ( integer const i_phase,
+    virtual void boundaryConditions ( integer const i_phase,
                           real const initial_state_control[],
                           real const final_state_control[],
                           real const parameters[],
@@ -636,7 +636,7 @@ namespace SingleMassPointENamespace {
                           real        __zeta_f,
                           real       values[] ) const;
 
-    virtual integer boundaryConditionsJac ( integer const i_phase,
+    virtual void boundaryConditionsJac ( integer const i_phase,
                                  real const initial_state_control[],
                                  real const final_state_control[],
                                  real const parameters[],
@@ -661,7 +661,7 @@ namespace SingleMassPointENamespace {
                                    integer       rows[],
                                    integer       cols[] ) const;
 
-    virtual integer boundaryConditionsHess ( integer const i_phase,
+    virtual void boundaryConditionsHess ( integer const i_phase,
                                       real const initial_state_control[],
                                       real const final_state_control[],
                                       real const parameters[],
@@ -715,7 +715,7 @@ namespace SingleMassPointENamespace {
     // +--------------------------------------------------------------------------------+
 
 
-    virtual integer eventConstraints ( integer const i_phase,
+    virtual void eventConstraints ( integer const i_phase,
                           real const left_state_control[],
                           real const right_state_control[],
                           real const parameters[],
@@ -723,7 +723,7 @@ namespace SingleMassPointENamespace {
                           real const __zeta_r,
                           real       values[] ) const;
 
-    virtual integer eventConstraintsJac ( integer const i_phase,
+    virtual void eventConstraintsJac ( integer const i_phase,
                                  real const left_state_control[],
                                  real const right_state_control[],
                                  real const parameters[],
@@ -748,7 +748,7 @@ namespace SingleMassPointENamespace {
                                    integer       rows[],
                                    integer       cols[] ) const;
 
-    virtual integer eventConstraintsHess ( integer const i_phase,
+    virtual void eventConstraintsHess ( integer const i_phase,
                                       real const left_state_control[],
                                       real const right_state_control[],
                                       real const parameters[],

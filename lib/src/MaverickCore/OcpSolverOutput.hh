@@ -57,7 +57,7 @@ namespace Maverick {
     u_long_integer getTotalCalculationMs() const;
 
     // get history count
-    integer getHistoryLength() const { return (integer) _history.size(); }
+    integer getHistoryLength() const;
 
     // access history element at index
     SingleIterationOutput const &at(integer const index) const;

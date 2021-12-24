@@ -125,7 +125,7 @@ namespace Maverick {
         }
         jac_xu.makeCompressed();
         _p_j_xu_outer_starts = new integer[jac_xu.outerSize() + 1];
-        copyVectorTo(jac_xu.outerIndexPtr(), _p_j_xu_outer_starts, (integer) jac_xu.outerSize() + 1);
+        copyVectorTo(jac_xu.outerIndexPtr(), _p_j_xu_outer_starts, jac_xu.outerSize() + 1);
 
         SparseMatrix jac_dxu(_dim_eq, _dim_y);
         jac_dxu.reserve(_nnz_j_dxu);
@@ -136,7 +136,7 @@ namespace Maverick {
         }
         jac_dxu.makeCompressed();
         _p_j_dxu_outer_starts = new integer[jac_dxu.outerSize() + 1];
-        copyVectorTo(jac_dxu.outerIndexPtr(), _p_j_dxu_outer_starts, (integer) jac_dxu.outerSize() + 1);
+        copyVectorTo(jac_dxu.outerIndexPtr(), _p_j_dxu_outer_starts, jac_dxu.outerSize() + 1);
 
         SparseMatrix jac_axu(_dim_eq, _dim_ay);
         jac_axu.reserve(_nnz_j_axu);
@@ -147,7 +147,7 @@ namespace Maverick {
         }
         jac_axu.makeCompressed();
         _p_j_axu_outer_starts = new integer[jac_axu.outerSize() + 1];
-        copyVectorTo(jac_axu.outerIndexPtr(), _p_j_axu_outer_starts, (integer) jac_axu.outerSize() + 1);
+        copyVectorTo(jac_axu.outerIndexPtr(), _p_j_axu_outer_starts, jac_axu.outerSize() + 1);
 
         jac_x = jac_xu.block(0, 0, _dim_eq, _dim_x) + jac_dxu.block(0, 0, _dim_eq, _dim_x);
         jac_ax = jac_axu.block(0, 0, _dim_eq, _dim_ax);
@@ -155,8 +155,8 @@ namespace Maverick {
       jac_x.makeCompressed();
       jac_ax.makeCompressed();
 
-      integer _nnz_jac_x = (integer) jac_x.nonZeros();
-      integer _nnz_jac_ax = (integer) jac_ax.nonZeros();
+      auto _nnz_jac_x = safeCastBetweenTypes<integer, u_int>(jac_x.nonZeros());
+      auto _nnz_jac_ax = safeCastBetweenTypes<integer, u_int>(jac_ax.nonZeros());
       _nnz_jac = _nnz_jac_x + _nnz_jac_ax;
       _p_scale_factor_jac = new real[_nnz_jac];
       _p_jac_cols = new integer[_nnz_jac];
@@ -165,8 +165,8 @@ namespace Maverick {
       integer counter = 0;
       for (integer k = 0; k < jac_x.outerSize(); ++k) {
         for (SparseMatrix::InnerIterator it(jac_x, k); it; ++it) {
-          integer i_row = (integer) it.row();
-          integer i_col = (integer) it.col();
+          integer i_row = it.row();
+          integer i_col = it.col();
           _p_jac_cols[counter] = i_col;
           _p_jac_rows[counter] = i_row;
           _p_scale_factor_jac[counter] = _p_inv_scaling_fo_eqns[i_row] * _p_scaling_y[i_col];
@@ -175,8 +175,8 @@ namespace Maverick {
       }
       for (integer k = 0; k < jac_ax.outerSize(); ++k) {
         for (SparseMatrix::InnerIterator it(jac_ax, k); it; ++it) {
-          integer i_row = (integer) it.row();
-          integer i_col = (integer) it.col() + _dim_x;
+          integer i_row = it.row();
+          integer i_col = it.col() + _dim_x;
           _p_jac_cols[counter] = i_col;
           _p_jac_rows[counter] = i_row;
           // for the scaling, check if the column is that of a normal state or algebraic state
@@ -239,7 +239,7 @@ namespace Maverick {
           }
           hess_xu_xu.makeCompressed();
           _p_h_xu_xu_outer_starts = new integer[hess_xu_xu.outerSize() + 1];
-          copyVectorTo(hess_xu_xu.outerIndexPtr(), _p_h_xu_xu_outer_starts, (integer) hess_xu_xu.outerSize() + 1);
+          copyVectorTo(hess_xu_xu.outerIndexPtr(), _p_h_xu_xu_outer_starts, hess_xu_xu.outerSize() + 1);
         }
         SparseMatrix hess_xu_dxu(_dim_y, _dim_y);
         {
@@ -251,7 +251,7 @@ namespace Maverick {
           }
           hess_xu_dxu.makeCompressed();
           _p_h_xu_dxu_outer_starts = new integer[hess_xu_dxu.outerSize() + 1];
-          copyVectorTo(hess_xu_dxu.outerIndexPtr(), _p_h_xu_dxu_outer_starts, (integer) hess_xu_dxu.outerSize() + 1);
+          copyVectorTo(hess_xu_dxu.outerIndexPtr(), _p_h_xu_dxu_outer_starts, hess_xu_dxu.outerSize() + 1);
         }
 
         SparseMatrix hess_xu_axu(_dim_ay, _dim_y);
@@ -264,7 +264,7 @@ namespace Maverick {
           }
           hess_xu_axu.makeCompressed();
           _p_h_xu_axu_outer_starts = new integer[hess_xu_axu.outerSize() + 1];
-          copyVectorTo(hess_xu_axu.outerIndexPtr(), _p_h_xu_axu_outer_starts, (integer) hess_xu_axu.outerSize() + 1);
+          copyVectorTo(hess_xu_axu.outerIndexPtr(), _p_h_xu_axu_outer_starts, hess_xu_axu.outerSize() + 1);
         }
 
         SparseMatrix hess_dxu_dxu(_dim_y, _dim_y);
@@ -277,7 +277,7 @@ namespace Maverick {
           }
           hess_dxu_dxu.makeCompressed();
           _p_h_dxu_dxu_outer_starts = new integer[hess_dxu_dxu.outerSize() + 1];
-          copyVectorTo(hess_dxu_dxu.outerIndexPtr(), _p_h_dxu_dxu_outer_starts, (integer) hess_dxu_dxu.outerSize() + 1);
+          copyVectorTo(hess_dxu_dxu.outerIndexPtr(), _p_h_dxu_dxu_outer_starts, hess_dxu_dxu.outerSize() + 1);
         }
 
         SparseMatrix hess_dxu_axu(_dim_ay, _dim_y);
@@ -290,7 +290,7 @@ namespace Maverick {
           }
           hess_dxu_axu.makeCompressed();
           _p_h_dxu_axu_outer_starts = new integer[hess_dxu_axu.outerSize() + 1];
-          copyVectorTo(hess_dxu_axu.outerIndexPtr(), _p_h_dxu_axu_outer_starts, (integer) hess_dxu_axu.outerSize() + 1);
+          copyVectorTo(hess_dxu_axu.outerIndexPtr(), _p_h_dxu_axu_outer_starts, hess_dxu_axu.outerSize() + 1);
         }
 
         SparseMatrix hess_axu_axu(_dim_ay, _dim_ay);
@@ -303,7 +303,7 @@ namespace Maverick {
           }
           hess_axu_axu.makeCompressed();
           _p_h_axu_axu_outer_starts = new integer[hess_axu_axu.outerSize() + 1];
-          copyVectorTo(hess_axu_axu.outerIndexPtr(), _p_h_axu_axu_outer_starts, (integer) hess_axu_axu.outerSize() + 1);
+          copyVectorTo(hess_axu_axu.outerIndexPtr(), _p_h_axu_axu_outer_starts, hess_axu_axu.outerSize() + 1);
         }
 
         hess.block(0, 0, _dim_x, _dim_x) =
@@ -558,7 +558,7 @@ namespace Maverick {
 #endif
     grad_x = grad_xu_mat.block(0, 0, _dim_eq, _dim_x) * _alpha + grad_dxu_mat.block(0, 0, _dim_eq, _dim_x) * _d_zeta_inv;
     grad_x.makeCompressed();
-    integer const grad_x_nnz = (integer) grad_x.nonZeros();
+    auto const grad_x_nnz = grad_x.nonZeros();
     multiplyAndCopyVectorTo(grad_x.valuePtr(), grad, _p_scale_factor_jac, grad_x_nnz);
 
     SparseMatrix grad_ax(_dim_eq, _dim_ax);
@@ -568,7 +568,7 @@ namespace Maverick {
     grad_ax = grad_axu_mat.block(0, 0, _dim_eq, _dim_ax);
     grad_ax.makeCompressed();
     multiplyAndCopyVectorTo(grad_ax.valuePtr(), grad + grad_x_nnz, _p_scale_factor_jac + grad_x_nnz,
-                            (integer) grad_ax.nonZeros());
+                            grad_ax.nonZeros());
   }
 
   void RK1Integrator::evalEquationsDenseJac(bool const new_unk,

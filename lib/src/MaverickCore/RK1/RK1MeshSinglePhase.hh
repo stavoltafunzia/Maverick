@@ -108,8 +108,6 @@ namespace Maverick {
     
     real _alpha;
 
-    bool isVectorIncreasingValues(real const values[], integer const length) const;
-
     vec_1d_real _zeta = {};
 
   };

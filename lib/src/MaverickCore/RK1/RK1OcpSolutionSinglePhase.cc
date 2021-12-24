@@ -17,6 +17,7 @@
 
 #define SPLINE_EXTEND_RANGE MaverickUtils::GF1ASpline::ExtendRange::keep_derivative
 
+#define CAST_SIZE_TO_NUM(X) safeCastToInt(X)
 using namespace std;
 
 namespace Maverick {
@@ -337,7 +338,7 @@ namespace Maverick {
       for (auto touple_data : all_spline_vecs_and_data) {
         auto p_spline_vec = std::get<0>(touple_data);
         auto p_data_vec = std::get<1>(touple_data);
-          for (auto i = 0; i < p_data_vec->size(); i++) {
+          for (size_t i = 0; i < p_data_vec->size(); i++) {
           MaverickUtils::GF1APolyFive *tmp_gf1a = new MaverickUtils::GF1APolyFive();
           tmp_gf1a->setup(gc);
           p_spline_vec->push_back(tmp_gf1a);
@@ -488,11 +489,11 @@ namespace Maverick {
     };
 
     for (auto & name_and_spline : names_and_splines)
-      for (auto i = 0; i < name_and_spline.second->size(); i++)
+      for (size_t i = 0; i < name_and_spline.second->size(); i++)
         header << name_and_spline.first << i << StreamChars::separator;
 
     for (auto & name_and_constant : names_and_constants)
-      for (auto i = 0; i < name_and_constant.second->size(); i++)
+      for (size_t i = 0; i < name_and_constant.second->size(); i++)
         header << name_and_constant.first << i << StreamChars::separator;
 
     //target
@@ -500,7 +501,7 @@ namespace Maverick {
            << "cumulative_target" << StreamChars::new_line;
 
     //body
-    for (integer mesh_point = 0; mesh_point < _zeta.size(); mesh_point++) {
+    for (size_t mesh_point = 0; mesh_point < _zeta.size(); mesh_point++) {
       if (add_phase_index)
         body << phase_index << StreamChars::separator;
 
@@ -510,11 +511,11 @@ namespace Maverick {
       body << std::scientific << std::setprecision(15);
 
       for (auto & name_and_spline : names_and_splines)
-        for (auto i = 0; i < name_and_spline.second->size(); i++)
+        for (size_t i = 0; i < name_and_spline.second->size(); i++)
           body << (*name_and_spline.second)[i]->funcEval(zeta) << StreamChars::separator;
 
       for (auto & name_and_constant : names_and_constants)
-        for (auto i = 0; i < name_and_constant.second->size(); i++)
+        for (size_t i = 0; i < name_and_constant.second->size(); i++)
           body << (*name_and_constant.second)[i] << StreamChars::separator;
 
       //target
@@ -545,40 +546,40 @@ namespace Maverick {
 
     if ((states_controls != nullptr) || (states_controls_upper_bounds_mult != nullptr) ||
         (states_controls_lower_bounds_mult != nullptr))
-      MAVERICK_ASSERT(num_states_controls == _states_controls.size(),
+      MAVERICK_ASSERT(num_states_controls == CAST_SIZE_TO_NUM(_states_controls.size()),
                       "RK1OcpSolutionSinglePhase::evalAtMesh: wrong states and controls size.\n")
 
     if ((algebraic_states_controls != nullptr) || (algebraic_states_controls_upper_bounds_mult != nullptr) ||
         (algebraic_states_controls_lower_bounds_mult != nullptr))
-      MAVERICK_ASSERT(num_alg_states_controls == _algebraic_states_controls.size(),
+      MAVERICK_ASSERT(num_alg_states_controls == CAST_SIZE_TO_NUM(_algebraic_states_controls.size()),
                       "RK1OcpSolutionSinglePhase::evalAtMesh: wrong algerbaic states and controls size.\n")
 
     if (int_constr != nullptr)
-      MAVERICK_ASSERT(num_int_constr == _int_constr.size(),
+      MAVERICK_ASSERT(num_int_constr == CAST_SIZE_TO_NUM(_int_constr.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong integral constraints size.\n")
 
     if (post_proc != nullptr)
-      MAVERICK_ASSERT(num_post_proc == _post_processing.size(),
+      MAVERICK_ASSERT(num_post_proc == CAST_SIZE_TO_NUM(_post_processing.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong post processing size.\n")
 
     if (diff_post_proc != nullptr)
-      MAVERICK_ASSERT(num_diff_post_proc == _differential_post_processing.size(),
+      MAVERICK_ASSERT(num_diff_post_proc == CAST_SIZE_TO_NUM(_differential_post_processing.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong differential post processing size.\n")
 
     if (int_post_proc != nullptr)
-      MAVERICK_ASSERT(num_int_post_proc == _integral_post_processing.size(),
+      MAVERICK_ASSERT(num_int_post_proc == CAST_SIZE_TO_NUM(_integral_post_processing.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong integral post processing size.\n")
 
     if ((states_constr != nullptr) || (point_constr_mult != nullptr))
-      MAVERICK_ASSERT(num_point_constr == _point_constraints.size(),
+      MAVERICK_ASSERT(num_point_constr == CAST_SIZE_TO_NUM(_point_constraints.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong point constraints size.\n")
 
     if ((path_constr != nullptr) || (path_constr_mult != nullptr))
-      MAVERICK_ASSERT(num_path_constr == _path_constr.size(),
+      MAVERICK_ASSERT(num_path_constr == CAST_SIZE_TO_NUM(_path_constr.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong path constraints size.\n")
 
     if ((fo_eqns != nullptr) || (fo_eqns_mult != nullptr))
-      MAVERICK_ASSERT(num_fo_eqns == _fo_eqns_multipliers.size(),
+      MAVERICK_ASSERT(num_fo_eqns == CAST_SIZE_TO_NUM(_fo_eqns_multipliers.size()),
                       "OcpCompleteSolution::evalAtMesh: wrong f.o. equations size.\n")
 
     using pointer_and_spline = std::pair<real *, std::vector<MaverickUtils::GenericFunction1AInterface *> const *>;
@@ -604,7 +605,7 @@ namespace Maverick {
 
     for (auto & data : pointer_and_splines)
       if (data.first != nullptr)
-        for (size i = 0; i < data.second->size(); i++)
+        for (size_t i = 0; i < data.second->size(); i++)
           data.first[i] = (*data.second)[i]->funcEval(zeta);
   }
 
@@ -621,19 +622,19 @@ namespace Maverick {
   {
 
     if ((parameters != nullptr) || (params_upper_bounds_mult != nullptr) || (params_lower_bounds_mult != nullptr))
-      MAVERICK_ASSERT(num_parameters == _parameters.size(),
+      MAVERICK_ASSERT(num_parameters == CAST_SIZE_TO_NUM(_parameters.size()),
                       "RK1OcpSolutionSinglePhase::evalParams wrong parameter size.\n")
 
     if ((int_constr_at_end != nullptr) || (int_constr_mult != nullptr))
-      MAVERICK_ASSERT(num_int_constr == _int_constr_multipliers.size(),
+      MAVERICK_ASSERT(num_int_constr == CAST_SIZE_TO_NUM(_int_constr_multipliers.size()),
                       "OcpCompleteSolution::evalParams: wrong integral constraints size.\n")
 
     if ((boundary_conditions != nullptr) || (boundary_conditions_mult != nullptr))
-      MAVERICK_ASSERT(num_boundary_conditions == _bcs_multipliers.size(),
+      MAVERICK_ASSERT(num_boundary_conditions == CAST_SIZE_TO_NUM(_bcs_multipliers.size()),
                       "OcpCompleteSolution::evalParams: wrong boundary conditions size.\n")
 
     if (int_post_proc_at_end != nullptr)
-      MAVERICK_ASSERT(num_int_post_proc == _integral_post_processing.size(),
+      MAVERICK_ASSERT(num_int_post_proc == CAST_SIZE_TO_NUM(_integral_post_processing.size()),
                       "OcpCompleteSolution::eval: wrong integral post processing size.\n")
 
     using pointer_and_vector = std::pair<real *, vec_1d_real const *>;
@@ -647,17 +648,17 @@ namespace Maverick {
 
     for (auto & data : pointer_and_vectors)
       if (data.first != nullptr)
-        copyVectorTo(data.second->data(), data.first, (integer) data.second->size());
+        copyVectorTo(data.second->data(), data.first, data.second->size());
 
     if (int_constr_at_end != nullptr)
-      for (size i = 0; i < num_int_constr; i++)
+      for (integer i = 0; i < num_int_constr; i++)
         int_constr_at_end[i] = *(_int_constr[i].end() - 1);
 
     if (int_constr_mult != nullptr)
       copyVectorTo(_int_constr_multipliers.data(), int_constr_mult, num_int_constr);
 
     if (int_post_proc_at_end != nullptr)
-      for (size i = 0; i < num_int_post_proc; i++)
+      for (integer i = 0; i < num_int_post_proc; i++)
         int_post_proc_at_end[i] = *(_integral_post_processing[i].end() - 1);
   }
 
@@ -784,7 +785,7 @@ namespace Maverick {
           auto const & name = std::get<0>(name_and_spline_vec);
           out_gc[name].set_vector(splines_vec.size());
           vector<real> tmp_vec;
-          for (auto i = 0; i < splines_vec.size(); i++) {
+          for (size_t i = 0; i < splines_vec.size(); i++) {
             auto & spline = splines_vec[i];
             tmp_vec.clear();
             if (spline != nullptr)
@@ -795,7 +796,7 @@ namespace Maverick {
         } else {
           vector<real> tmp_vec;
           auto const & get_name = std::get<2>(name_and_spline_vec);
-          for (auto i = 0; i < splines_vec.size(); i++) {
+          for (size_t i = 0; i < splines_vec.size(); i++) {
             auto & spline = splines_vec[i];
             tmp_vec.clear();
             if (spline != nullptr)
@@ -829,7 +830,7 @@ namespace Maverick {
       if (p_ocp == nullptr)
         out_gc[std::get<0>(names_and_vec)].set_vec_real(*vec);
       else
-        for (int i = 0; i < vec->size(); i++)
+        for (size_t i = 0; i < vec->size(); i++)
           out_gc[std::get<2>(names_and_vec)(i)] = (*vec)[i];
     }
     insert_values_to_gc_on_zeta(out_gc, _zeta);

@@ -59,9 +59,9 @@ void GF2ASpline::setup(string const &spine_type, vec_1d_real const &x1, vec_1d_r
   }
   _spline_type = spine_type;
 
-  integer nx1 = (integer) x1.size();
-  integer nx2 = (integer) x2.size();
-  integer ny = (integer) y.size();
+  auto nx1 = x1.size();
+  auto nx2 = x2.size();
+  auto ny = y.size();
 
   MAVERICK_ASSERT(nx1 * nx2 == ny, "GF2ASpline::setup: y vector size does not equal size(x1) times size(x2)\n")
   _p_spline->clear();

@@ -84,13 +84,13 @@ void MinimumTimeToClimb::derivedSetup(GC::GenericContainer const & gc) {
     }
     _p_CD0->setup(*gc_function);
 
-    _p_Eta = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("Eta"));
+    _p_SoundSpeed = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("SoundSpeed"));
     try {
-        gc_function = &( (*gc_mapped_objects)("Eta") );
+        gc_function = &( (*gc_mapped_objects)("SoundSpeed") );
     } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'Eta' in the lua data file\n");
+        throw std::runtime_error("Cannot find mapped object named 'SoundSpeed' in the lua data file\n");
     }
-    _p_Eta->setup(*gc_function);
+    _p_SoundSpeed->setup(*gc_function);
 
     _p_CLalpha = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("CLalpha"));
     try {
@@ -100,6 +100,14 @@ void MinimumTimeToClimb::derivedSetup(GC::GenericContainer const & gc) {
     }
     _p_CLalpha->setup(*gc_function);
 
+    _p_Eta = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("Eta"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("Eta") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'Eta' in the lua data file\n");
+    }
+    _p_Eta->setup(*gc_function);
+
     _p_Rho = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("Rho"));
     try {
         gc_function = &( (*gc_mapped_objects)("Rho") );
@@ -107,14 +115,6 @@ void MinimumTimeToClimb::derivedSetup(GC::GenericContainer const & gc) {
         throw std::runtime_error("Cannot find mapped object named 'Rho' in the lua data file\n");
     }
     _p_Rho->setup(*gc_function);
-
-    _p_SoundSpeed = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("SoundSpeed"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("SoundSpeed") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'SoundSpeed' in the lua data file\n");
-    }
-    _p_SoundSpeed->setup(*gc_function);
 
     _p_Thrust = std::unique_ptr<GenericFunction2AInterface> (getGenericFunction2A("Thrust"));
     try {
@@ -132,13 +132,13 @@ void MinimumTimeToClimb::printDerivedInfo(std::ostream & out, InfoLevel info_lev
     out << "\n";
     _p_CD0->printInfo(out, info_level);
     out << "\n";
-    _p_Eta->printInfo(out, info_level);
+    _p_SoundSpeed->printInfo(out, info_level);
     out << "\n";
     _p_CLalpha->printInfo(out, info_level);
     out << "\n";
-    _p_Rho->printInfo(out, info_level);
+    _p_Eta->printInfo(out, info_level);
     out << "\n";
-    _p_SoundSpeed->printInfo(out, info_level);
+    _p_Rho->printInfo(out, info_level);
     out << "\n";
     _p_Thrust->printInfo(out, info_level);
     out << "\n";
@@ -154,7 +154,7 @@ void MinimumTimeToClimb::printDerivedInfo(std::ostream & out, InfoLevel info_lev
 //   |                                     |
 //   +-------------------------------------+
 
-integer MinimumTimeToClimb::getStatesControlsBounds(integer const i_phase,
+void MinimumTimeToClimb::getStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -172,10 +172,9 @@ integer MinimumTimeToClimb::getStatesControlsBounds(integer const i_phase,
     upper[3] = _model_params[MOD_PAR_INDEX_m_max];
     }
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::getAlgebraicStatesControlsBounds(integer const i_phase,
+void MinimumTimeToClimb::getAlgebraicStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -187,10 +186,9 @@ integer MinimumTimeToClimb::getAlgebraicStatesControlsBounds(integer const i_pha
     upper[0] = _model_params[MOD_PAR_INDEX_alpha_max];
     }
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::getParametersBounds(integer const i_phase,
+void MinimumTimeToClimb::getParametersBounds(integer const i_phase,
                                                         real          lower[],
                                                         real          upper[] ) const {
     {
@@ -201,29 +199,26 @@ integer MinimumTimeToClimb::getParametersBounds(integer const i_phase,
     upper[0] = _model_params[MOD_PAR_INDEX_T_max];
     }
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::getPathConstraintsBounds(integer const i_phase,
+void MinimumTimeToClimb::getPathConstraintsBounds(integer const i_phase,
                                                              real    const __zeta,
                                                              real          lower[],
                                                              real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::getIntConstraintsBounds(integer const i_phase,
+void MinimumTimeToClimb::getIntConstraintsBounds(integer const i_phase,
                                                             real    const __zeta_i,
                                                             real    const __zeta_f,
                                                             real          lower[],
                                                             real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::getBoundaryConditionsBounds(integer const i_phase,
+void MinimumTimeToClimb::getBoundaryConditionsBounds(integer const i_phase,
                                                                 real    const __zeta_i,
                                                                 real    const __zeta_f,
                                                                 real          lower[],
@@ -248,26 +243,23 @@ integer MinimumTimeToClimb::getBoundaryConditionsBounds(integer const i_phase,
     upper[6] = _model_params[MOD_PAR_INDEX_fpa_f];
     }
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::getPointConstraintsBounds(integer const i_phase,
+void MinimumTimeToClimb::getPointConstraintsBounds(integer const i_phase,
                                                               real    const __zeta,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::getEventConstraintsBounds(integer const i_phase,
+void MinimumTimeToClimb::getEventConstraintsBounds(integer const i_phase,
                                                               real    const __zeta_i,
                                                               real    const __zeta_f,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
 // +----------------------------+
@@ -311,6 +303,10 @@ void MinimumTimeToClimb::evalAtMesh(integer const i_phase,
     __states_controls[3] = _model_params[MOD_PAR_INDEX_m_i];
 
     }
+    if (__algebraic_states_controls) {
+    
+
+    }
 }
 
 void MinimumTimeToClimb::eval(integer const i_phase,
@@ -348,17 +344,16 @@ void MinimumTimeToClimb::eval(integer const i_phase,
 //   |                  |___/            |
 //   +-----------------------------------+
 
-integer MinimumTimeToClimb::mayer ( integer const i_phase,
+void MinimumTimeToClimb::mayer ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
                real     & __value ) const {
         __value = _model_params[MOD_PAR_INDEX_wm] * __parameters[0];
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::mayerJac ( integer const i_phase,
+void MinimumTimeToClimb::mayerJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -367,7 +362,6 @@ integer MinimumTimeToClimb::mayerJac ( integer const i_phase,
                              real       __jac_p[] ) const {
         __jac_p[0] = _model_params[MOD_PAR_INDEX_wm];
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::mayerJacXuInitNnz ( integer const i_phase ) const {
@@ -397,7 +391,7 @@ void MinimumTimeToClimb::mayerJacPPattern ( integer const i_phase, integer cols[
 
 }
 
-integer MinimumTimeToClimb::mayerHess ( integer const i_phase,
+void MinimumTimeToClimb::mayerHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -410,7 +404,6 @@ integer MinimumTimeToClimb::mayerHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::mayerHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -489,7 +482,7 @@ void MinimumTimeToClimb::mayerHessPPPattern ( integer const i_phase, integer row
 //   |          |___/                 |___/       |
 //   +--------------------------------------------+
 
- integer MinimumTimeToClimb::lagrange ( integer const i_phase,
+ void MinimumTimeToClimb::lagrange ( integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -499,10 +492,9 @@ void MinimumTimeToClimb::mayerHessPPPattern ( integer const i_phase, integer row
        real t5 = pow(__algebraic_states_controls[0], 0.2e1);
     __value = __parameters[0] * (_model_params[MOD_PAR_INDEX_wl1] * t5 + _model_params[MOD_PAR_INDEX_wl]);
 
-   return 0;
 }
 
- integer MinimumTimeToClimb::lagrangeJac ( integer const i_phase,
+ void MinimumTimeToClimb::lagrangeJac ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -518,7 +510,6 @@ void MinimumTimeToClimb::mayerHessPPPattern ( integer const i_phase, integer row
     real t7 = t5 * t5;
     __jac_p[0] = t3 * t7 + _model_params[MOD_PAR_INDEX_wl];
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::lagrangeJacXuNnz ( integer const i_phase ) const {
@@ -557,7 +548,7 @@ void MinimumTimeToClimb::lagrangeJacPPattern ( integer const i_phase, integer co
 
 }
 
- integer MinimumTimeToClimb::lagrangeHess ( integer const i_phase,
+ void MinimumTimeToClimb::lagrangeHess ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -578,7 +569,6 @@ void MinimumTimeToClimb::lagrangeJacPPattern ( integer const i_phase, integer co
     __hess_axu_axu[0] = 2 * __parameters[0] * t3 * __lambda_0;
     __hess_axu_p[0] = 2 * t3 * __algebraic_states_controls[0] * __lambda_0;
 
-     return 0;
 }
 
 integer MinimumTimeToClimb::lagrangeHessXuXuNnz ( integer const i_phase ) const {
@@ -700,7 +690,7 @@ return 0;
 //   |                       |_|                                   |
 //   +-------------------------------------------------------------+
 
-integer MinimumTimeToClimb::foEqns ( integer const i_phase,
+void MinimumTimeToClimb::foEqns ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -738,10 +728,9 @@ integer MinimumTimeToClimb::foEqns ( integer const i_phase,
     __values[2] = __state_control_derivatives[2] * t3 - (t15 * t49 + t21 * t23 * t26 * t16 / 0.2e1) * t36 * t57 - t59 * (t5 / t43 - t39 * t57 * t45);
     __values[3] = __state_control_derivatives[3] * t3 + t15 / _model_params[MOD_PAR_INDEX_g0] / _model_params[MOD_PAR_INDEX_Isp];
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::foEqnsJac (integer const i_phase,
+void MinimumTimeToClimb::foEqnsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -835,7 +824,6 @@ integer MinimumTimeToClimb::foEqnsJac (integer const i_phase,
     __jac_p[2] = -__state_control_derivatives[2] * t167;
     __jac_p[3] = -__state_control_derivatives[3] * t167;
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::foEqnsJacXuNnz ( integer const i_phase ) const {
@@ -918,7 +906,7 @@ void MinimumTimeToClimb::foEqnsJacPPattern ( integer const i_phase, integer rows
 
 }
 
-integer MinimumTimeToClimb::foEqnsHess(integer const i_phase,
+void MinimumTimeToClimb::foEqnsHess(integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -1109,7 +1097,6 @@ integer MinimumTimeToClimb::foEqnsHess(integer const i_phase,
     real t495 = 0.1e1 / t477 / t476;
     __hess_p_p[0] = 0.2e1 * t1 * __state_control_derivatives[3] * t495 + 0.2e1 * t113 * __state_control_derivatives[1] * t495 + 0.2e1 * t386 * __state_control_derivatives[0] * t495 + 0.2e1 * t42 * __state_control_derivatives[2] * t495;
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::foEqnsHessXuXuNnz ( integer const i_phase ) const {
@@ -1267,7 +1254,7 @@ void MinimumTimeToClimb::foEqnsHessPPPattern ( integer const i_phase, integer ro
 // |                                                                       |
 // +-----------------------------------------------------------------------+
 
-integer MinimumTimeToClimb::pathConstraints ( integer const i_phase,
+void MinimumTimeToClimb::pathConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1275,10 +1262,9 @@ integer MinimumTimeToClimb::pathConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::pathConstraintsJac (integer const i_phase,
+void MinimumTimeToClimb::pathConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1290,7 +1276,6 @@ integer MinimumTimeToClimb::pathConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::pathConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1337,7 +1322,7 @@ void MinimumTimeToClimb::pathConstraintsJacPPattern ( integer const i_phase, int
 
 }
 
-integer MinimumTimeToClimb::pathConstraintsHess(integer const i_phase,
+void MinimumTimeToClimb::pathConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1356,7 +1341,6 @@ integer MinimumTimeToClimb::pathConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer MinimumTimeToClimb::pathConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1479,16 +1463,15 @@ void MinimumTimeToClimb::pathConstraintsHessPPPattern ( integer const i_phase, i
 // +----------------------------------------------------------------------------+
 
 
-integer MinimumTimeToClimb::pointConstraints ( integer const i_phase,
+void MinimumTimeToClimb::pointConstraints ( integer const i_phase,
                      real    const __states_controls[],
                      real    const __parameters[],
                      real          __zeta,
                      real          __values[] ) const {
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::pointConstraintsJac (integer const i_phase,
+void MinimumTimeToClimb::pointConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __parameters[],
                           real       __zeta,
@@ -1496,7 +1479,6 @@ integer MinimumTimeToClimb::pointConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::pointConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1521,7 +1503,7 @@ void MinimumTimeToClimb::pointConstraintsJacPPattern ( integer const i_phase, in
 
 }
 
-integer MinimumTimeToClimb::pointConstraintsHess (integer const i_phase,
+void MinimumTimeToClimb::pointConstraintsHess (integer const i_phase,
                                  real    const __states_controls[],
                                  real    const __parameters[],
                                  real          __zeta,
@@ -1531,7 +1513,6 @@ integer MinimumTimeToClimb::pointConstraintsHess (integer const i_phase,
                                  real          __hess_p_p[] ) const {
         
 
-    return 0;
  }
 integer MinimumTimeToClimb::pointConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1575,7 +1556,7 @@ void MinimumTimeToClimb::pointConstraintsHessPPPattern ( integer const i_phase, 
 // |                  |___/                                                                  |
 // +-----------------------------------------------------------------------------------------+
 
-integer MinimumTimeToClimb::intConstraints ( integer const i_phase,
+void MinimumTimeToClimb::intConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1583,10 +1564,9 @@ integer MinimumTimeToClimb::intConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer MinimumTimeToClimb::intConstraintsJac (integer const i_phase,
+void MinimumTimeToClimb::intConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1598,7 +1578,6 @@ integer MinimumTimeToClimb::intConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::intConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1645,7 +1624,7 @@ void MinimumTimeToClimb::intConstraintsJacPPattern ( integer const i_phase, inte
 
 }
 
-integer MinimumTimeToClimb::intConstraintsHess(integer const i_phase,
+void MinimumTimeToClimb::intConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1664,7 +1643,6 @@ integer MinimumTimeToClimb::intConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer MinimumTimeToClimb::intConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1785,7 +1763,7 @@ void MinimumTimeToClimb::intConstraintsHessPPPattern ( integer const i_phase, in
 //   |                                           |___/                                                  |
 //   +--------------------------------------------------------------------------------------------------+
 
-integer MinimumTimeToClimb::boundaryConditions ( integer const i_phase,
+void MinimumTimeToClimb::boundaryConditions ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
@@ -1800,10 +1778,9 @@ integer MinimumTimeToClimb::boundaryConditions ( integer const i_phase,
     __values[5] = __final_state_control[1];
     __values[6] = __final_state_control[2];
 
-    return 0;
 }
 
-integer MinimumTimeToClimb::boundaryConditionsJac ( integer const i_phase,
+void MinimumTimeToClimb::boundaryConditionsJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -1820,7 +1797,6 @@ integer MinimumTimeToClimb::boundaryConditionsJac ( integer const i_phase,
     __jac_xu_fin[1] = 1;
     __jac_xu_fin[2] = 1;
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::boundaryConditionsJacXuInitNnz ( integer const i_phase ) const {
@@ -1866,7 +1842,7 @@ void MinimumTimeToClimb::boundaryConditionsJacPPattern ( integer const i_phase, 
 
 }
 
-integer MinimumTimeToClimb::boundaryConditionsHess ( integer const i_phase,
+void MinimumTimeToClimb::boundaryConditionsHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -1881,7 +1857,6 @@ integer MinimumTimeToClimb::boundaryConditionsHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer MinimumTimeToClimb::boundaryConditionsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -1959,17 +1934,16 @@ void MinimumTimeToClimb::boundaryConditionsHessPPPattern ( integer const i_phase
 // |                                                                                |
 // +--------------------------------------------------------------------------------+
 
-integer MinimumTimeToClimb::eventConstraints ( integer const i_phase,
+void MinimumTimeToClimb::eventConstraints ( integer const i_phase,
                       real const left_state_control[],
                       real const right_state_control[],
                       real const parameters[],
                       real const __zeta_l,
                       real const __zeta_r,
                       real       __values[] ) const {
-    return 0;
 }
 
-integer MinimumTimeToClimb::eventConstraintsJac ( integer const i_phase,
+void MinimumTimeToClimb::eventConstraintsJac ( integer const i_phase,
                              real const left_state_control[],
                              real const right_state_control[],
                              real const parameters[],
@@ -1978,7 +1952,6 @@ integer MinimumTimeToClimb::eventConstraintsJac ( integer const i_phase,
                              real       __jac_xu_init[],
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
-    return 0;
 }
 
 integer MinimumTimeToClimb::eventConstraintsJacXuInitNnz ( integer const i_phase ) const {
@@ -2008,7 +1981,7 @@ void MinimumTimeToClimb::eventConstraintsJacPPattern ( integer const i_phase,
 
 }
 
-integer MinimumTimeToClimb::eventConstraintsHess ( integer const i_phase,
+void MinimumTimeToClimb::eventConstraintsHess ( integer const i_phase,
                                   real const left_state_control[],
                                   real const right_state_control[],
                                   real const parameters[],
@@ -2021,7 +1994,6 @@ integer MinimumTimeToClimb::eventConstraintsHess ( integer const i_phase,
                                   real       __hess_xu_fin_xu_fin[],
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
-    return 0;
 }
 
 integer MinimumTimeToClimb::eventConstraintsHessXuInitXuInitNnz ( integer const i_phase ) const {

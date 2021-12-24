@@ -76,54 +76,6 @@ void SingleMassPoint::derivedSetup(GC::GenericContainer const & gc) {
     }
     GC::GenericContainer const * gc_function = nullptr;
 
-    _p_RoadXR = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadXR"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadXR") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadXR' in the lua data file\n");
-    }
-    _p_RoadXR->setup(*gc_function);
-
-    _p_RoadYL = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadYL"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadYL") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadYL' in the lua data file\n");
-    }
-    _p_RoadYL->setup(*gc_function);
-
-    _p_RoadHeading = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadHeading"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadHeading") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadHeading' in the lua data file\n");
-    }
-    _p_RoadHeading->setup(*gc_function);
-
-    _p_RoadXL = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadXL"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadXL") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadXL' in the lua data file\n");
-    }
-    _p_RoadXL->setup(*gc_function);
-
-    _p_RoadLeftWidth = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadLeftWidth"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadLeftWidth") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadLeftWidth' in the lua data file\n");
-    }
-    _p_RoadLeftWidth->setup(*gc_function);
-
-    _p_RoadX = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadX"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("RoadX") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadX' in the lua data file\n");
-    }
-    _p_RoadX->setup(*gc_function);
-
     _p_RoadRightWidth = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadRightWidth"));
     try {
         gc_function = &( (*gc_mapped_objects)("RoadRightWidth") );
@@ -132,13 +84,13 @@ void SingleMassPoint::derivedSetup(GC::GenericContainer const & gc) {
     }
     _p_RoadRightWidth->setup(*gc_function);
 
-    _p_RoadY = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadY"));
+    _p_RoadX = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadX"));
     try {
-        gc_function = &( (*gc_mapped_objects)("RoadY") );
+        gc_function = &( (*gc_mapped_objects)("RoadX") );
     } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'RoadY' in the lua data file\n");
+        throw std::runtime_error("Cannot find mapped object named 'RoadX' in the lua data file\n");
     }
-    _p_RoadY->setup(*gc_function);
+    _p_RoadX->setup(*gc_function);
 
     _p_RoadYR = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadYR"));
     try {
@@ -156,31 +108,79 @@ void SingleMassPoint::derivedSetup(GC::GenericContainer const & gc) {
     }
     _p_RoadCurvature->setup(*gc_function);
 
+    _p_RoadXR = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadXR"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadXR") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadXR' in the lua data file\n");
+    }
+    _p_RoadXR->setup(*gc_function);
+
+    _p_RoadXL = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadXL"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadXL") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadXL' in the lua data file\n");
+    }
+    _p_RoadXL->setup(*gc_function);
+
+    _p_RoadY = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadY"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadY") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadY' in the lua data file\n");
+    }
+    _p_RoadY->setup(*gc_function);
+
+    _p_RoadHeading = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadHeading"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadHeading") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadHeading' in the lua data file\n");
+    }
+    _p_RoadHeading->setup(*gc_function);
+
+    _p_RoadLeftWidth = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadLeftWidth"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadLeftWidth") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadLeftWidth' in the lua data file\n");
+    }
+    _p_RoadLeftWidth->setup(*gc_function);
+
+    _p_RoadYL = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RoadYL"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("RoadYL") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'RoadYL' in the lua data file\n");
+    }
+    _p_RoadYL->setup(*gc_function);
+
 
 }
 
 void SingleMassPoint::printDerivedInfo(std::ostream & out, InfoLevel info_level) const {
     if (info_level >= info_level_verbose) {
     out << "\n";
-    _p_RoadXR->printInfo(out, info_level);
-    out << "\n";
-    _p_RoadYL->printInfo(out, info_level);
-    out << "\n";
-    _p_RoadHeading->printInfo(out, info_level);
-    out << "\n";
-    _p_RoadXL->printInfo(out, info_level);
-    out << "\n";
-    _p_RoadLeftWidth->printInfo(out, info_level);
-    out << "\n";
-    _p_RoadX->printInfo(out, info_level);
-    out << "\n";
     _p_RoadRightWidth->printInfo(out, info_level);
     out << "\n";
-    _p_RoadY->printInfo(out, info_level);
+    _p_RoadX->printInfo(out, info_level);
     out << "\n";
     _p_RoadYR->printInfo(out, info_level);
     out << "\n";
     _p_RoadCurvature->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadXR->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadXL->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadY->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadHeading->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadLeftWidth->printInfo(out, info_level);
+    out << "\n";
+    _p_RoadYL->printInfo(out, info_level);
     out << "\n";
     }
 }
@@ -194,7 +194,7 @@ void SingleMassPoint::printDerivedInfo(std::ostream & out, InfoLevel info_level)
 //   |                                     |
 //   +-------------------------------------+
 
-integer SingleMassPoint::getStatesControlsBounds(integer const i_phase,
+void SingleMassPoint::getStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -213,10 +213,9 @@ integer SingleMassPoint::getStatesControlsBounds(integer const i_phase,
     upper[3] = 0.105e2;
     }
 
-    return 0;
 }
 
-integer SingleMassPoint::getAlgebraicStatesControlsBounds(integer const i_phase,
+void SingleMassPoint::getAlgebraicStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -230,10 +229,9 @@ integer SingleMassPoint::getAlgebraicStatesControlsBounds(integer const i_phase,
     upper[1] = 1;
     }
 
-    return 0;
 }
 
-integer SingleMassPoint::getParametersBounds(integer const i_phase,
+void SingleMassPoint::getParametersBounds(integer const i_phase,
                                                         real          lower[],
                                                         real          upper[] ) const {
     {
@@ -244,10 +242,9 @@ integer SingleMassPoint::getParametersBounds(integer const i_phase,
     upper[0] = 0.5e0;
     }
 
-    return 0;
 }
 
-integer SingleMassPoint::getPathConstraintsBounds(integer const i_phase,
+void SingleMassPoint::getPathConstraintsBounds(integer const i_phase,
                                                              real    const __zeta,
                                                              real          lower[],
                                                              real          upper[] ) const {
@@ -261,20 +258,18 @@ integer SingleMassPoint::getPathConstraintsBounds(integer const i_phase,
     upper[1] = 1;
     }
 
-    return 0;
 }
 
-integer SingleMassPoint::getIntConstraintsBounds(integer const i_phase,
+void SingleMassPoint::getIntConstraintsBounds(integer const i_phase,
                                                             real    const __zeta_i,
                                                             real    const __zeta_f,
                                                             real          lower[],
                                                             real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer SingleMassPoint::getBoundaryConditionsBounds(integer const i_phase,
+void SingleMassPoint::getBoundaryConditionsBounds(integer const i_phase,
                                                                 real    const __zeta_i,
                                                                 real    const __zeta_f,
                                                                 real          lower[],
@@ -295,26 +290,23 @@ integer SingleMassPoint::getBoundaryConditionsBounds(integer const i_phase,
     upper[4] = _model_params[MOD_PAR_INDEX_Vf];
     }
 
-    return 0;
 }
 
-integer SingleMassPoint::getPointConstraintsBounds(integer const i_phase,
+void SingleMassPoint::getPointConstraintsBounds(integer const i_phase,
                                                               real    const __zeta,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer SingleMassPoint::getEventConstraintsBounds(integer const i_phase,
+void SingleMassPoint::getEventConstraintsBounds(integer const i_phase,
                                                               real    const __zeta_i,
                                                               real    const __zeta_f,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
 // +----------------------------+
@@ -350,6 +342,10 @@ void SingleMassPoint::evalAtMesh(integer const i_phase,
     // write the guess
     if (__states_controls) {
     __states_controls[2] = _model_params[MOD_PAR_INDEX_V0];
+
+    }
+    if (__algebraic_states_controls) {
+    
 
     }
 }
@@ -389,17 +385,16 @@ void SingleMassPoint::eval(integer const i_phase,
 //   |                  |___/            |
 //   +-----------------------------------+
 
-integer SingleMassPoint::mayer ( integer const i_phase,
+void SingleMassPoint::mayer ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
                real     & __value ) const {
         __value = 0;
 
-    return 0;
 }
 
-integer SingleMassPoint::mayerJac ( integer const i_phase,
+void SingleMassPoint::mayerJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -408,7 +403,6 @@ integer SingleMassPoint::mayerJac ( integer const i_phase,
                              real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer SingleMassPoint::mayerJacXuInitNnz ( integer const i_phase ) const {
@@ -438,7 +432,7 @@ void SingleMassPoint::mayerJacPPattern ( integer const i_phase, integer cols[] )
 
 }
 
-integer SingleMassPoint::mayerHess ( integer const i_phase,
+void SingleMassPoint::mayerHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -451,7 +445,6 @@ integer SingleMassPoint::mayerHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer SingleMassPoint::mayerHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -530,16 +523,16 @@ void SingleMassPoint::mayerHessPPPattern ( integer const i_phase, integer rows[]
 //   |          |___/                 |___/       |
 //   +--------------------------------------------+
 
- integer SingleMassPoint::lagrange ( integer const i_phase,
+ void SingleMassPoint::lagrange ( integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
                            real    const __parameters[],
                            real          __zeta,
                            real        & __value ) const {
-       real t3 = __states_controls[1];
+       real t3 = __states_controls[3];
     real t4 = cos(t3);
-    real t5 = __states_controls[3];
+    real t5 = __states_controls[1];
     real t6 = cos(t5);
     real t8 = sin(t3);
     real t9 = sin(t5);
@@ -548,10 +541,9 @@ void SingleMassPoint::mayerHessPPPattern ( integer const i_phase, integer rows[]
     real t23 = pow(__algebraic_states_controls[1], 0.2e1);
     __value = -0.1e1 / __states_controls[2] / (t4 * t6 + t8 * t9) * (__states_controls[0] * t15 - 0.1e1) * (0.1e1 + _model_params[MOD_PAR_INDEX_w_reg] * (t21 + t23));
 
-   return 0;
 }
 
- integer SingleMassPoint::lagrangeJac ( integer const i_phase,
+ void SingleMassPoint::lagrangeJac ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -563,9 +555,9 @@ void SingleMassPoint::mayerHessPPPattern ( integer const i_phase, integer rows[]
                                 real          __jac_p[] ) const {
         real t1 = __states_controls[2];
     real t2 = 0.1e1 / t1;
-    real t3 = __states_controls[1];
+    real t3 = __states_controls[3];
     real t4 = cos(t3);
-    real t5 = __states_controls[3];
+    real t5 = __states_controls[1];
     real t6 = cos(t5);
     real t8 = sin(t3);
     real t9 = sin(t5);
@@ -584,7 +576,7 @@ void SingleMassPoint::mayerHessPPPattern ( integer const i_phase, integer rows[]
     real t28 = t2 / t26;
     real t31 = __states_controls[0] * t14 - 0.1e1;
     real t32 = t31 *  t23;
-    real t35 = t4 * t9 - t8 * t6;
+    real t35 = -t4 * t9 + t8 * t6;
     __jac_xu[1] = t28 * t32 * t35;
     real t37 = t1 * t1;
     __jac_xu[2] = 0.1e1 / t37 * t12 * t32;
@@ -593,7 +585,6 @@ void SingleMassPoint::mayerHessPPPattern ( integer const i_phase, integer rows[]
     __jac_axu[0] = -0.2e1 * t13 * t42 * t17;
     __jac_axu[1] = -0.2e1 * t13 * t42 * t19;
 
-    return 0;
 }
 
 integer SingleMassPoint::lagrangeJacXuNnz ( integer const i_phase ) const {
@@ -636,7 +627,7 @@ void SingleMassPoint::lagrangeJacPPattern ( integer const i_phase, integer cols[
 
 }
 
- integer SingleMassPoint::lagrangeHess ( integer const i_phase,
+ void SingleMassPoint::lagrangeHess ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -655,9 +646,9 @@ void SingleMassPoint::lagrangeJacPPattern ( integer const i_phase, integer cols[
                                 real          __hess_p_p[] ) const {
          real t1 = __states_controls[2];
     real t2 = 0.1e1 / t1;
-    real t3 = __states_controls[1];
+    real t3 = __states_controls[3];
     real t4 = cos(t3);
-    real t5 = __states_controls[3];
+    real t5 = __states_controls[1];
     real t6 = cos(t5);
     real t8 = sin(t3);
     real t9 = sin(t5);
@@ -674,7 +665,7 @@ void SingleMassPoint::lagrangeJacPPattern ( integer const i_phase, integer cols[
     real t22 =  ( t21 *  t21);
     real t25 = 1 + t18 * (t20 + t22);
     real t26 = t25 * __lambda_0;
-    real t29 = t4 * t9 - t8 * t6;
+    real t29 = -t4 * t9 + t8 * t6;
     real t30 =  t26 * t29;
     __hess_xu_xu[0] = t16 * t30;
     real t31 = t1 * t1;
@@ -725,7 +716,6 @@ void SingleMassPoint::lagrangeJacPPattern ( integer const i_phase, integer cols[
     __hess_axu_axu[0] = -0.2e1 * t61 * t44 *  t18 *  __lambda_0;
     __hess_axu_axu[1] = __hess_axu_axu[0];
 
-     return 0;
 }
 
 integer SingleMassPoint::lagrangeHessXuXuNnz ( integer const i_phase ) const {
@@ -891,7 +881,7 @@ return 0;
 //   |                       |_|                                   |
 //   +-------------------------------------------------------------+
 
-integer SingleMassPoint::foEqns ( integer const i_phase,
+void SingleMassPoint::foEqns ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -899,35 +889,36 @@ integer SingleMassPoint::foEqns ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
         real t2 = __states_controls[2];
-    real t4 = __states_controls[1];
+    real t4 = __states_controls[3];
     real t5 = cos(t4);
-    real t6 = __states_controls[3];
+    real t6 = __states_controls[1];
     real t7 = cos(t6);
     real t8 = t5 * t7;
     real t9 = sin(t4);
     real t10 = sin(t6);
-    real t12 = t9 * t10 + t8;
+    real t11 = t9 * t10;
+    real t12 = t8 + t11;
     real t14 = _p_RoadCurvature->funcEval(__zeta);
     real t16 = __states_controls[0] * t14 - 0.1e1;
     real t17 = 0.1e1 / t16;
     real t18 = t12 * t17;
-    __values[0] = -__state_control_derivatives[0] * t2 * t18 + t2 * (t5 * t10 - t9 * t7);
-    real t36 = __algebraic_states_controls[1] * _model_params[MOD_PAR_INDEX_Omega_max];
-    __values[1] = -__state_control_derivatives[1] * t2 * t18 - (t9 * t2 * t10 * t14 + t5 * t2 * t7 * t14 + t36 * t16) * t17;
-    real t40 = t2 * t2;
-    real t42 = t7 * t7;
-    real t44 = t8 * t10 - t9 * t42 + t9;
-    real t46 = __state_control_derivatives[3];
-    real t48 = t7 * t2;
-    real t49 = __state_control_derivatives[2];
-    real t59 = _model_params[MOD_PAR_INDEX_g];
-    __values[2] = (t40 * t44 * t46 - t48 * t12 * t49 - t16 * (-t36 * t2 * t10 + __algebraic_states_controls[0] * _model_params[MOD_PAR_INDEX_Fx_max] * t59)) * t17;
-    __values[3] = (t2 * t44 * t49 + t7 * t40 * t12 * t46 - t16 * (_model_params[MOD_PAR_INDEX_Klambda] * t6 * t59 - t36 * t48)) * t17;
+    __values[0] = -__state_control_derivatives[0] * t2 * t18 - t2 * (t5 * t10 - t9 * t7);
+    real t33 = _model_params[MOD_PAR_INDEX_Omega_max];
+    real t34 = __algebraic_states_controls[1];
+    real t35 = t33 * t34;
+    __values[1] = -__state_control_derivatives[1] * t2 * t18 - (t14 * t5 * t2 * t7 + t14 * t2 * t11 + t35 * t16) * t17;
+    real t39 = t2 * t2;
+    real t41 = t5 * t5;
+    real t43 = -t10 * t41 + t8 * t9 + t10;
+    real t45 = __state_control_derivatives[3];
+    real t48 = __state_control_derivatives[2];
+    real t58 = _model_params[MOD_PAR_INDEX_g];
+    __values[2] = (t39 * t43 * t45 - t5 * t2 * t12 * t48 - t16 * (-t35 * t2 * t9 + __algebraic_states_controls[0] * _model_params[MOD_PAR_INDEX_Fx_max] * t58)) * t17;
+    __values[3] = (t2 * t43 * t48 + t5 * t39 * t12 * t45 - t16 * (-t5 * t34 * t33 * t2 + _model_params[MOD_PAR_INDEX_Klambda] * t4 * t58)) * t17;
 
-    return 0;
 }
 
-integer SingleMassPoint::foEqnsJac (integer const i_phase,
+void SingleMassPoint::foEqnsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -940,9 +931,9 @@ integer SingleMassPoint::foEqnsJac (integer const i_phase,
         real t1 = __state_control_derivatives[0];
     real t2 = __states_controls[2];
     real t3 = t1 * t2;
-    real t4 = __states_controls[1];
+    real t4 = __states_controls[3];
     real t5 = cos(t4);
-    real t6 = __states_controls[3];
+    real t6 = __states_controls[1];
     real t7 = cos(t6);
     real t8 = t5 * t7;
     real t9 = sin(t4);
@@ -961,72 +952,69 @@ integer SingleMassPoint::foEqnsJac (integer const i_phase,
     real t26 = __algebraic_states_controls[1];
     real t27 = t25 * t26;
     real t28 = 0.1e1 / t16;
-    real t31 = t5 * t2;
-    real t32 = t7 * t14;
-    real t34 = t9 * t2;
-    real t35 = t10 * t14;
-    __jac_xu[1] = t22 * t20 - t27 * t14 * t28 + (t27 * t16 + t31 * t32 + t34 * t35) * t18 * t14;
-    real t41 = t2 * t10;
-    real t42 = t27 * t41;
-    real t45 = _model_params[MOD_PAR_INDEX_Fx_max];
-    real t48 = _model_params[MOD_PAR_INDEX_g];
-    real t50 = __algebraic_states_controls[0] * t45 * t48 - t42;
-    real t53 = t2 * t2;
-    real t55 = t7 * t7;
-    real t57 = t8 * t10 - t9 * t55 + t9;
-    real t58 = t53 * t57;
-    real t59 = __state_control_derivatives[3];
-    real t61 = t7 * t2;
-    real t62 = __state_control_derivatives[2];
-    real t63 = t12 * t62;
-    __jac_xu[2] = -t14 * t50 * t28 - (-t16 * t50 + t58 * t59 - t61 * t63) * t18 * t14;
-    real t71 = _model_params[MOD_PAR_INDEX_Klambda];
-    real t74 = t71 * t6 * t48 - t27 * t61;
-    real t77 = t2 * t57;
-    real t79 = t7 * t53;
-    real t80 = t12 * t59;
-    __jac_xu[3] = -t14 * t74 * t28 - (-t16 * t74 + t77 * t62 + t79 * t80) * t18 * t14;
-    real t86 = t9 * t7;
+    real t31 = t14 * t5;
+    real t34 = t14 * t2;
+    __jac_xu[1] = t22 * t20 - t27 * t14 * t28 + (t31 * t2 * t7 + t34 * t11 + t27 * t16) * t18 * t14;
+    real t40 = t2 * t9;
+    real t41 = t27 * t40;
+    real t44 = _model_params[MOD_PAR_INDEX_Fx_max];
+    real t47 = _model_params[MOD_PAR_INDEX_g];
+    real t49 = __algebraic_states_controls[0] * t44 * t47 - t41;
+    real t52 = t2 * t2;
+    real t54 = t5 * t5;
+    real t56 = -t10 * t54 + t8 * t9 + t10;
+    real t57 = t52 * t56;
+    real t58 = __state_control_derivatives[3];
+    real t60 = t5 * t2;
+    real t61 = __state_control_derivatives[2];
+    real t62 = t12 * t61;
+    __jac_xu[2] = -t14 * t49 * t28 - (-t16 * t49 + t57 * t58 - t60 * t62) * t18 * t14;
+    real t69 = t25 * t2;
+    real t72 = _model_params[MOD_PAR_INDEX_Klambda];
+    real t75 = -t5 * t26 * t69 + t72 * t4 * t47;
+    real t78 = t2 * t56;
+    real t80 = t5 * t52;
+    real t81 = t12 * t58;
+    __jac_xu[3] = -t14 * t75 * t28 - (-t16 * t75 + t78 * t61 + t80 * t81) * t18 * t14;
     real t87 = t5 * t10;
-    real t88 = -t86 + t87;
-    real t89 = t88 * t28;
-    __jac_xu[4] = -t2 * t12 - t3 * t89;
-    real t96 = t31 * t35 - t34 * t32;
-    __jac_xu[5] = -t22 * t89 - t96 * t28;
-    real t98 = t86 * t10;
-    real t99 = t5 * t55;
-    real t100 = -t98 - t99 + t5;
-    __jac_xu[6] = (t53 * t100 * t59 - t61 * t88 * t62) * t28;
-    __jac_xu[7] = (t2 * t100 * t62 + t79 * t88 * t59) * t28;
-    __jac_xu[8] = -t1 * t12 * t28 - t86 + t87;
-    __jac_xu[9] = -t21 * t12 * t28 - (t11 * t14 + t8 * t14) * t28;
-    real t123 = t16 * t26;
-    __jac_xu[10] = (t123 * t25 * t10 - t7 * t12 * t62 + 0.2e1 * t77 * t59) * t28;
-    __jac_xu[11] = (t123 * t25 * t7 + t57 * t62 + 0.2e1 * t61 * t80) * t28;
-    real t133 = -t88;
-    real t134 = t133 * t28;
-    real t136 = t2 * t12;
-    __jac_xu[12] = -t3 * t134 + t136;
-    __jac_xu[13] = -t22 * t134 + t96 * t28;
-    real t140 = t10 * t10;
-    real t143 = -t5 * t140 + 0.2e1 * t98 + t99;
-    real t149 = t25 * t2;
-    real t150 = t149 * t7;
-    __jac_xu[14] = (-t61 * t133 * t62 + t53 * t143 * t59 + t123 * t150 + t41 * t63) * t28;
-    __jac_xu[15] = (t2 * t143 * t62 - t10 * t53 * t80 + t79 * t133 * t59 - t16 * (t71 * t48 + t42)) * t28;
-    __jac_dxu[0] = -t136 * t28;
+    real t88 = t9 * t7;
+    real t89 = -t87 + t88;
+    real t90 = t89 * t28;
+    real t92 = t2 * t12;
+    __jac_xu[4] = -t3 * t90 - t92;
+    real t97 = -t31 * t2 * t10 + t34 * t88;
+    __jac_xu[5] = -t22 * t90 - t97 * t28;
+    real t99 = t87 * t9;
+    real t100 = t7 * t54;
+    real t101 = -t99 - t100 + t7;
+    __jac_xu[6] = (t52 * t101 * t58 - t60 * t89 * t61) * t28;
+    __jac_xu[7] = (t2 * t101 * t61 + t80 * t89 * t58) * t28;
+    __jac_xu[8] = -t1 * t12 * t28 - t87 + t88;
+    __jac_xu[9] = -t21 * t12 * t28 - (t14 * t9 * t10 + t31 * t7) * t28;
+    real t125 = t16 * t26;
+    __jac_xu[10] = (-t5 * t12 * t61 + t125 * t25 * t9 + 0.2e1 * t78 * t58) * t28;
+    __jac_xu[11] = (t16 * t5 * t27 + t56 * t61 + 0.2e1 * t60 * t81) * t28;
+    real t135 = -t89;
+    real t136 = t135 * t28;
+    __jac_xu[12] = t2 * t12 - t3 * t136;
+    __jac_xu[13] = -t22 * t136 + t97 * t28;
+    real t143 = t9 * t9;
+    real t146 = -t143 * t7 + t100 + 0.2e1 * t99;
+    real t153 = t5 * t25 * t2;
+    __jac_xu[14] = (-t60 * t135 * t61 + t52 * t146 * t58 + t125 * t153 + t40 * t62) * t28;
+    __jac_xu[15] = (t2 * t146 * t61 - t9 * t52 * t81 + t80 * t135 * t58 - t16 * (t72 * t47 + t41)) * t28;
+    __jac_dxu[0] = -t92 * t28;
     __jac_dxu[1] = __jac_dxu[0];
-    real t164 = t12 * t28;
-    __jac_dxu[2] = -t61 * t164;
-    __jac_dxu[3] = t77 * t28;
-    __jac_dxu[4] = t58 * t28;
-    __jac_dxu[5] = t79 * t164;
-    __jac_axu[0] = -t45 * t48;
+    real t167 = t12 * t28;
+    __jac_dxu[2] = -t60 * t167;
+    __jac_dxu[3] = t78 * t28;
+    __jac_dxu[4] = t57 * t28;
+    __jac_dxu[5] = t80 * t167;
+    __jac_axu[0] = -t44 * t47;
     __jac_axu[1] = -t25;
-    __jac_axu[2] = t149 * t10;
-    __jac_axu[3] = t150;
+    __jac_axu[2] = t69 * t9;
+    __jac_axu[3] = t153;
 
-    return 0;
 }
 
 integer SingleMassPoint::foEqnsJacXuNnz ( integer const i_phase ) const {
@@ -1119,7 +1107,7 @@ void SingleMassPoint::foEqnsJacPPattern ( integer const i_phase, integer rows[],
 
 }
 
-integer SingleMassPoint::foEqnsHess(integer const i_phase,
+void SingleMassPoint::foEqnsHess(integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -1139,33 +1127,32 @@ integer SingleMassPoint::foEqnsHess(integer const i_phase,
         real t1 = __lambda[3];
     real t2 = _p_RoadCurvature->funcEval(__zeta);
     real t3 = t2 * t2;
-    real t5 = __algebraic_states_controls[1];
-    real t7 = _model_params[MOD_PAR_INDEX_Omega_max];
-    real t8 = t5 * t7;
-    real t9 = __states_controls[2];
-    real t10 = __states_controls[3];
-    real t11 = cos(t10);
-    real t12 = t9 * t11;
+    real t5 = __states_controls[3];
+    real t6 = cos(t5);
+    real t7 = __algebraic_states_controls[1];
+    real t10 = _model_params[MOD_PAR_INDEX_Omega_max];
+    real t11 = __states_controls[2];
+    real t12 = t10 * t11;
     real t15 = _model_params[MOD_PAR_INDEX_Klambda];
     real t18 = _model_params[MOD_PAR_INDEX_g];
-    real t20 = t15 * t10 * t18 - t8 * t12;
+    real t20 = -t6 * t7 * t12 + t15 * t5 * t18;
     real t23 = __states_controls[0] * t2 - 0.1e1;
     real t24 = t23 * t23;
     real t25 = 0.1e1 / t24;
     real t29 = __states_controls[1];
     real t30 = cos(t29);
-    real t31 = t30 * t11;
-    real t32 = sin(t10);
+    real t31 = t6 * t30;
+    real t32 = sin(t5);
     real t33 = t31 * t32;
     real t34 = sin(t29);
-    real t35 = t11 * t11;
+    real t35 = t6 * t6;
     real t36 = t34 * t35;
     real t37 = t33 - t36 + t34;
-    real t38 = t9 * t37;
+    real t38 = t11 * t37;
     real t39 = __state_control_derivatives[2];
-    real t41 = t9 * t9;
-    real t42 = t11 * t41;
-    real t43 = t34 * t32;
+    real t41 = t11 * t11;
+    real t42 = t6 * t41;
+    real t43 = t32 * t34;
     real t44 = t31 + t43;
     real t45 = __state_control_derivatives[3];
     real t46 = t44 * t45;
@@ -1173,123 +1160,121 @@ integer SingleMassPoint::foEqnsHess(integer const i_phase,
     real t52 = 0.1e1 / t24 / t23;
     real t53 = t52 * t3;
     real t56 = __lambda[2];
-    real t58 = t9 * t32;
-    real t59 = t8 * t58;
-    real t65 = __algebraic_states_controls[0] * _model_params[MOD_PAR_INDEX_Fx_max] * t18 - t59;
-    real t71 = t44 * t39;
-    real t72 = t12 * t71;
-    real t78 = __lambda[1];
-    real t79 = __state_control_derivatives[1];
-    real t80 = t79 * t9;
-    real t82 = t44 * t52 * t3;
-    real t86 = t30 * t9;
-    real t87 = t11 * t2;
-    real t88 = t86 * t87;
-    real t89 = t34 * t9;
-    real t90 = t32 * t2;
-    real t91 = t89 * t90;
-    real t99 = __lambda[0];
-    real t100 = __state_control_derivatives[0];
-    real t101 = t99 * t100;
-    real t102 = t101 * t9;
-    __hess_xu_xu[0] = 0.2e1 * t1 * t3 * t20 * t25 + 0.2e1 * t1 * (-t23 * t20 + t38 * t39 + t47) * t53 + 0.2e1 * t56 * t3 * t65 * t25 + 0.2e1 * t56 * (t41 * t37 * t45 - t23 * t65 - t72) * t53 + t78 * (-0.2e1 * t80 * t82 + 0.2e1 * t8 * t3 * t25 - 0.2e1 * (t8 * t23 + t88 + t91) * t52 * t3) - 0.2e1 * t102 * t82;
-    real t105 = t34 * t11;
-    real t106 = t105 * t32;
-    real t107 = t30 * t35;
-    real t108 = -t106 - t107 + t30;
-    real t109 = t9 * t108;
-    real t111 = t30 * t32;
-    real t112 = -t105 + t111;
-    real t113 = t112 * t45;
-    real t117 = t25 * t2;
-    real t121 = t112 * t39;
-    real t127 = t112 * t25 * t2;
-    real t131 = t86 * t90 - t89 * t87;
-    __hess_xu_xu[1] = -t1 * (t109 * t39 + t42 * t113) * t117 - t56 * (t41 * t108 * t45 - t12 * t121) * t117 + t78 * (t131 * t25 * t2 + t80 * t127) + t102 * t127;
-    real t137 = t1 * t2;
-    real t139 = t7 * t11;
-    real t140 = 0.1e1 / t23;
-    real t146 = t23 * t5;
-    real t147 = t146 * t139;
-    real t152 = t56 * t2 * t5;
-    real t153 = t7 * t32;
-    real t160 = t146 * t153;
-    real t174 = t44 * t25 * t2;
-    __hess_xu_xu[2] = t137 * t5 * t139 * t140 - t1 * (0.2e1 * t12 * t46 + t37 * t39 + t147) * t117 + t152 * t153 * t140 - t56 * (-t11 * t44 * t39 + 0.2e1 * t38 * t45 + t160) * t117 + t78 * (t79 * t44 * t117 + (t31 * t2 + t43 * t2) * t25 * t2) + t101 * t174;
-    real t177 = t15 * t18 + t59;
-    real t180 = t32 * t32;
-    real t183 = -t30 * t180 + 0.2e1 * t106 + t107;
-    real t184 = t9 * t183;
-    real t186 = t32 * t41;
-    real t188 = -t112;
-    real t189 = t188 * t45;
-    real t195 = t7 * t9;
-    real t202 = t188 * t39;
-    real t205 = t146 * t195 * t11;
-    real t210 = t188 * t25 * t2;
-    __hess_xu_xu[3] = -t137 * t177 * t140 - t1 * (-t23 * t177 + t184 * t39 - t186 * t46 + t42 * t189) * t117 + t152 * t195 * t11 * t140 - t56 * (t41 * t183 * t45 - t12 * t202 + t58 * t71 + t205) * t117 + t78 * (-t131 * t25 * t2 + t80 * t210) + t102 * t210;
+    real t58 = t7 * t10;
+    real t59 = t11 * t32;
+    real t60 = t58 * t59;
+    real t66 = __algebraic_states_controls[0] * _model_params[MOD_PAR_INDEX_Fx_max] * t18 - t60;
+    real t72 = t6 * t11;
+    real t73 = t44 * t39;
+    real t74 = t72 * t73;
+    real t80 = __lambda[1];
+    real t81 = __state_control_derivatives[1];
+    real t82 = t81 * t11;
+    real t84 = t44 * t52 * t3;
+    real t88 = t2 * t6;
+    real t90 = t88 * t11 * t30;
+    real t91 = t2 * t11;
+    real t92 = t91 * t43;
+    real t100 = __lambda[0];
+    real t101 = __state_control_derivatives[0];
+    real t102 = t100 * t101;
+    real t103 = t102 * t11;
+    __hess_xu_xu[0] = 0.2e1 * t1 * t3 * t20 * t25 + 0.2e1 * t1 * (-t23 * t20 + t38 * t39 + t47) * t53 + 0.2e1 * t56 * t3 * t66 * t25 + 0.2e1 * t56 * (t41 * t37 * t45 - t23 * t66 - t74) * t53 + t80 * (-0.2e1 * t82 * t84 + 0.2e1 * t58 * t3 * t25 - 0.2e1 * (t58 * t23 + t90 + t92) * t52 * t3) - 0.2e1 * t103 * t84;
+    real t106 = t6 * t34;
+    real t107 = t106 * t32;
+    real t108 = t30 * t35;
+    real t109 = -t107 - t108 + t30;
+    real t110 = t11 * t109;
+    real t112 = t32 * t30;
+    real t113 = -t106 + t112;
+    real t114 = t113 * t45;
+    real t118 = t25 * t2;
+    real t122 = t113 * t39;
+    real t128 = t113 * t25 * t2;
+    real t133 = -t88 * t11 * t34 + t91 * t112;
+    __hess_xu_xu[1] = -t1 * (t110 * t39 + t42 * t114) * t118 - t56 * (t41 * t109 * t45 - t72 * t122) * t118 + t80 * (t133 * t25 * t2 + t82 * t128) + t103 * t128;
+    real t139 = t1 * t2;
+    real t141 = 0.1e1 / t23;
+    real t148 = t23 * t6 * t58;
+    real t152 = t56 * t2;
+    real t154 = t10 * t32;
+    real t161 = t23 * t7;
+    real t162 = t161 * t154;
+    real t169 = t2 * t32;
+    real t177 = t44 * t25 * t2;
+    __hess_xu_xu[2] = t139 * t6 * t58 * t141 - t1 * (t37 * t39 + 0.2e1 * t72 * t46 + t148) * t118 + t152 * t7 * t154 * t141 - t56 * (-t6 * t44 * t39 + 0.2e1 * t38 * t45 + t162) * t118 + t80 * (t81 * t44 * t118 + (t169 * t34 + t88 * t30) * t25 * t2) + t102 * t177;
+    real t180 = t15 * t18 + t60;
+    real t183 = t32 * t32;
+    real t186 = -t183 * t30 + 0.2e1 * t107 + t108;
+    real t187 = t11 * t186;
+    real t189 = t32 * t41;
+    real t191 = -t113;
+    real t192 = t191 * t45;
+    real t205 = t191 * t39;
+    real t208 = t161 * t12 * t6;
+    real t213 = t191 * t25 * t2;
+    __hess_xu_xu[3] = -t139 * t180 * t141 - t1 * (-t23 * t180 + t187 * t39 - t189 * t46 + t42 * t192) * t118 + t152 * t6 * t58 * t11 * t141 - t56 * (t41 * t186 * t45 - t72 * t205 + t59 * t73 + t208) * t118 + t80 * (-t133 * t25 * t2 + t82 * t213) + t103 * t213;
     __hess_xu_xu[4] = __hess_xu_xu[1];
-    real t218 = -t37;
-    real t221 = -t44;
-    real t223 = t42 * t221 * t45;
-    real t230 = t12 * t221 * t39;
-    real t234 = t221 * t140;
-    real t236 = -t88 - t91;
-    real t239 = t78 * (-t236 * t140 - t80 * t234);
-    real t240 = t100 * t9;
-    real t242 = t9 * t188;
-    real t244 = t99 * (-t240 * t234 + t242);
-    __hess_xu_xu[5] = t1 * (t9 * t218 * t39 + t223) * t140 + t56 * (t41 * t218 * t45 - t230) * t140 + t239 + t244;
-    real t262 = -t105 * t2 + t111 * t2;
-    __hess_xu_xu[6] = t1 * (t108 * t39 + 0.2e1 * t12 * t113) * t140 + t56 * (-t11 * t112 * t39 + 0.2e1 * t109 * t45) * t140 + t78 * (-t79 * t112 * t140 - t262 * t140) + t99 * (-t100 * t112 * t140 - t31 - t43);
-    real t270 = t34 * t180;
-    real t272 = t270 - t36 + 0.2e1 * t33;
-    real t285 = t44 * t140;
-    real t292 = t9 * t112;
-    __hess_xu_xu[7] = t1 * (t9 * t272 * t39 - t186 * t113 + t47) * t140 + t56 * (t41 * t272 * t45 + t58 * t121 - t72) * t140 + t78 * (t236 * t140 - t80 * t285) + t99 * (-t240 * t285 + t292);
+    real t221 = -t37;
+    real t224 = -t44;
+    real t226 = t42 * t224 * t45;
+    real t233 = t72 * t224 * t39;
+    real t237 = t224 * t141;
+    real t239 = -t90 - t92;
+    real t242 = t80 * (-t239 * t141 - t82 * t237);
+    real t243 = t101 * t11;
+    real t245 = t11 * t113;
+    real t247 = t100 * (-t243 * t237 - t245);
+    __hess_xu_xu[5] = t1 * (t11 * t221 * t39 + t226) * t141 + t56 * (t41 * t221 * t45 - t233) * t141 + t242 + t247;
+    real t265 = t169 * t30 - t88 * t34;
+    __hess_xu_xu[6] = t1 * (t109 * t39 + 0.2e1 * t72 * t114) * t141 + t56 * (-t6 * t113 * t39 + 0.2e1 * t110 * t45) * t141 + t80 * (-t81 * t113 * t141 - t265 * t141) + t100 * (-t101 * t113 * t141 - t31 - t43);
+    real t273 = t34 * t183;
+    real t275 = t273 - t36 + 0.2e1 * t33;
+    real t288 = t44 * t141;
+    real t295 = t11 * t191;
+    __hess_xu_xu[7] = t1 * (t11 * t275 * t39 - t189 * t114 + t47) * t141 + t56 * (t41 * t275 * t45 + t59 * t122 - t74) * t141 + t80 * (t239 * t141 - t82 * t288) + t100 * (-t243 * t288 - t295);
     __hess_xu_xu[8] = __hess_xu_xu[2];
     __hess_xu_xu[9] = __hess_xu_xu[6];
-    real t295 = t1 * t11;
-    __hess_xu_xu[10] = 0.2e1 * t56 * t37 * t45 * t140 + 0.2e1 * t295 * t46 * t140;
-    __hess_xu_xu[11] = t1 * (0.2e1 * t12 * t189 + t183 * t39 - 0.2e1 * t58 * t46 - t160) * t140 + t56 * (-t11 * t188 * t39 + t32 * t44 * t39 + 0.2e1 * t184 * t45 + t147) * t140 + t78 * (-t79 * t188 * t140 + t262 * t140) + t99 * (-t100 * t188 * t140 + t31 + t43);
+    real t298 = t1 * t6;
+    __hess_xu_xu[10] = 0.2e1 * t56 * t37 * t45 * t141 + 0.2e1 * t298 * t46 * t141;
+    __hess_xu_xu[11] = t1 * (t186 * t39 + 0.2e1 * t72 * t192 - 0.2e1 * t59 * t46 - t162) * t141 + t56 * (-t6 * t191 * t39 + t32 * t44 * t39 + 0.2e1 * t187 * t45 + t148) * t141 + t80 * (-t81 * t191 * t141 + t265 * t141) + t100 * (-t101 * t191 * t141 + t31 + t43);
     __hess_xu_xu[12] = __hess_xu_xu[3];
     __hess_xu_xu[13] = __hess_xu_xu[7];
     __hess_xu_xu[14] = __hess_xu_xu[11];
-    real t332 = -0.4e1 * t33 - 0.2e1 * t270 + 0.2e1 * t36;
-    __hess_xu_xu[15] = t1 * (t9 * t332 * t39 - 0.2e1 * t186 * t189 - t205 + t223 - t47) * t140 + t56 * (-t146 * t195 * t32 + t41 * t332 * t45 + 0.2e1 * t58 * t202 - t230 + t72) * t140 + t239 + t244;
-    real t349 = t99 * t9;
-    __hess_xu_dxu[0] = t349 * t174;
-    real t350 = t78 * t9;
-    __hess_xu_dxu[1] = t350 * t174;
-    real t351 = t1 * t9;
-    real t353 = t37 * t25 * t2;
-    real t355 = t56 * t11;
-    __hess_xu_dxu[2] = t355 * t9 * t174 - t351 * t353;
-    real t360 = t56 * t41;
-    __hess_xu_dxu[3] = -t295 * t41 * t174 - t360 * t353;
-    real t362 = t112 * t140;
-    __hess_xu_dxu[4] = -t349 * t362;
-    __hess_xu_dxu[5] = -t350 * t362;
-    real t365 = t108 * t140;
-    __hess_xu_dxu[6] = -t355 * t292 * t140 + t351 * t365;
-    __hess_xu_dxu[7] = t295 * t41 * t112 * t140 + t360 * t365;
-    __hess_xu_dxu[8] = -t99 * t44 * t140;
-    __hess_xu_dxu[9] = -t78 * t44 * t140;
-    __hess_xu_dxu[10] = t1 * t37 * t140 - t355 * t285;
-    real t381 = t9 * t44 * t140;
-    __hess_xu_dxu[11] = 0.2e1 * t56 * t9 * t37 * t140 + 0.2e1 * t295 * t381;
-    real t387 = t188 * t140;
-    __hess_xu_dxu[12] = -t349 * t387;
-    __hess_xu_dxu[13] = -t350 * t387;
-    real t390 = t183 * t140;
-    __hess_xu_dxu[14] = -t355 * t242 * t140 + t56 * t32 * t381 + t351 * t390;
-    __hess_xu_dxu[15] = -t1 * t32 * t41 * t44 * t140 + t295 * t41 * t188 * t140 + t360 * t390;
-    real t404 = t1 * t7;
-    real t406 = t56 * t7;
-    __hess_xu_axu[0] = t404 * t11 + t406 * t32;
-    __hess_xu_axu[1] = t406 * t12 - t404 * t58;
+    real t335 = -0.4e1 * t33 - 0.2e1 * t273 + 0.2e1 * t36;
+    __hess_xu_xu[15] = t1 * (t11 * t335 * t39 - 0.2e1 * t189 * t192 - t208 + t226 - t47) * t141 + t56 * (-t23 * t32 * t58 * t11 + t41 * t335 * t45 + 0.2e1 * t59 * t205 - t233 + t74) * t141 + t242 + t247;
+    real t353 = t100 * t11;
+    __hess_xu_dxu[0] = t353 * t177;
+    real t354 = t80 * t11;
+    __hess_xu_dxu[1] = t354 * t177;
+    real t355 = t1 * t11;
+    real t357 = t37 * t25 * t2;
+    real t359 = t56 * t6;
+    __hess_xu_dxu[2] = t359 * t11 * t177 - t355 * t357;
+    real t364 = t56 * t41;
+    __hess_xu_dxu[3] = -t298 * t41 * t177 - t364 * t357;
+    real t366 = t113 * t141;
+    __hess_xu_dxu[4] = -t353 * t366;
+    __hess_xu_dxu[5] = -t354 * t366;
+    real t369 = t109 * t141;
+    __hess_xu_dxu[6] = -t359 * t245 * t141 + t355 * t369;
+    __hess_xu_dxu[7] = t298 * t41 * t113 * t141 + t364 * t369;
+    __hess_xu_dxu[8] = -t100 * t44 * t141;
+    __hess_xu_dxu[9] = -t80 * t44 * t141;
+    __hess_xu_dxu[10] = t1 * t37 * t141 - t359 * t288;
+    real t385 = t11 * t44 * t141;
+    __hess_xu_dxu[11] = 0.2e1 * t56 * t11 * t37 * t141 + 0.2e1 * t298 * t385;
+    real t391 = t191 * t141;
+    __hess_xu_dxu[12] = -t353 * t391;
+    __hess_xu_dxu[13] = -t354 * t391;
+    real t394 = t186 * t141;
+    __hess_xu_dxu[14] = -t359 * t295 * t141 + t56 * t32 * t385 + t355 * t394;
+    real t400 = t1 * t32;
+    __hess_xu_dxu[15] = t298 * t41 * t191 * t141 - t400 * t41 * t44 * t141 + t364 * t394;
+    real t409 = t56 * t10;
+    __hess_xu_axu[0] = t298 * t10 + t409 * t32;
+    __hess_xu_axu[1] = -t400 * t12 + t409 * t72;
 
-    return 0;
 }
 
 integer SingleMassPoint::foEqnsHessXuXuNnz ( integer const i_phase ) const {
@@ -1473,7 +1458,7 @@ void SingleMassPoint::foEqnsHessPPPattern ( integer const i_phase, integer rows[
 // |                                                                       |
 // +-----------------------------------------------------------------------+
 
-integer SingleMassPoint::pathConstraints ( integer const i_phase,
+void SingleMassPoint::pathConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1494,10 +1479,9 @@ integer SingleMassPoint::pathConstraints ( integer const i_phase,
     real t35 = pow(_model_params[MOD_PAR_INDEX_DY], 0.2e1);
     __values[1] = t23 / t26 + t32 / t35;
 
-    return 0;
 }
 
-integer SingleMassPoint::pathConstraintsJac (integer const i_phase,
+void SingleMassPoint::pathConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1527,7 +1511,6 @@ integer SingleMassPoint::pathConstraintsJac (integer const i_phase,
     __jac_axu[1] = 0.2e1 * t24 * t3 * t11 - 0.2e1 * t34 * t3 * t17;
     __jac_p[0] = -0.2e1 * t34 * t19 + 0.2e1 * t24 * t29;
 
-    return 0;
 }
 
 integer SingleMassPoint::pathConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1578,7 +1561,7 @@ void SingleMassPoint::pathConstraintsJacPPattern ( integer const i_phase, intege
 
 }
 
-integer SingleMassPoint::pathConstraintsHess(integer const i_phase,
+void SingleMassPoint::pathConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1632,7 +1615,6 @@ integer SingleMassPoint::pathConstraintsHess(integer const i_phase,
     real t82 = t57 * t57;
     __hess_p_p[0] = t1 * (0.2e1 * t79 * t12 + 0.2e1 * t82 * t20 - 0.2e1 * t60 * t49 + 0.2e1 * t55 * t57);
 
-    return 0;
 }
 integer SingleMassPoint::pathConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 1;
@@ -1757,16 +1739,15 @@ void SingleMassPoint::pathConstraintsHessPPPattern ( integer const i_phase, inte
 // +----------------------------------------------------------------------------+
 
 
-integer SingleMassPoint::pointConstraints ( integer const i_phase,
+void SingleMassPoint::pointConstraints ( integer const i_phase,
                      real    const __states_controls[],
                      real    const __parameters[],
                      real          __zeta,
                      real          __values[] ) const {
     
-    return 0;
 }
 
-integer SingleMassPoint::pointConstraintsJac (integer const i_phase,
+void SingleMassPoint::pointConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __parameters[],
                           real       __zeta,
@@ -1774,7 +1755,6 @@ integer SingleMassPoint::pointConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer SingleMassPoint::pointConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1799,7 +1779,7 @@ void SingleMassPoint::pointConstraintsJacPPattern ( integer const i_phase, integ
 
 }
 
-integer SingleMassPoint::pointConstraintsHess (integer const i_phase,
+void SingleMassPoint::pointConstraintsHess (integer const i_phase,
                                  real    const __states_controls[],
                                  real    const __parameters[],
                                  real          __zeta,
@@ -1809,7 +1789,6 @@ integer SingleMassPoint::pointConstraintsHess (integer const i_phase,
                                  real          __hess_p_p[] ) const {
         
 
-    return 0;
  }
 integer SingleMassPoint::pointConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1853,7 +1832,7 @@ void SingleMassPoint::pointConstraintsHessPPPattern ( integer const i_phase, int
 // |                  |___/                                                                  |
 // +-----------------------------------------------------------------------------------------+
 
-integer SingleMassPoint::intConstraints ( integer const i_phase,
+void SingleMassPoint::intConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1861,10 +1840,9 @@ integer SingleMassPoint::intConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer SingleMassPoint::intConstraintsJac (integer const i_phase,
+void SingleMassPoint::intConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1876,7 +1854,6 @@ integer SingleMassPoint::intConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer SingleMassPoint::intConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1923,7 +1900,7 @@ void SingleMassPoint::intConstraintsJacPPattern ( integer const i_phase, integer
 
 }
 
-integer SingleMassPoint::intConstraintsHess(integer const i_phase,
+void SingleMassPoint::intConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1942,7 +1919,6 @@ integer SingleMassPoint::intConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer SingleMassPoint::intConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -2063,7 +2039,7 @@ void SingleMassPoint::intConstraintsHessPPPattern ( integer const i_phase, integ
 //   |                                           |___/                                                  |
 //   +--------------------------------------------------------------------------------------------------+
 
-integer SingleMassPoint::boundaryConditions ( integer const i_phase,
+void SingleMassPoint::boundaryConditions ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
@@ -2076,10 +2052,9 @@ integer SingleMassPoint::boundaryConditions ( integer const i_phase,
     __values[3] = __initial_state_control[3];
     __values[4] = __final_state_control[2];
 
-    return 0;
 }
 
-integer SingleMassPoint::boundaryConditionsJac ( integer const i_phase,
+void SingleMassPoint::boundaryConditionsJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -2094,7 +2069,6 @@ integer SingleMassPoint::boundaryConditionsJac ( integer const i_phase,
     __jac_xu_init[3] = 1;
     __jac_xu_fin[0] = 1;
 
-    return 0;
 }
 
 integer SingleMassPoint::boundaryConditionsJacXuInitNnz ( integer const i_phase ) const {
@@ -2136,7 +2110,7 @@ void SingleMassPoint::boundaryConditionsJacPPattern ( integer const i_phase, int
 
 }
 
-integer SingleMassPoint::boundaryConditionsHess ( integer const i_phase,
+void SingleMassPoint::boundaryConditionsHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -2151,7 +2125,6 @@ integer SingleMassPoint::boundaryConditionsHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer SingleMassPoint::boundaryConditionsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -2229,17 +2202,16 @@ void SingleMassPoint::boundaryConditionsHessPPPattern ( integer const i_phase, i
 // |                                                                                |
 // +--------------------------------------------------------------------------------+
 
-integer SingleMassPoint::eventConstraints ( integer const i_phase,
+void SingleMassPoint::eventConstraints ( integer const i_phase,
                       real const left_state_control[],
                       real const right_state_control[],
                       real const parameters[],
                       real const __zeta_l,
                       real const __zeta_r,
                       real       __values[] ) const {
-    return 0;
 }
 
-integer SingleMassPoint::eventConstraintsJac ( integer const i_phase,
+void SingleMassPoint::eventConstraintsJac ( integer const i_phase,
                              real const left_state_control[],
                              real const right_state_control[],
                              real const parameters[],
@@ -2248,7 +2220,6 @@ integer SingleMassPoint::eventConstraintsJac ( integer const i_phase,
                              real       __jac_xu_init[],
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
-    return 0;
 }
 
 integer SingleMassPoint::eventConstraintsJacXuInitNnz ( integer const i_phase ) const {
@@ -2278,7 +2249,7 @@ void SingleMassPoint::eventConstraintsJacPPattern ( integer const i_phase,
 
 }
 
-integer SingleMassPoint::eventConstraintsHess ( integer const i_phase,
+void SingleMassPoint::eventConstraintsHess ( integer const i_phase,
                                   real const left_state_control[],
                                   real const right_state_control[],
                                   real const parameters[],
@@ -2291,7 +2262,6 @@ integer SingleMassPoint::eventConstraintsHess ( integer const i_phase,
                                   real       __hess_xu_fin_xu_fin[],
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
-    return 0;
 }
 
 integer SingleMassPoint::eventConstraintsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -2399,9 +2369,9 @@ void SingleMassPoint::differentialPostProcessing(integer const i_phase,
                                                         real          __zeta,
                                                         real          __values[] ) const {
         real t2 = __states_controls[2];
-    real t4 = __states_controls[1];
+    real t4 = __states_controls[3];
     real t5 = cos(t4);
-    real t6 = __states_controls[3];
+    real t6 = __states_controls[1];
     real t7 = cos(t6);
     real t9 = sin(t4);
     real t10 = sin(t6);
@@ -2426,9 +2396,9 @@ void SingleMassPoint::integralPostProcessing(integer const i_phase,
                                                         real    const __parameters[],
                                                         real          __zeta,
                                                         real          __values[] ) const {
-        real t3 = __states_controls[1];
+        real t3 = __states_controls[3];
     real t4 = cos(t3);
-    real t5 = __states_controls[3];
+    real t5 = __states_controls[1];
     real t6 = cos(t5);
     real t8 = sin(t3);
     real t9 = sin(t5);

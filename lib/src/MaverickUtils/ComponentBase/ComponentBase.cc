@@ -105,7 +105,7 @@ namespace MaverickUtils {
 
   real ComponentBase::findValueParamWithPrefixAndName(string const &prefix, string const &name1, string const &name2,
                                                       GenericContainer const &gc) const {
-    real value;
+    real value = 0;  // init to zero just to suppress a gcc warning
     exception _exc;
     DoubledValue *_dv = 0;
 
@@ -127,7 +127,7 @@ namespace MaverickUtils {
       if (_dv == 0) _dv = new DoubledValue(dv);
     } catch (exception const &exc) { _exc = exc; }
 
-    if (foundFirst && foundSecond) // if the parameter is found with different names thorw exception
+    if (foundFirst && foundSecond) // if the parameter is found with different names throw exception
       throw runtime_error(
           _model + ": parameter of group '" + prefix + "' defined with both names: '" + name1 + "', and '" + name2 +
           "' in setup.\n");

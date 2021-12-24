@@ -46,7 +46,7 @@ namespace Maverick {
   }
 
   integer RK1MeshSinglePhase::getNumberOfDiscretisationPoints() const {
-    return (integer) _zeta.size();
+    return safeCastBetweenTypes<integer, size_t>(_zeta.size());
   }
 
   vec_1d_real const &RK1MeshSinglePhase::getDiscretisationPoints() const {
@@ -129,7 +129,7 @@ namespace Maverick {
 
     MAVERICK_ASSERT(are_zeta_points_declared || are_segments_declared,
                     "Mesh: either mesh points or segments must be supplied.\n")
-    MAVERICK_ASSERT(isVectorIncreasingValues(_zeta.data(), (integer) _zeta.size()),
+    MAVERICK_ASSERT(isVectorIncreasingValues(_zeta.data(), _zeta.size()),
                     "Mesh: non monotonically increasing indipendent coordinate.\n")
     MAVERICK_ASSERT(getNumberOfDiscretisationPoints() > 2, "Mesh: number of mesh points must be grater than two.\n")
   }
@@ -149,7 +149,7 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getZetaAtIndex(integer const mesh_point_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_point_index < _number_of_mesh_points,
+    MAVERICK_SKIPABLE_ASSERT(mesh_point_index < safeCastToInt(_number_of_mesh_points),
                              "RK1MeshSinglePhase::getZeta: number of mesh point " << mesh_point_index
                                                                                        << " greater than "
                                                                                        << _number_of_mesh_points - 1
@@ -158,7 +158,7 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getZetaLeft(integer const mesh_interval_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
+    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < safeCastToInt(_number_of_mesh_points) - 1,
                              "RK1MeshSinglePhase::getZetaLeft: number of mesh interval " << mesh_interval_index
                                                                                               << " greater than " <<
                                                                                               _number_of_mesh_points - 2
@@ -167,7 +167,7 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getZetaRight(integer const mesh_interval_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
+    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < safeCastToInt(_number_of_mesh_points) - 1,
                              "RK1MeshSinglePhase::getZetaRight: number of mesh interval " << mesh_interval_index
                                                                                                << " greater than " <<
                                                                                                _number_of_mesh_points -
@@ -176,7 +176,7 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getZetaAlpha(integer const mesh_interval_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
+    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < safeCastToInt(_number_of_mesh_points) - 1,
                              "RK1MeshSinglePhase::getZetaCenter: number of mesh interval " << mesh_interval_index
                                                                                                 << " greater than " <<
                                                                                                 _number_of_mesh_points -
@@ -185,7 +185,7 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getDz(integer const mesh_interval_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < _number_of_mesh_points - 1,
+    MAVERICK_SKIPABLE_ASSERT(mesh_interval_index < safeCastToInt(_number_of_mesh_points) - 1,
                              "RK1MeshSinglePhase::getDz: number of mesh interval " << mesh_interval_index
                                                                                         << " greater than "
                                                                                         << _number_of_mesh_points - 2
@@ -194,14 +194,14 @@ namespace Maverick {
   }
 
   real RK1MeshSinglePhase::getDzAverageAtIndex(integer const mesh_point_index) const {
-    MAVERICK_SKIPABLE_ASSERT(mesh_point_index < _number_of_mesh_points,
+    MAVERICK_SKIPABLE_ASSERT(mesh_point_index < safeCastToInt(_number_of_mesh_points),
                              "RK1MeshSinglePhase::getDzDual: number of mesh point " << mesh_point_index
                                                                                          << " greater than "
                                                                                          << _number_of_mesh_points
                                                                                          << ".")
-    if (mesh_point_index == 0)
+    if (mesh_point_index <= 0)
       return (_zeta[1] - _zeta[0]);
-    if (mesh_point_index == _number_of_mesh_points - 1)
+    if ((size_t) mesh_point_index == _number_of_mesh_points - 1)
       return (_zeta[_number_of_mesh_points - 1] - _zeta[_number_of_mesh_points - 2]);
     return (_zeta[mesh_point_index + 1] - _zeta[mesh_point_index - 1]) / 2.0;
   }
@@ -265,10 +265,10 @@ namespace Maverick {
 
   RK1MeshSinglePhase &RK1MeshSinglePhase::operator<<(RK1MeshSinglePhase const &mesh) {
     vector<real> mesh_2_add = mesh.getDiscretisationPoints();
-    MAVERICK_ASSERT(isVectorIncreasingValues(mesh_2_add.data(), (integer) mesh_2_add.size()),
+    MAVERICK_ASSERT(isVectorIncreasingValues(mesh_2_add.data(), mesh_2_add.size()),
                     "Mesh::operator << : non monotonically increasing zeta.\n")
     real const zeta_offset = *(_zeta.end() - 1) - *(mesh_2_add.end() - 1);
-    for (integer i = 1; i < mesh_2_add.size(); i++)
+    for (size_t i = 1; i < mesh_2_add.size(); i++)
       _zeta.push_back(mesh_2_add[i] + zeta_offset);
     return *this;
   }
@@ -290,13 +290,6 @@ namespace Maverick {
     MAVERICK_ASSERT(_length > 0, "RK1MeshSinglePhase::Segment: nonpositive segment length not allowed.\n")
     MAVERICK_ASSERT(_num_intervals > 0,
                     "RK1MeshSinglePhase::Segment: nonpositive segment number of intervals not allowed.\n")
-  }
-
-  bool RK1MeshSinglePhase::isVectorIncreasingValues(real const values[], integer const length) const {
-    for (integer i = 0; i < length - 1; i++) {
-      if (values[i + 1] <= values[i]) return false;
-    }
-    return true;
   }
 
 };

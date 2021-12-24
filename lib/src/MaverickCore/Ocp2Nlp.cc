@@ -30,13 +30,13 @@ Ocp2Nlp::~Ocp2Nlp() {
 
 void Ocp2Nlp::deleteAllDataPointers() {
 
-  for (integer i = 0; i < _int_vec_pointers.size(); i++) {
+  for (size_t i = 0; i < _int_vec_pointers.size(); i++) {
     if (*(_int_vec_pointers[i]) != nullptr)
       delete[] *(_int_vec_pointers[i]);
     *_int_vec_pointers[i] = nullptr;
   }
 
-  for (integer i = 0; i < _real_vec_pointers.size(); i++) {
+  for (size_t i = 0; i < _real_vec_pointers.size(); i++) {
     if (*(_real_vec_pointers[i]) != nullptr)
       delete[] *(_real_vec_pointers[i]);
     *_real_vec_pointers[i] = nullptr;
@@ -90,7 +90,7 @@ void Ocp2Nlp::evalNlpConstraints(Nlp &nlp) const {
                   "Ocp2Nlp::evalNlpConstraints: wrong nlp constraints size")
   integer const n_constr = getNlpConstraintsSize();
   real *constr = new real[n_constr];
-  calculateNlpQuantities(nlp.getY().data(), (integer) nlp.getNlpSize(), nullptr, 0,
+  calculateNlpQuantities(nlp.getY().data(), safeCastBetweenTypes<integer, size>(nlp.getNlpSize()), nullptr, 0,
                          nullptr,
                          nullptr, 0,
                          constr, n_constr,

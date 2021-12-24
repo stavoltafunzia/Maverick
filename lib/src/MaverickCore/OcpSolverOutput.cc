@@ -147,6 +147,10 @@ void OcpSolverOutput::writeSingleIterationOutputToGC(integer const index, GC::Ge
 
 }
 
+integer OcpSolverOutput::getHistoryLength() const {
+  return safeCastBetweenTypes<integer, size_t>(_history.size());
+}
+
 std::shared_ptr<const OcpSolution> OcpSolverOutput::getSolution() const {
   return _solution;
 }

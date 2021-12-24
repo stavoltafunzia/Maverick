@@ -103,9 +103,9 @@ GF1ASpline::setup(std::string const &spine_type, vec_1d_real const &x, vec_1d_re
     new_y = y;
   }
 
-  _p_spline->reserve((integer) new_x.size());
+  _p_spline->reserve(new_x.size());
 
-  for (size i = 0; i < new_x.size(); ++i) // add provided points
+  for (size_t i = 0; i < new_x.size(); ++i) // add provided points
     _p_spline->pushBack(new_x[i], new_y[i]);
 
   _p_spline->build();

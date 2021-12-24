@@ -2,6 +2,7 @@
 #include "MaverickCore/RK1/RK1Integrator.hh"
 #include "MaverickCore/MaverickSingleton.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
+#include "MaverickCore/MaverickFunctions.hh"
 #include <iomanip>
 #include <thread>
 
@@ -72,7 +73,7 @@ namespace Maverick {
         new_zeta.reserve(c_mesh.getNumberOfDiscretisationPoints() * 2);
 
       //loop over mesh intervals
-      for (integer i_interval = 0; i_interval < mesh_errors.size(); i_interval++) {
+      for (size_t i_interval = 0; i_interval < mesh_errors.size(); i_interval++) {
         if (mesh_errors[i_interval] <
             0) // in this case, an error occurred, therefore we consider it to be greater than the mesh_error_threshold
           mesh_errors[i_interval] = mesh_error_threshold * (1.01);
@@ -136,7 +137,7 @@ namespace Maverick {
                                                            RK1OcpSolution const &sol, vec_1d_real &mesh_errors) const
   {
     integer const num_mesh_points = mesh(i_phase).getNumberOfDiscretisationPoints();
-    integer const num_threads_to_use = (integer) _th_affinity.size();
+    integer const num_threads_to_use = safeCastToInt(_th_affinity.size());
     integer num_mesh_points_per_thread = ceil(num_mesh_points / real(num_threads_to_use));
 
     // calculate the number of mesh points to be spanned by each thread
@@ -155,7 +156,7 @@ namespace Maverick {
     mesh_errors = vec_1d_real(num_mesh_points - 1);
     std::thread *threads[(thread_mesh_points.size() - 1)];
 
-    for (integer i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
+    for (size_t i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
       real *mesh_error_ptr = &mesh_errors[thread_mesh_points[i_phase]];
       threads[i_thread] = new std::thread(&RK1MeshSolutionRefiner::calculateMeshErrorBetweenMeshPoints, this,
                                           i_phase,
@@ -167,11 +168,11 @@ namespace Maverick {
 
     }
 
-    for (integer i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
+    for (size_t i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
       threads[i_thread]->join();
     }
 
-    for (integer i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
+    for (size_t i_thread = 0; i_thread < (thread_mesh_points.size() - 1); i_thread++) {
       delete threads[i_thread];
     }
 
@@ -187,9 +188,9 @@ namespace Maverick {
     vec_2d_real const &algebraic_state_control = sol(i_phase).getAlgebraicStatesControls();
 
     integer const dim_x = _ocp_problem.numberOfStates(i_phase);
-    integer const dim_u = (integer) state_control.size() - dim_x;
+    integer const dim_u = safeCastToInt(state_control.size()) - dim_x;
     integer const dim_ax = _ocp_problem.numberOfAlgebraicStates(i_phase);
-    integer const dim_au = (integer) algebraic_state_control.size() - dim_ax;
+    integer const dim_au = safeCastToInt(algebraic_state_control.size()) - dim_ax;
     integer const dim_p = _ocp_problem.numberOfParameters(i_phase);
 
     RK1Integrator calculator(_ocp_problem, _scaling, i_phase, _integrator_type);

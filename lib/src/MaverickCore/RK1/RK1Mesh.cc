@@ -2,6 +2,7 @@
 #include "MaverickCore/MaverickSingleton.hh"
 #include "MaverickCore/RK1/RK1Ocp2NlpSinglePhase.hh"
 #include "MaverickCore/RK1/RK1MeshSolutionRefiner.hh"
+#include "MaverickCore/MaverickFunctions.hh"
 
 using namespace Maverick;
 using namespace std;
@@ -121,7 +122,7 @@ void RK1Mesh::clear() {
 }
 
 integer RK1Mesh::getNumberOfPhases() const {
-  return (integer) _meshes.size();
+  return safeCastBetweenTypes<integer, size_t>(_meshes.size());
 }
 
 unique_ptr<Mesh> RK1Mesh::copy() const {

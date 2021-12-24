@@ -76,6 +76,14 @@ void Quadcopter::derivedSetup(GC::GenericContainer const & gc) {
     }
     GC::GenericContainer const * gc_function = nullptr;
 
+    _p_MinimumHeight = std::unique_ptr<GenericFunction2AInterface> (getGenericFunction2A("MinimumHeight"));
+    try {
+        gc_function = &( (*gc_mapped_objects)("MinimumHeight") );
+    } catch (...) {
+        throw std::runtime_error("Cannot find mapped object named 'MinimumHeight' in the lua data file\n");
+    }
+    _p_MinimumHeight->setup(*gc_function);
+
     _p_RegularizedAbsoluteValue = std::unique_ptr<GenericFunction1AInterface> (getGenericFunction1A("RegularizedAbsoluteValue"));
     try {
         gc_function = &( (*gc_mapped_objects)("RegularizedAbsoluteValue") );
@@ -92,25 +100,17 @@ void Quadcopter::derivedSetup(GC::GenericContainer const & gc) {
     }
     _p_ThrustFactor->setup(*gc_function);
 
-    _p_MinimumHeight = std::unique_ptr<GenericFunction2AInterface> (getGenericFunction2A("MinimumHeight"));
-    try {
-        gc_function = &( (*gc_mapped_objects)("MinimumHeight") );
-    } catch (...) {
-        throw std::runtime_error("Cannot find mapped object named 'MinimumHeight' in the lua data file\n");
-    }
-    _p_MinimumHeight->setup(*gc_function);
-
 
 }
 
 void Quadcopter::printDerivedInfo(std::ostream & out, InfoLevel info_level) const {
     if (info_level >= info_level_verbose) {
     out << "\n";
+    _p_MinimumHeight->printInfo(out, info_level);
+    out << "\n";
     _p_RegularizedAbsoluteValue->printInfo(out, info_level);
     out << "\n";
     _p_ThrustFactor->printInfo(out, info_level);
-    out << "\n";
-    _p_MinimumHeight->printInfo(out, info_level);
     out << "\n";
     }
 }
@@ -124,7 +124,7 @@ void Quadcopter::printDerivedInfo(std::ostream & out, InfoLevel info_level) cons
 //   |                                     |
 //   +-------------------------------------+
 
-integer Quadcopter::getStatesControlsBounds(integer const i_phase,
+void Quadcopter::getStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -154,10 +154,9 @@ integer Quadcopter::getStatesControlsBounds(integer const i_phase,
     upper[9] = _model_params[MOD_PAR_INDEX_thrust_max];
     }
 
-    return 0;
 }
 
-integer Quadcopter::getAlgebraicStatesControlsBounds(integer const i_phase,
+void Quadcopter::getAlgebraicStatesControlsBounds(integer const i_phase,
                                                             real    const __zeta,
                                                             real          lower[],
                                                             real          upper[] ) const {
@@ -175,10 +174,9 @@ integer Quadcopter::getAlgebraicStatesControlsBounds(integer const i_phase,
     upper[3] = _model_params[MOD_PAR_INDEX_thrust_dot_max];
     }
 
-    return 0;
 }
 
-integer Quadcopter::getParametersBounds(integer const i_phase,
+void Quadcopter::getParametersBounds(integer const i_phase,
                                                         real          lower[],
                                                         real          upper[] ) const {
     {
@@ -189,10 +187,9 @@ integer Quadcopter::getParametersBounds(integer const i_phase,
     upper[0] = _model_params[MOD_PAR_INDEX_T_max];
     }
 
-    return 0;
 }
 
-integer Quadcopter::getPathConstraintsBounds(integer const i_phase,
+void Quadcopter::getPathConstraintsBounds(integer const i_phase,
                                                              real    const __zeta,
                                                              real          lower[],
                                                              real          upper[] ) const {
@@ -204,20 +201,18 @@ integer Quadcopter::getPathConstraintsBounds(integer const i_phase,
     upper[0] = 0.1e6;
     }
 
-    return 0;
 }
 
-integer Quadcopter::getIntConstraintsBounds(integer const i_phase,
+void Quadcopter::getIntConstraintsBounds(integer const i_phase,
                                                             real    const __zeta_i,
                                                             real    const __zeta_f,
                                                             real          lower[],
                                                             real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer Quadcopter::getBoundaryConditionsBounds(integer const i_phase,
+void Quadcopter::getBoundaryConditionsBounds(integer const i_phase,
                                                                 real    const __zeta_i,
                                                                 real    const __zeta_f,
                                                                 real          lower[],
@@ -264,26 +259,23 @@ integer Quadcopter::getBoundaryConditionsBounds(integer const i_phase,
     upper[17] = _model_params[MOD_PAR_INDEX_mu_f];
     }
 
-    return 0;
 }
 
-integer Quadcopter::getPointConstraintsBounds(integer const i_phase,
+void Quadcopter::getPointConstraintsBounds(integer const i_phase,
                                                               real    const __zeta,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
-integer Quadcopter::getEventConstraintsBounds(integer const i_phase,
+void Quadcopter::getEventConstraintsBounds(integer const i_phase,
                                                               real    const __zeta_i,
                                                               real    const __zeta_f,
                                                               real          lower[],
                                                               real          upper[] ) const {
     
     
-    return 0;
 }
 
 // +----------------------------+
@@ -334,6 +326,10 @@ void Quadcopter::evalAtMesh(integer const i_phase,
     __states_controls[5] = t18 * t22;
 
     }
+    if (__algebraic_states_controls) {
+    
+
+    }
 }
 
 void Quadcopter::eval(integer const i_phase,
@@ -371,17 +367,16 @@ void Quadcopter::eval(integer const i_phase,
 //   |                  |___/            |
 //   +-----------------------------------+
 
-integer Quadcopter::mayer ( integer const i_phase,
+void Quadcopter::mayer ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
                real     & __value ) const {
         __value = _model_params[MOD_PAR_INDEX_wmt] * __parameters[0];
 
-    return 0;
 }
 
-integer Quadcopter::mayerJac ( integer const i_phase,
+void Quadcopter::mayerJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -390,7 +385,6 @@ integer Quadcopter::mayerJac ( integer const i_phase,
                              real       __jac_p[] ) const {
         __jac_p[0] = _model_params[MOD_PAR_INDEX_wmt];
 
-    return 0;
 }
 
 integer Quadcopter::mayerJacXuInitNnz ( integer const i_phase ) const {
@@ -420,7 +414,7 @@ void Quadcopter::mayerJacPPattern ( integer const i_phase, integer cols[] ) cons
 
 }
 
-integer Quadcopter::mayerHess ( integer const i_phase,
+void Quadcopter::mayerHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -433,7 +427,6 @@ integer Quadcopter::mayerHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer Quadcopter::mayerHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -512,7 +505,7 @@ void Quadcopter::mayerHessPPPattern ( integer const i_phase, integer rows[], int
 //   |          |___/                 |___/       |
 //   +--------------------------------------------+
 
- integer Quadcopter::lagrange ( integer const i_phase,
+ void Quadcopter::lagrange ( integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -526,10 +519,9 @@ void Quadcopter::mayerHessPPPattern ( integer const i_phase, integer rows[], int
     real t20 = pow(_model_params[MOD_PAR_INDEX_thrust_0], 0.2e1);
     __value = _model_params[MOD_PAR_INDEX_wlt] * __parameters[0] + _model_params[MOD_PAR_INDEX_wlu] * (t8 + t10 + t12 * _model_params[MOD_PAR_INDEX_psi_dot_rel_imp] + t17 / t20);
 
-   return 0;
 }
 
- integer Quadcopter::lagrangeJac ( integer const i_phase,
+ void Quadcopter::lagrangeJac ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -547,7 +539,6 @@ void Quadcopter::mayerHessPPPattern ( integer const i_phase, integer rows[], int
     __jac_axu[3] = 2 * t2 * __algebraic_states_controls[3] / t16;
     __jac_p[0] = _model_params[MOD_PAR_INDEX_wlt];
 
-    return 0;
 }
 
 integer Quadcopter::lagrangeJacXuNnz ( integer const i_phase ) const {
@@ -589,7 +580,7 @@ void Quadcopter::lagrangeJacPPattern ( integer const i_phase, integer cols[] ) c
 
 }
 
- integer Quadcopter::lagrangeHess ( integer const i_phase,
+ void Quadcopter::lagrangeHess ( integer const i_phase,
                                 real    const __states_controls[],
                                 real    const __state_control_derivatives[],
                                 real    const __algebraic_states_controls[],
@@ -613,7 +604,6 @@ void Quadcopter::lagrangeJacPPattern ( integer const i_phase, integer cols[] ) c
     real t10 =  pow( _model_params[MOD_PAR_INDEX_thrust_0],  2);
     __hess_axu_axu[3] = 2 * t2 / t10 * __lambda_0;
 
-     return 0;
 }
 
 integer Quadcopter::lagrangeHessXuXuNnz ( integer const i_phase ) const {
@@ -741,7 +731,7 @@ return 0;
 //   |                       |_|                                   |
 //   +-------------------------------------------------------------+
 
-integer Quadcopter::foEqns ( integer const i_phase,
+void Quadcopter::foEqns ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -797,10 +787,9 @@ integer Quadcopter::foEqns ( integer const i_phase,
     __values[8] = __algebraic_states_controls[2] - t46;
     __values[9] = -__state_control_derivatives[9] * t3 + __algebraic_states_controls[3];
 
-    return 0;
 }
 
-integer Quadcopter::foEqnsJac (integer const i_phase,
+void Quadcopter::foEqnsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -959,7 +948,6 @@ integer Quadcopter::foEqnsJac (integer const i_phase,
     __jac_p[8] = t187;
     __jac_p[9] = __state_control_derivatives[9] * t181;
 
-    return 0;
 }
 
 integer Quadcopter::foEqnsJacXuNnz ( integer const i_phase ) const {
@@ -1130,7 +1118,7 @@ void Quadcopter::foEqnsJacPPattern ( integer const i_phase, integer rows[], inte
 
 }
 
-integer Quadcopter::foEqnsHess(integer const i_phase,
+void Quadcopter::foEqnsHess(integer const i_phase,
                            real    const __states_controls[],
                            real    const __state_control_derivatives[],
                            real    const __algebraic_states_controls[],
@@ -1350,7 +1338,6 @@ integer Quadcopter::foEqnsHess(integer const i_phase,
     real t475 = (0.2e1 * t113 * t457 + 0.2e1 * t459 * t49) * t37;
     __hess_p_p[0] = -0.2e1 * t435 * __state_control_derivatives[9] * t439 - 0.2e1 * t419 * t32 * t439 - 0.2e1 * t415 * t341 * t439 - 0.2e1 * t403 * t62 * t439 + t1 * (0.2e1 * t37 * __state_control_derivatives[5] * t439 - t455 * t15 + t463 * t91) + t40 * (0.2e1 * t37 * __state_control_derivatives[4] * t439 - t463 * t128 + t475 * t15) + t9 * (0.2e1 * t37 * __state_control_derivatives[3] * t439 + t455 * t128 - t475 * t91) + 0.2e1 * t47 * __state_control_derivatives[2] * t439 + 0.2e1 * t51 * __state_control_derivatives[1] * t439 + 0.2e1 * t57 * __state_control_derivatives[0] * t439;
 
-    return 0;
 }
 
 integer Quadcopter::foEqnsHessXuXuNnz ( integer const i_phase ) const {
@@ -1582,7 +1569,7 @@ void Quadcopter::foEqnsHessPPPattern ( integer const i_phase, integer rows[], in
 // |                                                                       |
 // +-----------------------------------------------------------------------+
 
-integer Quadcopter::pathConstraints ( integer const i_phase,
+void Quadcopter::pathConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1592,10 +1579,9 @@ integer Quadcopter::pathConstraints ( integer const i_phase,
         real t4 = _p_MinimumHeight->funcEval(__states_controls[0], __states_controls[1]);
     __values[0] = __states_controls[2] - t4;
 
-    return 0;
 }
 
-integer Quadcopter::pathConstraintsJac (integer const i_phase,
+void Quadcopter::pathConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1613,7 +1599,6 @@ integer Quadcopter::pathConstraintsJac (integer const i_phase,
     __jac_xu[1] = -t4;
     __jac_xu[2] = 0.1e1;
 
-    return 0;
 }
 
 integer Quadcopter::pathConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1664,7 +1649,7 @@ void Quadcopter::pathConstraintsJacPPattern ( integer const i_phase, integer row
 
 }
 
-integer Quadcopter::pathConstraintsHess(integer const i_phase,
+void Quadcopter::pathConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -1692,7 +1677,6 @@ integer Quadcopter::pathConstraintsHess(integer const i_phase,
     real t8 = _p_MinimumHeight->funcEval_D_2_2(t2, t3);
     __hess_xu_xu[3] = -t1 * t8;
 
-    return 0;
 }
 integer Quadcopter::pathConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 4;
@@ -1821,16 +1805,15 @@ void Quadcopter::pathConstraintsHessPPPattern ( integer const i_phase, integer r
 // +----------------------------------------------------------------------------+
 
 
-integer Quadcopter::pointConstraints ( integer const i_phase,
+void Quadcopter::pointConstraints ( integer const i_phase,
                      real    const __states_controls[],
                      real    const __parameters[],
                      real          __zeta,
                      real          __values[] ) const {
     
-    return 0;
 }
 
-integer Quadcopter::pointConstraintsJac (integer const i_phase,
+void Quadcopter::pointConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __parameters[],
                           real       __zeta,
@@ -1838,7 +1821,6 @@ integer Quadcopter::pointConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer Quadcopter::pointConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1863,7 +1845,7 @@ void Quadcopter::pointConstraintsJacPPattern ( integer const i_phase, integer ro
 
 }
 
-integer Quadcopter::pointConstraintsHess (integer const i_phase,
+void Quadcopter::pointConstraintsHess (integer const i_phase,
                                  real    const __states_controls[],
                                  real    const __parameters[],
                                  real          __zeta,
@@ -1873,7 +1855,6 @@ integer Quadcopter::pointConstraintsHess (integer const i_phase,
                                  real          __hess_p_p[] ) const {
         
 
-    return 0;
  }
 integer Quadcopter::pointConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -1917,7 +1898,7 @@ void Quadcopter::pointConstraintsHessPPPattern ( integer const i_phase, integer 
 // |                  |___/                                                                  |
 // +-----------------------------------------------------------------------------------------+
 
-integer Quadcopter::intConstraints ( integer const i_phase,
+void Quadcopter::intConstraints ( integer const i_phase,
                  real    const __states_controls[],
                  real    const __state_control_derivatives[],
                  real    const __algebraic_states_controls[],
@@ -1925,10 +1906,9 @@ integer Quadcopter::intConstraints ( integer const i_phase,
                  real          __zeta,
                  real          __values[] ) const {
     
-    return 0;
 }
 
-integer Quadcopter::intConstraintsJac (integer const i_phase,
+void Quadcopter::intConstraintsJac (integer const i_phase,
                           real const __states_controls[],
                           real const __state_control_derivatives[],
                           real const __algebraic_states_controls[],
@@ -1940,7 +1920,6 @@ integer Quadcopter::intConstraintsJac (integer const i_phase,
                           real       __jac_p[] ) const {
         
 
-    return 0;
 }
 
 integer Quadcopter::intConstraintsJacXuNnz ( integer const i_phase ) const {
@@ -1987,7 +1966,7 @@ void Quadcopter::intConstraintsJacPPattern ( integer const i_phase, integer rows
 
 }
 
-integer Quadcopter::intConstraintsHess(integer const i_phase,
+void Quadcopter::intConstraintsHess(integer const i_phase,
                                     real    const __states_controls[],
                                     real    const __state_control_derivatives[],
                                     real    const __algebraic_states_controls[],
@@ -2006,7 +1985,6 @@ integer Quadcopter::intConstraintsHess(integer const i_phase,
                                     real          __hess_p_p[] ) const {
         
 
-    return 0;
 }
 integer Quadcopter::intConstraintsHessXuXuNnz ( integer const i_phase ) const {
     return 0;
@@ -2127,7 +2105,7 @@ void Quadcopter::intConstraintsHessPPPattern ( integer const i_phase, integer ro
 //   |                                           |___/                                                  |
 //   +--------------------------------------------------------------------------------------------------+
 
-integer Quadcopter::boundaryConditions ( integer const i_phase,
+void Quadcopter::boundaryConditions ( integer const i_phase,
                real const __initial_state_control[],
                real const __final_state_control[],
                real const __parameters[],
@@ -2153,10 +2131,9 @@ integer Quadcopter::boundaryConditions ( integer const i_phase,
     __values[16] = __final_state_control[6];
     __values[17] = __final_state_control[7];
 
-    return 0;
 }
 
-integer Quadcopter::boundaryConditionsJac ( integer const i_phase,
+void Quadcopter::boundaryConditionsJac ( integer const i_phase,
                              real const __initial_state_control[],
                              real const __final_state_control[],
                              real const __parameters[],
@@ -2184,7 +2161,6 @@ integer Quadcopter::boundaryConditionsJac ( integer const i_phase,
     __jac_xu_fin[7] = 1;
     __jac_xu_fin[8] = 1;
 
-    return 0;
 }
 
 integer Quadcopter::boundaryConditionsJacXuInitNnz ( integer const i_phase ) const {
@@ -2252,7 +2228,7 @@ void Quadcopter::boundaryConditionsJacPPattern ( integer const i_phase, integer 
 
 }
 
-integer Quadcopter::boundaryConditionsHess ( integer const i_phase,
+void Quadcopter::boundaryConditionsHess ( integer const i_phase,
                                   real const __initial_state_control[],
                                   real const __final_state_control[],
                                   real const __parameters[],
@@ -2267,7 +2243,6 @@ integer Quadcopter::boundaryConditionsHess ( integer const i_phase,
                                   real       __hess_p_p[] ) const {
         
 
-    return 0;
 }
 
 integer Quadcopter::boundaryConditionsHessXuInitXuInitNnz ( integer const i_phase ) const {
@@ -2345,17 +2320,16 @@ void Quadcopter::boundaryConditionsHessPPPattern ( integer const i_phase, intege
 // |                                                                                |
 // +--------------------------------------------------------------------------------+
 
-integer Quadcopter::eventConstraints ( integer const i_phase,
+void Quadcopter::eventConstraints ( integer const i_phase,
                       real const left_state_control[],
                       real const right_state_control[],
                       real const parameters[],
                       real const __zeta_l,
                       real const __zeta_r,
                       real       __values[] ) const {
-    return 0;
 }
 
-integer Quadcopter::eventConstraintsJac ( integer const i_phase,
+void Quadcopter::eventConstraintsJac ( integer const i_phase,
                              real const left_state_control[],
                              real const right_state_control[],
                              real const parameters[],
@@ -2364,7 +2338,6 @@ integer Quadcopter::eventConstraintsJac ( integer const i_phase,
                              real       __jac_xu_init[],
                              real       __jac_xu_fin[],
                              real       __jac_p[] ) const {
-    return 0;
 }
 
 integer Quadcopter::eventConstraintsJacXuInitNnz ( integer const i_phase ) const {
@@ -2394,7 +2367,7 @@ void Quadcopter::eventConstraintsJacPPattern ( integer const i_phase,
 
 }
 
-integer Quadcopter::eventConstraintsHess ( integer const i_phase,
+void Quadcopter::eventConstraintsHess ( integer const i_phase,
                                   real const left_state_control[],
                                   real const right_state_control[],
                                   real const parameters[],
@@ -2407,7 +2380,6 @@ integer Quadcopter::eventConstraintsHess ( integer const i_phase,
                                   real       __hess_xu_fin_xu_fin[],
                                   real       __hess_xu_fin_p[],
                                   real       __hess_p_p[] ) const {
-    return 0;
 }
 
 integer Quadcopter::eventConstraintsHessXuInitXuInitNnz ( integer const i_phase ) const {

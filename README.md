@@ -27,10 +27,10 @@ In order to compile the core C++ library, first install the third party software
 to compile, and
   > make install
 
-to install the library in `/usr/local/maverick/`. When compiling the C++ library, you may need to specify some dependency libraries (ipopt and blas) with the command
+to install the library (the default path being `/usr/local/maverick/`, can be changed with the INSTALL_PATH argument). When compiling the C++ library, you may need to specify some dependency libraries (ipopt and blas) with the command
   >make IPOPT_INCLUDE=\<compiler_flag_to_use_ipopt_headers> IPOPT_LIB=\<compiler_flag_to_link_to_ipopt_library> BLAS=\<compiler_flag_to_link_to_blas_library>
 
-By default ipopt is sought in /usr/local/ipopt, and the blas library used is ATLAS.
+By default ipopt is looked for in /usr/local/ipopt, and the blas library used is ATLAS.
 
 If you want to use the Python(3) library, type
   >make python
@@ -71,7 +71,7 @@ programming" (J. T. Betts), or in my [PhD thesis](http://paduaresearch.cab.unipd
   * 3.b) The second option is to use the Python interface. With the Python interface, the user can specify the dataset in a Python dictionary (data), or alternatively the dataset can be loaded from a Lua file into a Python dictionary. The solver can be invoked from Python and the solution is returned as a Python dictionary with the following simple commands:
     >import sys;
 
-    >sys.path.append('/usr/local/maverick/python')
+    >sys.path.append('/opt/maverick/python')
 
     >import maverick
 

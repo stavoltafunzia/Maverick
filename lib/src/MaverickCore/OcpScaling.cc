@@ -5,6 +5,8 @@
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
 #include <iomanip>
 
+#define CAST_IPHASE(X) safeCastToInt(X)
+
 using namespace Maverick;
 using namespace std;
 
@@ -106,8 +108,8 @@ void OcpScaling::setupForOcp(GC::GenericContainer const &gc, MaverickOcp const &
     if (!are_all_phases_declared) {
       std::stringstream err_mess;
       err_mess << "Maverick ocp scaling: scaling is not declared for all phases. Missing phases are: ";
-      for (integer i = 0; i < missing_phases.size(); i++)
-        err_mess << missing_phases[i] << " ";
+      for (const auto& x : missing_phases)
+        err_mess << x << " ";
       err_mess << "\n";
       throw runtime_error(err_mess.str());
     }
@@ -145,7 +147,7 @@ void OcpScaling::setupForOcpAsNoScaling(MaverickOcp const &ocp_problem) {
 
 void OcpScaling::writeScalingsToStream(std::ostream &out) const {
 
-  for (integer i_phase = 0; i_phase < _states_control.size(); i_phase++) {
+  for (size_t i_phase = 0; i_phase < _states_control.size(); i_phase++) {
     out << "Phase" << i_phase << "\n";
 
     out << "\ttarget: " << _target[i_phase] << "\n";
@@ -273,7 +275,7 @@ OcpScalingOptions const &OcpScaling::getScalingOptions() const {
 void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, MaverickOcp const &ocp_problem,
                                         vec_2d_real const &all_zeta) {
 
-  integer i_phase = (integer) _states_control.size();
+  integer i_phase = safeCastBetweenTypes<integer, size_t>(_states_control.size());
 
   string not_found = "";
   //bool something_not_found = false;
@@ -286,8 +288,8 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real states_controls;
     bool found = findVecRealFromGenericContainer(gc, "states_and_controls", states_controls);
     if (found) {
-      integer read = (integer) states_controls.size();
-      integer exp = (integer) ocp_problem.numberOfStates(i_phase) + (integer) ocp_problem.numberOfControls(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(states_controls.size());
+      integer exp = ocp_problem.numberOfStates(i_phase) + ocp_problem.numberOfControls(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong states and controls scaling size at phase " + std::to_string(i_phase)
@@ -316,14 +318,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
           states_controls = vec_1d_real(nnz, 0);
 
           vec_1d_real zeta;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta = all_zeta[i_phase];
           } else {
             zeta = {0};
             mesh_warning = true;
           }
 
-          for (integer i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
+          for (size i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
             ocp_problem.getStatesControlsBounds(i_phase, zeta[i_mesh], lower_bounds, upper_bounds);
 
             for (integer i = 0; i < nnz; i++) {
@@ -351,9 +353,9 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real algebraic_states_controls;
     bool found = findVecRealFromGenericContainer(gc, "algebraic_states_and_controls", algebraic_states_controls);
     if (found) {
-      integer read = (integer) algebraic_states_controls.size();
-      integer exp = (integer) ocp_problem.numberOfAlgebraicStates(i_phase) +
-                    (integer) ocp_problem.numberOfAlgebraicControls(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(algebraic_states_controls.size());
+      integer exp = ocp_problem.numberOfAlgebraicStates(i_phase) +
+                    ocp_problem.numberOfAlgebraicControls(i_phase);
       if (read != exp) {
         throw runtime_error("Maverick ocp scaling: wrong algebraic states and controls scaling size at phase " +
                             std::to_string(i_phase)
@@ -383,14 +385,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
           algebraic_states_controls = vec_1d_real(nnz, 0);
 
           vec_1d_real zeta;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta = all_zeta[i_phase];
           } else {
             zeta = {0};
             mesh_warning = true;
           }
 
-          for (integer i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
+          for (size i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
             ocp_problem.getAlgebraicStatesControlsBounds(i_phase, zeta[i_mesh], lower_bounds, upper_bounds);
 
             for (integer i = 0; i < nnz; i++) {
@@ -418,13 +420,13 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real params;
     bool found = findVecRealFromGenericContainer(gc, "parameters", params);
     if (found) {
-      integer read = (integer) params.size();
-      integer exp = (integer) ocp_problem.numberOfParameters(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(params.size());
+      integer exp = ocp_problem.numberOfParameters(i_phase);
       if (read != exp) {
         throw runtime_error("Maverick ocp scaling: wrong parameters scaling size at phase " + std::to_string(i_phase)
                             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < params.size(); i++) {
+      for (size_t i = 0; i < params.size(); i++) {
         MAVERICK_ASSERT(params[i] > 0,
                         "Scaling for parameter at index " + std::to_string(i) + " at phase " + std::to_string(i_phase) +
                         " cannot be non positive");
@@ -491,14 +493,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real fo_eqns;
     bool found = findVecRealFromGenericContainer(gc, "fo_equations", fo_eqns);
     if (found) {
-      integer read = (integer) fo_eqns.size();
-      integer exp = (integer) ocp_problem.numberOfFirstOrderEquations(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(fo_eqns.size());
+      integer exp = ocp_problem.numberOfFirstOrderEquations(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong f.o. equations scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < fo_eqns.size(); i++) {
+      for (size_t i = 0; i < fo_eqns.size(); i++) {
         MAVERICK_ASSERT(fo_eqns[i] > 0,
                         "Scaling for equation at index " + std::to_string(i) + " at phase " + std::to_string(i_phase) +
                         " cannot be non positive");
@@ -528,14 +530,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real vec;
     bool found = findVecRealFromGenericContainer(gc, "point_constraints", vec);
     if (found) {
-      integer read = (integer) vec.size();
-      integer exp = (integer) ocp_problem.numberOfPointConstraints(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(vec.size());
+      integer exp = ocp_problem.numberOfPointConstraints(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong point constraints scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         MAVERICK_ASSERT(vec[i] > 0, "Scaling for point constraint at index " + std::to_string(i) + " at phase " +
                                     std::to_string(i_phase) + " cannot be non positive");
       }
@@ -552,14 +554,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
           vec = vec_1d_real(nnz, 0);
 
           vec_1d_real zeta;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta = all_zeta[i_phase];
           } else {
             zeta = {0};
             mesh_warning = true;
           }
 
-          for (integer i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
+          for (size i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
             ocp_problem.getPointConstraintsBounds(i_phase, zeta[i_mesh], lower_bounds, upper_bounds);
 
             for (integer i = 0; i < nnz; i++) {
@@ -588,14 +590,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real vec;
     bool found = findVecRealFromGenericContainer(gc, "path_constraints", vec);
     if (found) {
-      integer read = (integer) vec.size();
-      integer exp = (integer) ocp_problem.numberOfPathConstraints(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(vec.size());
+      integer exp = ocp_problem.numberOfPathConstraints(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong path constraints scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         MAVERICK_ASSERT(vec[i] > 0, "Scaling for path constraint at index " + std::to_string(i) + " at phase " +
                                     std::to_string(i_phase) + " cannot be non positive");
       }
@@ -612,14 +614,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
           vec = vec_1d_real(nnz, 0);
 
           vec_1d_real zeta;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta = all_zeta[i_phase];
           } else {
             zeta = {0};
             mesh_warning = true;
           }
 
-          for (integer i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
+          for (size i_mesh = 0; i_mesh < zeta.size(); i_mesh++) {
             ocp_problem.getPathConstraintsBounds(i_phase, zeta[i_mesh], lower_bounds, upper_bounds);
 
             for (integer i = 0; i < nnz; i++) {
@@ -648,14 +650,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real vec;
     bool found = findVecRealFromGenericContainer(gc, "integral_constraints", vec);
     if (found) {
-      integer read = (integer) vec.size();
-      integer exp = (integer) ocp_problem.numberOfIntConstraints(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(vec.size());
+      integer exp = ocp_problem.numberOfIntConstraints(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong integral constraints scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         MAVERICK_ASSERT(vec[i] > 0, "Scaling for integral constraint at index " + std::to_string(i) + " at phase " +
                                     std::to_string(i_phase) + " cannot be non positive");
       }
@@ -672,7 +674,7 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
 
           real zeta_f = 1;
           real zeta_i = 0;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta_f = all_zeta[i_phase].back();
             zeta_i = all_zeta[i_phase].front();
           } else {
@@ -705,14 +707,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real vec;
     bool found = findVecRealFromGenericContainer(gc, "boundary_conditions", vec);
     if (found) {
-      integer read = (integer) vec.size();
-      integer exp = (integer) ocp_problem.numberOfBoundaryConditions(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(vec.size());
+      integer exp = ocp_problem.numberOfBoundaryConditions(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong boundary conditions scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         MAVERICK_ASSERT(vec[i] > 0, "Scaling for boundary condition at index " + std::to_string(i) + " at phase " +
                                     std::to_string(i_phase) + " cannot be non positive");
       }
@@ -729,7 +731,7 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
 
           real zeta_f = 1;
           real zeta_i = 0;
-          if (all_zeta.size() > i_phase) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase) {
             zeta_f = all_zeta[i_phase].back();
             zeta_i = all_zeta[i_phase].front();
           } else {
@@ -762,14 +764,14 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
     vec_1d_real vec;
     bool found = findVecRealFromGenericContainer(gc, "event_constraints", vec);
     if (found) {
-      integer read = (integer) vec.size();
-      integer exp = (integer) ocp_problem.numberOfEventConstraints(i_phase);
+      integer read = safeCastBetweenTypes<integer, size_t>(vec.size());
+      integer exp = ocp_problem.numberOfEventConstraints(i_phase);
       if (read != exp) {
         throw runtime_error(
             "Maverick ocp scaling: wrong event constraints scaling size at phase " + std::to_string(i_phase)
             + ". Found " + std::to_string(read) + " elements, expected " + std::to_string(exp) + "\n");
       }
-      for (integer i = 0; i < vec.size(); i++) {
+      for (size_t i = 0; i < vec.size(); i++) {
         MAVERICK_ASSERT(vec[i] > 0, "Scaling for event constraint at index " + std::to_string(i) + " at phase " +
                                     std::to_string(i_phase) + " cannot be non positive");
       }
@@ -786,7 +788,7 @@ void OcpScaling::setupForOcpAndOnePhase(GC::GenericContainer const &gc, Maverick
 
           real zeta_l = 1;
           real zeta_r = 0;
-          if (all_zeta.size() > i_phase + 1) {
+          if (CAST_IPHASE(all_zeta.size()) > i_phase + 1) {
             zeta_l = all_zeta[i_phase].back();
             zeta_r = all_zeta[i_phase + 1].front();
           } else {
@@ -835,7 +837,7 @@ bool OcpScaling::checkIfStringMatchesAutomaticBounds(string const &str) {
 //    return _zeta[i_phase];
 //}
 Maverick::real OcpScaling::getTargetScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _target.size(), "OcpScaling::getTargetScaling: phase index out of bounds.\n");
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_target.size()), "OcpScaling::getTargetScaling: phase index out of bounds.\n");
   return _target[i_phase];
 }
 
@@ -844,53 +846,53 @@ Maverick::real OcpScaling::getTargetScaling(integer const i_phase) const {
 //     return _is_tgt_lag_type[i_phase];
 // }
 vec_1d_real const &OcpScaling::getStatesControlScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _states_control.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_states_control.size()),
                   "OcpScaling::getStatesControlScaling: phase index out of bounds.\n");
   return _states_control[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getAlgebraicStatesControlScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _algebraic_states_controls.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_algebraic_states_controls.size()),
                   "OcpScaling::getAlgebraicStatesControlScaling: phase index out of bounds.\n");
   return _algebraic_states_controls[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getParamsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _params.size(), "OcpScaling::getParamsScaling: phase index out of bounds.\n");
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_params.size()), "OcpScaling::getParamsScaling: phase index out of bounds.\n");
   return _params[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getFoEqnsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _fo_equations.size(), "OcpScaling::getFoEqnsScaling: phase index out of bounds.\n");
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_fo_equations.size()), "OcpScaling::getFoEqnsScaling: phase index out of bounds.\n");
   return _fo_equations[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getPointConstraintsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _point_constraints.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_point_constraints.size()),
                   "OcpScaling::getPointConstraintsScaling: phase index out of bounds.\n");
   return _point_constraints[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getPathConstraintsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _path_constraints.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_path_constraints.size()),
                   "OcpScaling::getPathConstraintsScaling: phase index out of bounds.\n");
   return _path_constraints[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getIntConstraintsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _int_constraints.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_int_constraints.size()),
                   "OcpScaling::getIntConstraintsScaling: phase index out of bounds.\n");
   return _int_constraints[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getBoundaryConditionsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _boundary_conditions.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_boundary_conditions.size()),
                   "OcpScaling::getBoundaryConditionsScaling: phase index out of bounds.\n");
   return _boundary_conditions[i_phase];
 }
 
 vec_1d_real const &OcpScaling::getEventConstraintsScaling(integer const i_phase) const {
-  MAVERICK_ASSERT(i_phase < _event_constraints.size(),
+  MAVERICK_ASSERT(i_phase < CAST_IPHASE(_event_constraints.size()),
                   "OcpScaling::getEventConstraintsScaling: phase index out of bounds.\n");
   return _event_constraints[i_phase];
 }

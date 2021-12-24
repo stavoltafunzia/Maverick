@@ -58,10 +58,10 @@ namespace MinimumTimeToClimbNamespace {
 
         //external objects
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_CD0 = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_Eta = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_CLalpha = nullptr;
-        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_Rho = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_SoundSpeed = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_CLalpha = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_Eta = nullptr;
+        std::unique_ptr<MaverickUtils::GenericFunction1AInterface> _p_Rho = nullptr;
         std::unique_ptr<MaverickUtils::GenericFunction2AInterface> _p_Thrust = nullptr;
 
 
@@ -82,43 +82,43 @@ namespace MinimumTimeToClimbNamespace {
     //   |                                     |
     //   +-------------------------------------+
 
-        virtual integer getStatesControlsBounds(integer const i_phase,
+        virtual void getStatesControlsBounds(integer const i_phase,
                                                 real    const __zeta,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getAlgebraicStatesControlsBounds(integer const i_phase,
+        virtual void getAlgebraicStatesControlsBounds(integer const i_phase,
                                                 real    const __zeta,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getParametersBounds(integer const i_phase,
+        virtual void getParametersBounds(integer const i_phase,
                                             real          lower[],
                                             real          upper[] ) const;
 
-        virtual integer getPointConstraintsBounds(integer const i_phase,
+        virtual void getPointConstraintsBounds(integer const i_phase,
                                                   real    const __zeta,
                                                   real          lower[],
                                                   real          upper[] ) const;
 
-        virtual integer getPathConstraintsBounds(integer const i_phase,
+        virtual void getPathConstraintsBounds(integer const i_phase,
                                                  real    const __zeta,
                                                  real          lower[],
                                                  real          upper[] ) const;
 
-        virtual integer getIntConstraintsBounds(integer const i_phase,
+        virtual void getIntConstraintsBounds(integer const i_phase,
                                                 real    const __zeta_i,
                                                 real    const __zeta_f,
                                                 real          lower[],
                                                 real          upper[] ) const;
 
-        virtual integer getBoundaryConditionsBounds(integer const i_phase,
+        virtual void getBoundaryConditionsBounds(integer const i_phase,
                                                     real    const __zeta_i,
                                                     real    const __zeta_f,
                                                     real          lower[],
                                                     real          upper[] ) const;
 
-        virtual integer getEventConstraintsBounds(integer const i_phase,
+        virtual void getEventConstraintsBounds(integer const i_phase,
                                                   real    const __zeta_l,
                                                   real    const __zeta_r,
                                                   real          lower[],
@@ -161,13 +161,13 @@ namespace MinimumTimeToClimbNamespace {
     //   |                  |___/            |
     //   +-----------------------------------+
 
-    virtual integer mayer ( integer const i_phase,
+    virtual void mayer ( integer const i_phase,
                            real const initial_state_control[],
                            real const final_state_control[],
                            real const parameters[],
                            real       &value ) const;
 
-    virtual integer mayerJac ( integer const i_phase,
+    virtual void mayerJac ( integer const i_phase,
                               real const initial_state_control[],
                               real const final_state_control[],
                               real const parameters[],
@@ -184,7 +184,7 @@ namespace MinimumTimeToClimbNamespace {
     virtual integer mayerJacPNnz ( integer const i_phase ) const;
     virtual void mayerJacPPattern ( integer const i_phase, integer cols[] ) const;
 
-    virtual integer mayerHess ( integer const i_phase,
+    virtual void mayerHess ( integer const i_phase,
                                real const initial_state_control[],
                                real const final_state_control[],
                                real const parameters[],
@@ -235,7 +235,7 @@ namespace MinimumTimeToClimbNamespace {
     //   |          |___/                 |___/       |
     //   +--------------------------------------------+
 
-    virtual integer lagrange ( integer const i_phase,
+    virtual void lagrange ( integer const i_phase,
                               real    const state_control[],
                               real    const state_control_derivative[],
                               real    const algebraic_state_control[],
@@ -243,7 +243,7 @@ namespace MinimumTimeToClimbNamespace {
                               real           __zeta,
                               real          &value ) const;
 
-    virtual integer lagrangeJac ( integer const i_phase,
+    virtual void lagrangeJac ( integer const i_phase,
                                  real    const state_control[],
                                  real    const state_control_derivative[],
                                  real    const algebraic_state_control[],
@@ -266,7 +266,7 @@ namespace MinimumTimeToClimbNamespace {
     virtual integer lagrangeJacPNnz ( integer const i_phase ) const;
     virtual void lagrangeJacPPattern ( integer const i_phase, integer cols[] ) const;
 
-    virtual integer lagrangeHess ( integer const i_phase,
+    virtual void lagrangeHess ( integer const i_phase,
                                   real    const state_control[],
                                   real    const state_control_derivative[],
                                   real    const algebraic_state_control[],
@@ -323,7 +323,7 @@ namespace MinimumTimeToClimbNamespace {
     //   |                       |_|                                   |
     //   +-------------------------------------------------------------+
 
-    virtual integer foEqns (integer const i_phase,
+    virtual void foEqns (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -331,7 +331,7 @@ namespace MinimumTimeToClimbNamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer foEqnsJac (integer const i_phase,
+    virtual void foEqnsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -354,7 +354,7 @@ namespace MinimumTimeToClimbNamespace {
      virtual integer foEqnsJacPNnz ( integer const i_phase ) const;
      virtual void foEqnsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer foEqnsHess ( integer const i_phase,
+     virtual void foEqnsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -412,7 +412,7 @@ namespace MinimumTimeToClimbNamespace {
     // +-----------------------------------------------------------------------+
 
 
-    virtual integer pathConstraints (integer const i_phase,
+    virtual void pathConstraints (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -420,7 +420,7 @@ namespace MinimumTimeToClimbNamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer pathConstraintsJac (integer const i_phase,
+    virtual void pathConstraintsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -443,7 +443,7 @@ namespace MinimumTimeToClimbNamespace {
      virtual integer pathConstraintsJacPNnz ( integer const i_phase ) const;
      virtual void pathConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer pathConstraintsHess ( integer const i_phase,
+     virtual void pathConstraintsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -501,13 +501,13 @@ namespace MinimumTimeToClimbNamespace {
     // +----------------------------------------------------------------------------+
 
 
-    virtual integer pointConstraints ( integer const i_phase,
+    virtual void pointConstraints ( integer const i_phase,
                                  real    const state_control[],
                                  real    const parameters[],
                                  real           __zeta,
                                  real          values[] ) const;
 
-    virtual integer pointConstraintsJac (integer const i_phase,
+    virtual void pointConstraintsJac (integer const i_phase,
                                         real const state_control[],
                                         real const parameters[],
                                         real       __zeta,
@@ -520,7 +520,7 @@ namespace MinimumTimeToClimbNamespace {
     virtual integer pointConstraintsJacPNnz ( integer const i_phase ) const;
     virtual void pointConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-    virtual integer pointConstraintsHess (integer const i_phase,
+    virtual void pointConstraintsHess (integer const i_phase,
                                      real    const state_control[],
                                      real    const parameters[],
                                      real           __zeta,
@@ -547,7 +547,7 @@ namespace MinimumTimeToClimbNamespace {
     // +-----------------------------------------------------------------------------------------+
 
 
-    virtual integer intConstraints (integer const i_phase,
+    virtual void intConstraints (integer const i_phase,
                             real    const state_control[],
                             real    const state_control_derivative[],
                             real    const algebraic_state_control[],
@@ -555,7 +555,7 @@ namespace MinimumTimeToClimbNamespace {
                             real           __zeta,
                             real          values[] ) const;
 
-    virtual integer intConstraintsJac (integer const i_phase,
+    virtual void intConstraintsJac (integer const i_phase,
                                real    const state_control[],
                                real    const state_control_derivative[],
                                real    const algebraic_state_control[],
@@ -578,7 +578,7 @@ namespace MinimumTimeToClimbNamespace {
      virtual integer intConstraintsJacPNnz ( integer const i_phase ) const;
      virtual void intConstraintsJacPPattern ( integer const i_phase, integer rows[], integer cols[] ) const;
 
-     virtual integer intConstraintsHess ( integer const i_phase,
+     virtual void intConstraintsHess ( integer const i_phase,
                                    real    const state_control[],
                                    real    const state_control_derivative[],
                                    real    const algebraic_state_control[],
@@ -635,7 +635,7 @@ namespace MinimumTimeToClimbNamespace {
     //   |                                           |___/                                                  |
     //   +--------------------------------------------------------------------------------------------------+
 
-    virtual integer boundaryConditions ( integer const i_phase,
+    virtual void boundaryConditions ( integer const i_phase,
                           real const initial_state_control[],
                           real const final_state_control[],
                           real const parameters[],
@@ -643,7 +643,7 @@ namespace MinimumTimeToClimbNamespace {
                           real        __zeta_f,
                           real       values[] ) const;
 
-    virtual integer boundaryConditionsJac ( integer const i_phase,
+    virtual void boundaryConditionsJac ( integer const i_phase,
                                  real const initial_state_control[],
                                  real const final_state_control[],
                                  real const parameters[],
@@ -668,7 +668,7 @@ namespace MinimumTimeToClimbNamespace {
                                    integer       rows[],
                                    integer       cols[] ) const;
 
-    virtual integer boundaryConditionsHess ( integer const i_phase,
+    virtual void boundaryConditionsHess ( integer const i_phase,
                                       real const initial_state_control[],
                                       real const final_state_control[],
                                       real const parameters[],
@@ -722,7 +722,7 @@ namespace MinimumTimeToClimbNamespace {
     // +--------------------------------------------------------------------------------+
 
 
-    virtual integer eventConstraints ( integer const i_phase,
+    virtual void eventConstraints ( integer const i_phase,
                           real const left_state_control[],
                           real const right_state_control[],
                           real const parameters[],
@@ -730,7 +730,7 @@ namespace MinimumTimeToClimbNamespace {
                           real const __zeta_r,
                           real       values[] ) const;
 
-    virtual integer eventConstraintsJac ( integer const i_phase,
+    virtual void eventConstraintsJac ( integer const i_phase,
                                  real const left_state_control[],
                                  real const right_state_control[],
                                  real const parameters[],
@@ -755,7 +755,7 @@ namespace MinimumTimeToClimbNamespace {
                                    integer       rows[],
                                    integer       cols[] ) const;
 
-    virtual integer eventConstraintsHess ( integer const i_phase,
+    virtual void eventConstraintsHess ( integer const i_phase,
                                       real const left_state_control[],
                                       real const right_state_control[],
                                       real const parameters[],

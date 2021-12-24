@@ -150,43 +150,43 @@ namespace Maverick {
     //   |                                     |
     //   +-------------------------------------+
 
-    virtual integer getStatesControlsBounds(integer const i_phase,
+    virtual void getStatesControlsBounds(integer const i_phase,
                                             real const __zeta,
                                             real lower[],
                                             real upper[]) const = 0;
 
-    virtual integer getAlgebraicStatesControlsBounds(integer const i_phase,
+    virtual void getAlgebraicStatesControlsBounds(integer const i_phase,
                                                      real const __zeta,
                                                      real lower[],
                                                      real upper[]) const = 0;
 
-    virtual integer getParametersBounds(integer const i_phase,
+    virtual void getParametersBounds(integer const i_phase,
                                         real lower[],
                                         real upper[]) const = 0;
 
-    virtual integer getPointConstraintsBounds(integer const i_phase,
+    virtual void getPointConstraintsBounds(integer const i_phase,
                                               real const __zeta,
                                               real lower[],
                                               real upper[]) const = 0;
 
-    virtual integer getPathConstraintsBounds(integer const i_phase,
+    virtual void getPathConstraintsBounds(integer const i_phase,
                                              real const __zeta,
                                              real lower[],
                                              real upper[]) const = 0;
 
-    virtual integer getIntConstraintsBounds(integer const i_phase,
+    virtual void getIntConstraintsBounds(integer const i_phase,
                                             real const __zeta_i,
                                             real const __zeta_f,
                                             real lower[],
                                             real upper[]) const = 0;
 
-    virtual integer getBoundaryConditionsBounds(integer const i_phase,
+    virtual void getBoundaryConditionsBounds(integer const i_phase,
                                                 real const __zeta_i,
                                                 real const __zeta_f,
                                                 real lower[],
                                                 real upper[]) const = 0;
 
-    virtual integer getEventConstraintsBounds(integer const i_phase,
+    virtual void getEventConstraintsBounds(integer const i_phase,
                                               real const __zeta_l,
                                               real const __zeta_r,
                                               real lower[],
@@ -233,13 +233,13 @@ namespace Maverick {
     //   |                  |___/            |
     //   +-----------------------------------+
 
-    virtual integer mayer(integer const i_phase,
+    virtual void mayer(integer const i_phase,
                           real const initial_state_control[],
                           real const final_state_control[],
                           real const parameters[],
                           real &value) const = 0;
 
-    virtual integer mayerJac(integer const i_phase,
+    virtual void mayerJac(integer const i_phase,
                              real const initial_state_control[],
                              real const final_state_control[],
                              real const parameters[],
@@ -259,7 +259,7 @@ namespace Maverick {
 
     virtual void mayerJacPPattern(integer const i_phase, integer cols[]) const = 0;
 
-    virtual integer mayerHess(integer const i_phase,
+    virtual void mayerHess(integer const i_phase,
                               real const initial_state_control[],
                               real const final_state_control[],
                               real const parameters[],
@@ -316,7 +316,7 @@ namespace Maverick {
     //   |          |___/                 |___/       |
     //   +--------------------------------------------+
 
-    virtual integer lagrange(integer const i_phase,
+    virtual void lagrange(integer const i_phase,
                              real const state_control[],
                              real const state_control_derivative[],
                              real const algebraic_state_control[],
@@ -324,7 +324,7 @@ namespace Maverick {
                              real __zeta,
                              real &value) const = 0;
 
-    virtual integer lagrangeJac(integer const i_phase,
+    virtual void lagrangeJac(integer const i_phase,
                                 real const state_control[],
                                 real const state_control_derivative[],
                                 real const algebraic_state_control[],
@@ -351,7 +351,7 @@ namespace Maverick {
 
     virtual void lagrangeJacPPattern(integer const i_phase, integer cols[]) const = 0;
 
-    virtual integer lagrangeHess(integer const i_phase,
+    virtual void lagrangeHess(integer const i_phase,
                                  real const state_control[],
                                  real const state_control_derivative[],
                                  real const algebraic_state_control[],
@@ -418,7 +418,7 @@ namespace Maverick {
     //   |                       |_|                                   |
     //   +-------------------------------------------------------------+
 
-    virtual integer foEqns(integer const i_phase,
+    virtual void foEqns(integer const i_phase,
                            real const state_control[],
                            real const state_control_derivative[],
                            real const algebraic_state_control[],
@@ -426,7 +426,7 @@ namespace Maverick {
                            real __zeta,
                            real values[]) const = 0;
 
-    virtual integer foEqnsJac(integer const i_phase,
+    virtual void foEqnsJac(integer const i_phase,
                               real const state_control[],
                               real const state_control_derivative[],
                               real const algebraic_state_control[],
@@ -453,7 +453,7 @@ namespace Maverick {
 
     virtual void foEqnsJacPPattern(integer const i_phase, integer rows[], integer cols[]) const = 0;
 
-    virtual integer foEqnsHess(integer const i_phase,
+    virtual void foEqnsHess(integer const i_phase,
                                real const state_control[],
                                real const state_control_derivative[],
                                real const algebraic_state_control[],
@@ -521,7 +521,7 @@ namespace Maverick {
     // +-----------------------------------------------------------------------+
 
 
-    virtual integer pathConstraints(integer const i_phase,
+    virtual void pathConstraints(integer const i_phase,
                                     real const state_control[],
                                     real const state_control_derivative[],
                                     real const algebraic_state_control[],
@@ -529,7 +529,7 @@ namespace Maverick {
                                     real __zeta,
                                     real values[]) const = 0;
 
-    virtual integer pathConstraintsJac(integer const i_phase,
+    virtual void pathConstraintsJac(integer const i_phase,
                                        real const state_control[],
                                        real const state_control_derivative[],
                                        real const algebraic_state_control[],
@@ -556,7 +556,7 @@ namespace Maverick {
 
     virtual void pathConstraintsJacPPattern(integer const i_phase, integer rows[], integer cols[]) const = 0;
 
-    virtual integer pathConstraintsHess(integer const i_phase,
+    virtual void pathConstraintsHess(integer const i_phase,
                                         real const state_control[],
                                         real const state_control_derivative[],
                                         real const algebraic_state_control[],
@@ -624,13 +624,13 @@ namespace Maverick {
     // +----------------------------------------------------------------------------+
 
 
-    virtual integer pointConstraints(integer const i_phase,
+    virtual void pointConstraints(integer const i_phase,
                                      real const state_control[],
                                      real const parameters[],
                                      real __zeta,
                                      real values[]) const = 0;
 
-    virtual integer pointConstraintsJac(integer const i_phase,
+    virtual void pointConstraintsJac(integer const i_phase,
                                         real const state_control[],
                                         real const parameters[],
                                         real __zeta,
@@ -645,7 +645,7 @@ namespace Maverick {
 
     virtual void pointConstraintsJacPPattern(integer const i_phase, integer rows[], integer cols[]) const = 0;
 
-    virtual integer pointConstraintsHess(integer const i_phase,
+    virtual void pointConstraintsHess(integer const i_phase,
                                          real const state_control[],
                                          real const parameters[],
                                          real __zeta,
@@ -676,7 +676,7 @@ namespace Maverick {
     // +-----------------------------------------------------------------------------------------+
 
 
-    virtual integer intConstraints(integer const i_phase,
+    virtual void intConstraints(integer const i_phase,
                                    real const state_control[],
                                    real const state_control_derivative[],
                                    real const algebraic_state_control[],
@@ -684,7 +684,7 @@ namespace Maverick {
                                    real __zeta,
                                    real values[]) const = 0;
 
-    virtual integer intConstraintsJac(integer const i_phase,
+    virtual void intConstraintsJac(integer const i_phase,
                                       real const state_control[],
                                       real const state_control_derivative[],
                                       real const algebraic_state_control[],
@@ -711,7 +711,7 @@ namespace Maverick {
 
     virtual void intConstraintsJacPPattern(integer const i_phase, integer rows[], integer cols[]) const = 0;
 
-    virtual integer intConstraintsHess(integer const i_phase,
+    virtual void intConstraintsHess(integer const i_phase,
                                        real const state_control[],
                                        real const state_control_derivative[],
                                        real const algebraic_state_control[],
@@ -778,7 +778,7 @@ namespace Maverick {
     //   |                                           |___/                                                  |
     //   +--------------------------------------------------------------------------------------------------+
 
-    virtual integer boundaryConditions(integer const i_phase,
+    virtual void boundaryConditions(integer const i_phase,
                                        real const initial_state_control[],
                                        real const final_state_control[],
                                        real const parameters[],
@@ -786,7 +786,7 @@ namespace Maverick {
                                        real __zeta_f,
                                        real values[]) const = 0;
 
-    virtual integer boundaryConditionsJac(integer const i_phase,
+    virtual void boundaryConditionsJac(integer const i_phase,
                                           real const initial_state_control[],
                                           real const final_state_control[],
                                           real const parameters[],
@@ -814,7 +814,7 @@ namespace Maverick {
                                                integer rows[],
                                                integer cols[]) const = 0;
 
-    virtual integer boundaryConditionsHess(integer const i_phase,
+    virtual void boundaryConditionsHess(integer const i_phase,
                                            real const initial_state_control[],
                                            real const final_state_control[],
                                            real const parameters[],
@@ -874,7 +874,7 @@ namespace Maverick {
     // +--------------------------------------------------------------------------------+
 
 
-    virtual integer eventConstraints(integer const i_phase,
+    virtual void eventConstraints(integer const i_phase,
                                      real const left_state_control[],
                                      real const right_state_control[],
                                      real const parameters[],
@@ -882,7 +882,7 @@ namespace Maverick {
                                      real const __zeta_r,
                                      real values[]) const = 0;
 
-    virtual integer eventConstraintsJac(integer const i_phase,
+    virtual void eventConstraintsJac(integer const i_phase,
                                         real const left_state_control[],
                                         real const right_state_control[],
                                         real const parameters[],
@@ -910,7 +910,7 @@ namespace Maverick {
                                              integer rows[],
                                              integer cols[]) const = 0;
 
-    virtual integer eventConstraintsHess(integer const i_phase,
+    virtual void eventConstraintsHess(integer const i_phase,
                                          real const left_state_control[],
                                          real const right_state_control[],
                                          real const parameters[],

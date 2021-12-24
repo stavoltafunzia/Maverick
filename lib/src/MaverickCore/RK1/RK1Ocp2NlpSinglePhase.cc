@@ -13,7 +13,7 @@ using namespace std;
 #define SPLINE_EXTEND_RANGE MaverickUtils::GF1ASpline::ExtendRange::keep_derivative
 
 RK1Ocp2NlpSinglePhase::RK1Ocp2NlpSinglePhase(MaverickOcp const &ocp_problem, Mesh const &mesh, integer const i_phase) :
-                                             _i_phase(i_phase), Ocp2Nlp(ocp_problem, mesh)
+                                             Ocp2Nlp(ocp_problem, mesh), _i_phase(i_phase)
 {
 
   if (mesh.discretisationType() != Mesh::DiscretisationType::runge_kutta_1)
@@ -323,7 +323,7 @@ integer RK1Ocp2NlpSinglePhase::getNlpHessianNnz() const {
 
 void RK1Ocp2NlpSinglePhase::clearThreadJobs() {
   // stop threads and detach them
-  for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+  for (integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     ThreadJob &th_job = _thread_jobs[i_thread];
     {
       unique_lock<mutex> lock(*(th_job.job_mutex));
@@ -344,7 +344,7 @@ void RK1Ocp2NlpSinglePhase::calculateWorkForThreads() {
   clearThreadJobs();
 
   // CALCULATE NUMBER OF THREADS TO USE
-  integer const expected_num_threads = (integer) _th_affinity.size();
+  integer const expected_num_threads = safeCastToInt(_th_affinity.size());
   integer const min_mesh_intervals_per_thread = ceil(_min_nlp_vars_per_thread / real(_dim_y));
 
   integer mesh_intervals_per_thread = ceil(_p_mesh->getNumberOfIntervals() / real(expected_num_threads));
@@ -359,7 +359,7 @@ void RK1Ocp2NlpSinglePhase::calculateWorkForThreads() {
   integer current_mesh_point = 0;
   integer const num_mesh_intervals = _p_mesh->getNumberOfIntervals();
 
-  for (u_integer i_thread = 0; i_thread < expected_num_threads; i_thread++) {
+  for (integer i_thread = 0; i_thread < expected_num_threads; i_thread++) {
     _actual_num_threads++;
     if ((current_mesh_point + mesh_intervals_per_thread) < num_mesh_intervals) {
       current_mesh_point += mesh_intervals_per_thread;
@@ -373,7 +373,7 @@ void RK1Ocp2NlpSinglePhase::calculateWorkForThreads() {
 
   // now build the thread jobs
   _thread_jobs = new ThreadJob[_actual_num_threads];
-  for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+  for (integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     ThreadJob &th_job = _thread_jobs[i_thread];
 
     // init pointers
@@ -417,7 +417,7 @@ void RK1Ocp2NlpSinglePhase::calculateWorkForThreads() {
 
   // now actually set the affinity of the threads
 #ifdef __linux__
-  for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+  for (integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     ThreadJob &th_job = _thread_jobs[i_thread];
     auto const &c_aff = th_job.affinity;
     if (c_aff.size() > 0) {
@@ -736,7 +736,7 @@ RK1Ocp2NlpSinglePhase::getNlpConstraintsBounds(real lower_bounds[], real upper_b
 
 threads_affinity RK1Ocp2NlpSinglePhase::getActualThreadsAffinityUsed(integer const i_phase) const {
   threads_affinity out = {};
-  for (u_integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
+  for (integer i_thread = 0; i_thread < _actual_num_threads; i_thread++) {
     out.push_back(_thread_jobs[i_thread].affinity);
   }
   return out;

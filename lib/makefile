@@ -67,9 +67,9 @@ ARFLAGS := rvs
 
 ifeq ($(PLATFORM),"x86_64")
     ifeq ($(OS),Darwin)
-        CPPADDFLAG := -m64 -arch x86_64
+        CPPADDFLAG := -m64 -arch x86_64 -Wall
     else
-        CPPADDFLAG := -m64 -fopenmp
+        CPPADDFLAG := -m64 -fopenmp -Wall
 	endif
 else #armv7
     CPPADDFLAG := -fopenmp
@@ -140,9 +140,13 @@ ifeq ($(OS),Darwin) # OsX
 	LINKER_LOAD_ALL_LIB := -Wl,-all_load
 	LINKER_NO_LOAD_ALL_LIB := -Wl,-noall_load
 	MAKE_SHARED := -dynamiclib -undefined dynamic_lookup
-	INSTALL_PATH_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAME).$(SL_EXT)
-	INSTALL_PATH_TOIPOPT_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAMEIP).$(SL_EXT)
-	INSTALL_PATH_TENSOLVE_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAMETS).$(SL_EXT)
+	# Let's use LD_LIBRARY_PATH
+	# INSTALL_PATH_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAME).$(SL_EXT)
+	# INSTALL_PATH_TOIPOPT_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAMEIP).$(SL_EXT)
+	# INSTALL_PATH_TENSOLVE_LIB := -install_name $(INSTALL_PATH)/lib/$(LIBNAMETS).$(SL_EXT)
+	INSTALL_PATH_LIB :=
+	INSTALL_PATH_TOIPOPT_LIB :=
+	INSTALL_PATH_TENSOLVE_LIB :=
 
 	ADD_SLLIB_COMMANDS :=
 else ifeq ($(OS),Linux)
@@ -157,14 +161,18 @@ else ifeq ($(OS),Linux)
 	LINKER_LOAD_ALL_LIB := -Wl,--whole-archive
 	LINKER_NO_LOAD_ALL_LIB := -Wl,--no-whole-archive
 	MAKE_SHARED := -shared
-	INSTALL_PATH_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAME).$(SL_EXT)
-	INSTALL_PATH_TOIPOPT_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAMEIP).$(SL_EXT)
-	INSTALL_PATH_TENSOLVE_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAMETS).$(SL_EXT)
+	# Let's use LD_LIBRARY_PATH
+	# INSTALL_PATH_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAME).$(SL_EXT)
+	# INSTALL_PATH_TOIPOPT_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAMEIP).$(SL_EXT)
+	# INSTALL_PATH_TENSOLVE_LIB := -Wl,-soname,$(INSTALL_PATH)/lib/$(LIBNAMETS).$(SL_EXT)
+	INSTALL_PATH_LIB :=
+	INSTALL_PATH_TOIPOPT_LIB :=
+	INSTALL_PATH_TENSOLVE_LIB :=
 
 	ADD_SLLIB_COMMANDS := -pthread -fopenmp
 endif
 
-CPP_FLAGS := -std=c++11 -fPIC $(OPTIM_FLAGS) $(CPPADDFLAG)
+CPP_FLAGS := -fPIC $(OPTIM_FLAGS) $(CPPADDFLAG)
 
 CORE_INCLUDES = -Isrc -I/usr/include -I/usr/local/include
 CORE_CFLAGS = $(CPP_FLAGS) $(BUILD_FLAGS) $(CORE_INCLUDES) $(IPOPT_INCLUDE)

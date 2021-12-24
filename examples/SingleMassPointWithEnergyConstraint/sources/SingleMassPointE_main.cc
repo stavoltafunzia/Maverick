@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
 
         std::cout << "ALL DONE!\n";
 
-    } catch ( std::runtime_error exc) {
+    } catch ( std::runtime_error & exc) {
         cout << exc.what();
     }
 

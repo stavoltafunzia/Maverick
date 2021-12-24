@@ -8,7 +8,7 @@
 #ifndef MAVERICK_FUNCTIONS_HH
 #define MAVERICK_FUNCTIONS_HH
 
-#include "MaverickDefinitions.hh"
+#include "MaverickPrivateDefinitions.hh"
 #include "MaverickGC/GenericContainer.hh"
 #include "Eigen/Core"
 #include <memory>
@@ -82,7 +82,7 @@ namespace Maverick {
   std::vector<T> extractAlphaPoints(std::vector<T> const &input_vector, T const alpha) {
     std::vector<T> out;
     out.reserve(input_vector.size() - 1);
-    for (auto index = 0; index < input_vector.size() - 1; index++)
+    for (size_t index = 0; index < input_vector.size() - 1; index++)
       out.push_back(input_vector[index] * alpha + input_vector[index + 1] * (1 - alpha));
     return out;
   }
@@ -101,12 +101,6 @@ namespace Maverick {
   void computeTpzAlphaWithoutScaling(real const alpha, real const leftValues[], real const rightValues[], real outputValues[],
                                       integer const length);
 
-  void copyVectorTo(real const from[], real to[], integer const length);
-
-  void copyVectorToMT(real const from[], real to[], integer const length);
-
-  void copyVectorTo(integer const from[], integer to[], integer const length);
-
   void multiplyAndCopyVectorTo(real const from[], real to[], real const multiplier, integer const length);
 
   void multiplyAndCopyVectorTo(real const from[], real to[], real const multiplier[], integer const length);
@@ -118,7 +112,6 @@ namespace Maverick {
   void multiplyVectorBy(real input[], real const scalar_multiplier, integer length);
 
   void multiplyVectorBy(real input[], real const vector_multiplier[], integer length);
-
 
 
   // void multiplyVectorBy(real input[], real const multiplier1[], real const multiplier2[], integer length);
@@ -145,6 +138,39 @@ namespace Maverick {
 
   void makeWeightedAverageOfVectors(real const vec1[], real const vec2[], real const weight12, real out[],
                                     integer const length);
+
+  template<typename T, typename S>
+  inline void copyVectorTo(T const from[], T to[], S const length) {
+    std::memcpy(to, from, length * sizeof(T));
+  }
+
+  template<typename R, typename T>
+  inline R safeCastBetweenTypes(T x) {
+    if (((std::numeric_limits<T>::is_signed) && (std::numeric_limits<R>::is_signed)) ||
+      ((! std::numeric_limits<T>::is_signed) && (! std::numeric_limits<R>::is_signed))) {
+      MAVERICK_ASSERT((x >= std::numeric_limits<R>::min()) && (std::numeric_limits<R>::max() >= x), "Type cast failed");
+    } else {
+      if (std::numeric_limits<T>::is_signed) {
+        MAVERICK_ASSERT((x >= 0) && (std::numeric_limits<R>::max() >= (size_t) x), "Type cast failed");
+      } else {
+        MAVERICK_ASSERT((std::numeric_limits<R>::max() >= int64_t(x)), "Type cast failed");
+      }
+    }
+    return (R) x;
+  }
+
+  template< typename T>
+  inline integer safeCastToInt(T x) { return safeCastBetweenTypes<integer, T>(x); }
+
+  template<typename T, typename S>
+  bool isVectorIncreasingValues(T const values[], S const length) {
+    if (length == 0)
+      return true;
+    for (S i = 0; i < length - 1; i++) {
+      if (values[i + 1] <= values[i]) return false;
+    }
+    return true;
+  }
 
 }
 

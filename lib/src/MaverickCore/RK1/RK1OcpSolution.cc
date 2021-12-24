@@ -1,5 +1,6 @@
 #include "RK1OcpSolution.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
+#include "MaverickCore/MaverickFunctions.hh"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ namespace Maverick {
   }
 
   RK1OcpSolutionSinglePhase const &RK1OcpSolution::operator()(integer const i_phase) const {
-    MAVERICK_SKIPABLE_ASSERT(i_phase < (integer) _solutions.size(),
+    MAVERICK_SKIPABLE_ASSERT(i_phase < safeCastToInt(_solutions.size()),
                              "RK1OcpSolutionSinglePhase::const operator(): number of mesh point " << i_phase
                                                                                                        << " greater than "
                                                                                                        <<
@@ -39,7 +40,7 @@ namespace Maverick {
   }
 
   RK1OcpSolutionSinglePhase &RK1OcpSolution::operator()(integer const i_phase) {
-    MAVERICK_SKIPABLE_ASSERT(i_phase < (integer) _solutions.size(),
+    MAVERICK_SKIPABLE_ASSERT(i_phase < safeCastToInt(_solutions.size()),
                              "RK1OcpSolutionSinglePhase::operator(): number of mesh point " << i_phase
                                                                                                  << " greater than "
                                                                                                  << _solutions.size() -
@@ -57,7 +58,7 @@ namespace Maverick {
   }
 
   integer RK1OcpSolution::getNumberOfPhases() const {
-    return (integer) _solutions.size();
+    return safeCastToInt(_solutions.size());
   }
 
   void RK1OcpSolution::clear() {
@@ -78,7 +79,7 @@ namespace Maverick {
 
   real RK1OcpSolution::getTarget() const {
     real target = 0;
-    for (integer i = 0; i < _solutions.size(); i++)
+    for (size_t i = 0; i < _solutions.size(); i++)
       target += _solutions[i].getTarget();
     return target;
   }
@@ -192,7 +193,7 @@ namespace Maverick {
   }
 
   void RK1OcpSolution::writeAllMeshVarsToStream(std::ostream &out) const {
-    for (integer i_phase = 0; i_phase < _solutions.size(); i_phase++) {
+    for (size_t i_phase = 0; i_phase < _solutions.size(); i_phase++) {
       writeOnePhaseMeshVarsToStream(i_phase, out);
     }
   }
@@ -223,7 +224,7 @@ namespace Maverick {
     // target
     out_gc["target"].set_real(getTarget());
     // solution
-    for (integer i = 0; i < _solutions.size(); i++) {
+    for (size_t i = 0; i < _solutions.size(); i++) {
       _solutions[i].writeContentToGC(out_gc["Phase" + std::to_string(i)], p_ocp, i);
     }
   }
@@ -235,7 +236,7 @@ namespace Maverick {
 
     found_variables = {};
     RK1OcpSolution *solution = new RK1OcpSolution();
-    for (integer i = 0; i < guess_table.size(); i++) {
+    for (size_t i = 0; i < guess_table.size(); i++) {
       std::vector<string> tmp_found;
       std::unique_ptr<RK1OcpSolutionSinglePhase> c_sol = RK1OcpSolutionSinglePhase::convertFromRealTable(
           guess_table[i], ocp_problem, i, tmp_found);

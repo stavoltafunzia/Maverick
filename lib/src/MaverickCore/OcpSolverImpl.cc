@@ -76,12 +76,12 @@ OcpSolverOutput OcpSolverImpl::solve() {
           }
         }
         if (specific_affinity) {
-          for (integer i_t = 0; i_t < actual_th_aff.size(); i_t++) {
+          for (size i_t = 0; i_t < actual_th_aff.size(); i_t++) {
             auto const &entry = actual_th_aff[i_t];
             message << "\n\tthread " << i_t << " core affinity: ";
             if (entry.size() > 0) {
               message << "[";
-              for (integer i_aff = 0; i_aff < entry.size(); i_aff++) {
+              for (size i_aff = 0; i_aff < entry.size(); i_aff++) {
                 message << entry[i_aff];
                 if (i_aff != (entry.size() - 1)) message << ", ";
               }
@@ -619,7 +619,7 @@ void OcpSolverImpl::setupSolverOnly(GC::GenericContainer const &gc_solver) {
       GC::vector_type const &gc_aff = gc_solver("threads_affinity").get_vector();
       _th_affinity = {};
 
-      for (integer i = 0; i < gc_aff.size(); i++) {
+      for (size_t i = 0; i < gc_aff.size(); i++) {
         _th_affinity.push_back({});
         vector<integer> c_aff;
         if (!findVecIntFromGenericContainer(gc_aff[i], c_aff)) throw runtime_error("");
@@ -746,7 +746,7 @@ void OcpSolverImpl::setupGuessTablesOnly(GC::GenericContainer const &gc_guess_ta
   if (is_one_phase_declared && (!are_all_phases_declared)) {
     std::stringstream err_mess;
     err_mess << "Guess tables are not declared for all phases. Missing phases are: ";
-    for (integer i = 0; i < missing_phases.size(); i++)
+    for (size_t i = 0; i < missing_phases.size(); i++)
       err_mess << missing_phases[i] << " ";
     err_mess << "\n";
     throw runtime_error(err_mess.str());
@@ -814,7 +814,7 @@ void OcpSolverImpl::setupGuessTablesOnly(GC::GenericContainer const &gc_guess_ta
     vector<vector<string>> found_vars_vec;
     std::unique_ptr<OcpSolution> solution = RK1OcpSolution::getFromGuessTablesForOcpProblem(tables, _ocp_problem, found_vars_vec);
     stringstream found_vars;
-    for (integer i = 0; i < found_vars_vec.size(); i++) {
+    for (size_t i = 0; i < found_vars_vec.size(); i++) {
       vector<string> const &vars = found_vars_vec[i];
       found_vars << "\tPhase" << i << ", found guess for: ";
       for (vector<string>::const_iterator it = vars.begin(); it != vars.end(); it++) {
