@@ -1,7 +1,7 @@
 require "readtexttable"
-ground_altitude_profile_x = readtexttable("./../data/ground_altitude_profile_x.txt")
-ground_altitude_profile_y = readtexttable("./../data/ground_altitude_profile_y.txt")
-ground_altitude_profile_z = readtexttable("./../data/ground_altitude_profile_z.txt")
+ground_altitude_profile_x = readtexttable("./../data/ground_altitude_profile_x.csv")
+ground_altitude_profile_y = readtexttable("./../data/ground_altitude_profile_y.csv")
+ground_altitude_profile_z = readtexttable("./../data/ground_altitude_profile_z.csv")
 
 altitude =      {-100, -20, -10, 100, 200, 400, 600, 800, 1e3, 1.2e3, 1.4e3}
 thrust_factor = {1,    1,     1,   1,   1, 0.8, 0.7, 0.6, 0.5, 0.3,   0.2} --exaggerated

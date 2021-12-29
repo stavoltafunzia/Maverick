@@ -1,6 +1,6 @@
 require "readtexttable"
-bryson_aircraft_aero = readtexttable("./../data/bryson_aircraft_aero.txt")
-us19476 = readtexttable("./../data/us1976_atmosphere.txt")
+bryson_aircraft_aero = readtexttable("./../data/bryson_aircraft_aero.csv")
+us19476 = readtexttable("./../data/us1976_atmosphere.csv")
 
 -- bryson aircraft propulsion data
 bac_mach = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8}

@@ -14,17 +14,17 @@ namespace MaverickUtils {
 
   typedef Maverick::real real;
 
-#define SPLINE_AKIMA "Akima"
-#define SPLINE_BESSEL "Bessel"
-#define SPLINE_CONSTANTS "Constants"
-#define SPLINE_CUBIC "Cubic"
-#define SPLINE_LINEAR "Linear"
-#define SPLINE_PCHIP "Pchip"
-#define SPLINE_QUINTIC "Quintic"
+#define SPLINE_AKIMA "akima"
+#define SPLINE_BESSEL "bessel"
+#define SPLINE_CONSTANTS "constants"
+#define SPLINE_CUBIC "cubic"
+#define SPLINE_LINEAR "linear"
+#define SPLINE_PCHIP "pchip"
+#define SPLINE_QUINTIC "quintic"
 
-#define SPLINE_BILINEAR  "Bilinear"
-#define SPLINE_BICUBIC   "Bicubic"
-#define SPLINE_BIQUINTIC "Biquintic"
+#define SPLINE_BILINEAR  "bilinear"
+#define SPLINE_BICUBIC   "bicubic"
+#define SPLINE_BIQUINTIC "biquintic"
 
 }
 

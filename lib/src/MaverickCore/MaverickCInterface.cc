@@ -2,108 +2,64 @@
 #include "MaverickCore/OcpSolverImpl.hh"
 #include "MaverickGC/GenericContainerLuaInterface.hh"
 #include "MaverickCore/MaverickPrivateDefinitions.hh"
+#include "MaverickSplines/Splines.hh"
+#include "MaverickCore/MaverickFunctions.hh"
+#include <iostream>
 
 using namespace Maverick;
+using namespace MaverickUtils;
 using namespace std;
 
-static std::map<int, OcpSolverImpl *> map_solver;
-static std::map<int, GC::GenericContainer *> map_gc;
-static std::map<int, MaverickOcp *> map_ocp;
-static std::map<MaverickOcp *, void *> map_open_lib;
+namespace Maverick {
+  
+  static std::map<MaverickOcp *, void *> map_open_lib;
 
-template<typename T>
-static int getNewIdForMap(std::map<int, T> const &mappa) {
-  if (mappa.empty()) return 1;
+  template<typename T>
+  static maverick_int getNewIdForMap(std::map<int, T> const &mappa) {
+    if (mappa.empty()) return 1;
 
-  int id = 0;
+    maverick_int id = 0;
 
-  int const last_id = mappa.rbegin()->first;
+    maverick_int const last_id = mappa.rbegin()->first;
 
-  for (int i = last_id; i < std::numeric_limits<int>::max(); i++) {
-    if (mappa.find(i) == mappa.end()) {
-      id = i;
-      break;
+    for (maverick_int i = last_id; i < std::numeric_limits<int>::max(); i++) {
+      if (mappa.find(i) == mappa.end()) {
+        id = i;
+        break;
+      }
     }
-  }
 
-  if (id != 0) return id;
+    if (id != 0) return id;
 
-  for (int i = std::numeric_limits<int>::min(); i < last_id; i++) {
-    if (mappa.find(i) == mappa.end()) {
-      id = i;
-      break;
+    for (maverick_int i = std::numeric_limits<int>::min(); i < last_id; i++) {
+      if (mappa.find(i) == mappa.end()) {
+        id = i;
+        break;
+      }
     }
-  }
 
-  return id;
+    return id;
+  }
 }
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-
-/* create a MaverickOcp object loaded from the shared library specified. The object is kept inernally and
- an ID is returned for further use.
- Error codes are:  0  = succsefull
- 1  = shared library not found
- 2  = shared library do not expose the method 'void * getMaverickOcpPointer()'
- -1  = error in creating the object (e.g. not enough available) memory
- */
-int loadMaverickOcpFromLib(char const lib_name[], int *const p_err_code,
-                           char **error) {
-  MaverickOcp *ocp = (MaverickOcp *) getMaverickOcpFromLib(lib_name, p_err_code, error);
-  if (*p_err_code != 0)
-    return 0;
-
-  int id = getNewIdForMap(map_ocp);
-  if (id == 0) {
-    *p_err_code = -1;
-    int tmp;
-    deleteMaverickOcp(ocp, &tmp);
-    return 0;
-  }
-  *p_err_code = -1;
-  map_ocp.insert(std::pair<int, MaverickOcp *>(id, ocp));
-  *p_err_code = 0;
-  return id;
+maverick_int getMaverickCInterfaceVersion() {
+  return 1;
 }
 
-/* delete a MaverickOcp object which has the provided ID
- Error codes are: 0 = succsefull
- 1 = ID not found (object non existing)
- */
-void unloadMaverickOcp(int const maverick_ocp_id, int *const p_err_code) {
-  std::map<int, MaverickOcp *>::iterator it = map_ocp.find(maverick_ocp_id);
-
-  *p_err_code = 0;
-  if (it == map_ocp.end()) {
-    *p_err_code = 1;
-    return;
-  }
-
-  deleteMaverickOcp((void *) it->second, p_err_code);
-  if (*p_err_code == 0)
-    map_ocp.erase(it);
+bool isMaverickCInterfaceCompatibleWithVersion(maverick_int ver) {
+  if (ver == 1)
+    return true;
+  return false;
 }
 
-
-/* create a MaverickOcp object loaded from the shared library specified. The object pointer is returned and
- the management is left to the user
- Error codes are: 0 = succsefull
- 1 = shared library not found
- 2 = shared library do not expose the method 'void * getMaverickOcpPointer()'
- -1 = error in creating the object (e.g. not enough available) memory
- */
-void *getMaverickOcpFromLib(char const lib_name[], int *const p_err_code,
-                            char **error) {
+void * getMaverickOcpFromLib(char const lib_name[], char err_msg_buf[], size_t buf_len) {
   MaverickOcp *p_maverick_ocp = nullptr;
 
   void *lib_handle = nullptr;
   lib_handle = dlopen(lib_name, RTLD_LAZY);
 
   if (lib_handle == nullptr) {
-    *p_err_code = 1;
-    *error = dlerror();
+    strncpy(err_msg_buf, dlerror(), buf_len);
     return nullptr;
   }
 
@@ -113,52 +69,46 @@ void *getMaverickOcpFromLib(char const lib_name[], int *const p_err_code,
 
   p_get_maverick_ocp = (GetMaverickOcp) dlsym(lib_handle, "getMaverickOcpPointer");
 
-  // if sl_handle exist
+  // if p_get_maverick_ocp exist
   if (p_get_maverick_ocp != nullptr) {
     try {
       p_maverick_ocp = p_get_maverick_ocp();
-    } catch (...) {
-      *p_err_code = -1;
+      map_open_lib.insert(std::pair<MaverickOcp *, void *>(p_maverick_ocp, lib_handle));
+    } catch (std::exception &exc) {
+      strncpy(err_msg_buf, exc.what(), buf_len);
       return nullptr;
     }
   } else {
-    *p_err_code = 2;
+    strncpy(err_msg_buf, "The shared library does not have the symbol 'getMaverickOcpPointer'", buf_len);
     return nullptr;
   }
-
-  map_open_lib.insert(std::pair<MaverickOcp *, void *>(p_maverick_ocp, lib_handle));
   return p_maverick_ocp;
 }
 
-/* delete the MaverickOcp object pointed by the pointer
- Error codes are: 0 = succsefull
- 1 = null pointer
- */
-void deleteMaverickOcp(void *const p_maverick_ocp, int *const p_err_code) {
+void deleteMaverickOcp(void *const p_maverick_ocp) {
   MaverickOcp *ocp = (MaverickOcp *) p_maverick_ocp;
-  if (ocp == NULL) {
-    *p_err_code = 1;
-    return;
-  }
   delete ocp;
-  *p_err_code = 0;
 
   // look for opened shared library with that object
-  std::map<MaverickOcp *, void *>::iterator it = map_open_lib.find(ocp);
-  if (it != map_open_lib.end()) { // if the pointer is found
-    void *p_shared_lib = it->second;
-    map_open_lib.erase(it);
-    bool should_close_lib = true;
-    for (std::map<MaverickOcp *, void *>::iterator xx = map_open_lib.begin();
-         xx != map_open_lib.end(); xx++) { // check if we should close the library
-      if (xx->second == p_shared_lib) {
-        should_close_lib = false;
-        break;
+  try {
+    std::map<MaverickOcp *, void *>::iterator it = map_open_lib.find(ocp);
+    if (it != map_open_lib.end()) { // if the pointer is found
+      void *p_shared_lib = it->second;
+      map_open_lib.erase(it);
+      bool should_close_lib = true;
+      for (std::map<MaverickOcp *, void *>::iterator xx = map_open_lib.begin();
+           xx != map_open_lib.end(); xx++) { // check if we should close the library
+        if (xx->second == p_shared_lib) {
+          should_close_lib = false;
+          break;
+        }
+      }
+      if (should_close_lib && (p_shared_lib != nullptr)) {
+        dlclose(p_shared_lib);
       }
     }
-    if (should_close_lib && (p_shared_lib != nullptr)) {
-      dlclose(p_shared_lib);
-    }
+  } catch (...) {
+    cout << "ERROR: Internal error in the Maverick C interface. Kill the application." << endl;
   }
 }
 
@@ -166,344 +116,447 @@ void deleteMaverickOcp(void *const p_maverick_ocp, int *const p_err_code) {
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 // MAVERICK OCP
 
-/* create a MaverickOcpSolver object binded to the MaverickOcp object with the provided ID. Only one solver
- for each MaverickOcp object can exists. The ID to use for furhter usage of the solver is the same of
- the MaverickOcp object.
- Error codes are: 0 = succsefull
- 1 = a Solver for the provided MaverickOcp ID already exists
- 2 = MaverickOcp object not found for the given ID
- -1 = error in creating the object (e.g. not enough available) memory
- */
-int loadMaverickOcpSolver(int maverick_ocp_id, int *const p_err_code) {
-  // check if the MaverickOcp exists
-  std::map<int, MaverickOcp *>::iterator it = map_ocp.find(maverick_ocp_id);
-
-  if (it == map_ocp.end()) {
-    *p_err_code = 2;
-    return 0;
-  }
-
-  // get new ID for the ocp solver
-  int id = getNewIdForMap(map_solver);
-  if (id == 0) {
-    *p_err_code = -1;
-    return 0;
-  }
-
-  // check for duplicate solver
-  for (std::map<int, OcpSolverImpl *>::iterator its = map_solver.begin(); its != map_solver.end(); its++) {
-    MaverickOcp const *tmp = &((its->second)->getOcpProblem());
-    if (tmp == it->second) {
-      *p_err_code = 1;
-      return 0;
-    }
-  }
-
-  // now proceed
-  *p_err_code = -1;
-  OcpSolverImpl *solver = (OcpSolverImpl *) getMaverickOcpSolver(it->second, p_err_code);
-  if (*p_err_code != 0)
-    return 0;
-
-  *p_err_code = -1;
-  map_solver.insert(std::pair<int, OcpSolverImpl *>(id, solver));
-  *p_err_code = 0;
-
-  return id;
-}
-
-/* delete the MaverickOcpSolver object with the provided ID.
- Error codes are: 0 = succsefull
- 1 = ID not found (object non existing)
- */
-void unloadMaverickOcpSolver(int maverick_ocp_id, int *const p_err_code) {
-  std::map<int, OcpSolverImpl *>::iterator it = map_solver.find(maverick_ocp_id);
-
-  if (it == map_solver.end()) {
-    *p_err_code = 1;
-    return;
-  }
-
-  delete it->second;
-  map_solver.erase(it);
-  *p_err_code = 0;
-}
-
-/* create a MaverickOcpSolver object binded to the MaverickOcp object provided.
- The object pointer is returned the management is left to the user.
- Error codes are: 0 = succsefull
- 1 = null MaverickOcp pointer
- -1 = error in creating the object (e.g. not enough available) memory
- */
-void *getMaverickOcpSolver(void *const p_maverick_ocp, int *const p_err_code) {
+void *getMaverickOcpSolver(void *const p_maverick_ocp, char err_msg_buf[], size_t buf_len) {
   // check for NULL pointer
   if (p_maverick_ocp == NULL) {
-    *p_err_code = 1;
-    return NULL;
+    strncpy(err_msg_buf, "p_maverick_ocp is a nullptr", buf_len);
+    return nullptr;
   }
 
   //create the solver
-  *p_err_code = -1;
-  MaverickOcp *ocp = (MaverickOcp *) p_maverick_ocp;
-  OcpSolverImpl *solver = new OcpSolverImpl(*ocp);
-  *p_err_code = 0;
+  OcpSolverImpl *solver = nullptr;
+  try {
+    MaverickOcp *ocp = (MaverickOcp *) p_maverick_ocp;
+    solver = new OcpSolverImpl(*ocp);
+  } catch (std::exception & exc) {
+    strncpy(err_msg_buf, exc.what(), buf_len);
+  }
+
   return (void *) solver;
 }
 
-/* delete the MaverickOcpSolver object with the provided ID.
- Error codes are: 0 = succsefull
- 1 = null pointer
- */
-void deleteMaverickOcpSolver(void *solver, int *const p_err_code) {
+void deleteMaverickOcpSolver(void *solver) {
   OcpSolverImpl *_solver = (OcpSolverImpl *) solver;
-  if (_solver == NULL) {
-    *p_err_code = 1;
-    return;
-  }
   delete _solver;
-  *p_err_code = 0;
 }
 
-/* Search the maverick solver with the ID specified and calls the 'solve' method passing the GenericContainer
- with the provided id. The solution is saved in the output generic container passed through pointer
- Error codes are: 0 = succsefull
- 1 = Solver ID not found
- 2 = input GenericContainer ID not found
- 3 = Error in computing the solution
- 4 = output GenericContainer pointer null
- 5 = error in writing the solution to the output generic container
- */
-void
-solveFromInternalGC(int maverick_id, int input_generic_container_id, int sol_type, void *p_output_generic_container,
-                    int *const p_err_code,
-                    char error[], size_t error_length) {
+maverick_int solveMaverick(void *p_maverick_solver, void *p_input_generic_container, maverick_int sol_type,
+                  void *p_output_generic_container, char err_msg_buf[], size_t buf_len) {
 
-  // check that the generic container exists
-  std::map<int, GC::GenericContainer *>::iterator it = map_gc.find(input_generic_container_id);
-  if (it == map_gc.end()) {
-    *p_err_code = 2;
-    return;
+  if (p_maverick_solver == nullptr) {
+    strncpy(err_msg_buf, "p_maverick_solver is a nullptr", buf_len);
+    return 1;
   }
 
-  solveFromExternalGC(maverick_id, it->second, sol_type, p_output_generic_container,
-                      p_err_code,
-                      error, error_length);
-}
-
-/* Search the maverick solver with the ID specified and calls the 'solve' method passing the GenericContainer
- passed thorugh pointer. The solution is saved in the output generic container passed through pointer.
- Error codes are: 0 = succsefull
- 1 = Solver ID not found
- 2 = input GenericContainer pointer null
- 3 = Error in computing the solution
- 4 = output GenericContainer pointer null
- 5 = error in writing the solution to the output generic container
- */
-void
-solveFromExternalGC(int maverick_id, void *p_input_generic_container, int sol_type, void *p_output_generic_container,
-                    int *const p_err_code,
-                    char error[], size_t error_length) {
-
-  // check if solver exists
-  std::map<int, OcpSolverImpl *>::iterator it = map_solver.find(maverick_id);
-  if (it == map_solver.end()) {
-    *p_err_code = 1;
-    return;
+  if (p_input_generic_container == nullptr) {
+    strncpy(err_msg_buf, "p_input_generic_container is a nullptr", buf_len);
+    return 1;
   }
 
-  // if exists then solve
-  solveFromExternalSolver(it->second, p_input_generic_container, sol_type, p_output_generic_container,
-                          p_err_code,
-                          error, error_length);
-}
-
-/* call the 'solve' method to the solver passed through pointer and pass as argument the GenericContainer
- passed thorugh pointer. The solution is saved in the output generic container passed through pointer.
- Error codes are: 0 = succsefull
- 1 = Solver pointer null
- 2 = input GenericContainer pointer null
- 3 = Error in computing the solution
- 4 = output GenericContainer pointer null
- 5 = error in writing the solution to the output generic container
- */
-void solveFromExternalSolver(void *p_maverick_solver, void *p_input_generic_container, int sol_type,
-                             void *p_output_generic_container,
-                             int *const p_err_code,
-                             char error[], size_t error_length) {
-  if (p_maverick_solver == NULL) {
-    *p_err_code = 1;
-    return;
+  if (p_output_generic_container == nullptr) {
+    strncpy(err_msg_buf, "p_output_generic_container is a nullptr", buf_len);
+    return 1;
   }
 
-  if (p_input_generic_container == NULL) {
-    *p_err_code = 2;
-    return;
-  }
-
-  if (p_output_generic_container == NULL) {
-    *p_err_code = 4;
-    return;
-  }
-
-  OcpSolverOutput out;
   // solve
   try {
-    out = ((MaverickOcpSolver *) p_maverick_solver)->solve(*((GC::GenericContainer *) p_input_generic_container));
+    auto out = ((MaverickOcpSolver *) p_maverick_solver)->solve(*((GC::GenericContainer *) p_input_generic_container));
+    ((GC::GenericContainer *) p_output_generic_container)->clear();
+    if (sol_type == 0)
+      out.writeContentToGC(*((GC::GenericContainer *) p_output_generic_container), nullptr);
+    else
+      out.writeContentToGC(*((GC::GenericContainer *) p_output_generic_container),
+                           &(((MaverickOcpSolver *) p_maverick_solver)->getOcpProblem()));
   } catch (std::exception &exc) {
-    std::string mess = exc.what();
-    std::strcpy(error, mess.substr(0, error_length - 1).c_str());
-    *p_err_code = 3;
-    return;
+    std::strncpy(err_msg_buf, exc.what(), buf_len);
+    return 1;
   }
-
-  ((GC::GenericContainer *) p_output_generic_container)->clear();
-
-  if (sol_type == 0)
-    out.writeContentToGC(*((GC::GenericContainer *) p_output_generic_container), nullptr);
-  else
-    out.writeContentToGC(*((GC::GenericContainer *) p_output_generic_container),
-                         &(((MaverickOcpSolver *) p_maverick_solver)->getOcpProblem()));
+  return 0;
 }
-
-
-
-
 
 //|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 // GENERIC CONTAINER
 
-/* create a GenericContainer object and inflate it with the specified global variable
- form the specified lua file. The object is kept inernally and an ID is returned for further use.
- Error codes are:  0  = succsefull
- 1  = error inflating lua
- 2  = error converting lua to gc
- -1  = error in creating the object (e.g. not enough available) memory
- */
-int loadGenericContainerFromLua(char const lua_name[], char const lua_global_var[],
-                                int print_content,
-                                int *const p_err_code,
-                                char error[], size_t error_length) {
-  GC::GenericContainer *gc = (GC::GenericContainer *) getGenericContainerFromLua(lua_name, lua_global_var,
-                                                                                 p_err_code,
-                                                                                 error, error_length);
-  if (*p_err_code != 0)
-    return 0;
+maverick_int fillGenericContainerFromLua(void const * p_generic_container,
+                                         char const lua_file[], char const lua_global_var[],
+                                         char err_msg_buf[], size_t buf_len) {
 
-  int id = getNewIdForMap(map_gc);
-  if (id == 0) {
-    *p_err_code = -1;
-    return 0;
+  if (p_generic_container == nullptr) {
+    strncpy(err_msg_buf, "p_generic_container is nullptr", buf_len);
+    return 1;
   }
 
-  *p_err_code = -1;
-  map_gc.insert(std::pair<int, GC::GenericContainer *>(id, gc));
-  *p_err_code = 0;
-
-  if (print_content)
-    gc->print(std::cout);
-
-  return id;
-}
-
-/* delete a GenericContainer object which has the provided ID.
- Error codes are: 0 = succsefull
- 1 = ID not found (object non existing)
- */
-void unloadGenericContainer(int const generic_container_id, int *const p_err_code) {
-  std::map<int, GC::GenericContainer *>::iterator it = map_gc.find(generic_container_id);
-
-  if (it == map_gc.end()) {
-    *p_err_code = 1;
-    return;
-  }
-
-  delete it->second;
-  map_gc.erase(it);
-  *p_err_code = 0;
-}
-
-/* create a GenericContainer object and inflate it with the specified global variable
- form the specified lua file. The object pointer is returned and the management is left
- to the user
- Error codes are: 0 = succsefull
- 1  = error inflating lua
- 2  = error converting lua to gc
- -1  = error in creating the object (e.g. not enough available) memory
- */
-void *getGenericContainerFromLua(char const lua_name[], char const lua_global_var[],
-                                 int *const p_err_code,
-                                 char error[], size_t error_length) {
-
-  *p_err_code = -1;
-  GC::GenericContainer *gc = nullptr;
-  gc = new GC::GenericContainer();
-  if (gc == nullptr)
-    return NULL;
-
-  fillGenericContainerFromLua((void *) gc, lua_name, lua_global_var,
-                              p_err_code,
-                              error, error_length);
-
-  if (*p_err_code != 0)
-    return NULL;
-
-  return (void *) gc;
-}
-
-/* delete the GenericContainer object pointed by the pointer
- Error codes are: 0 = succsefull
- 1 = null pointer
- */
-void deleteGenericContainer(void *const p_generic_container, int *const p_err_code) {
-  GC::GenericContainer *gc = (GC::GenericContainer *) p_generic_container;
-  if (gc == NULL) {
-    *p_err_code = 1;
-    return;
-  }
-  delete gc;
-  *p_err_code = 0;
-}
-
-/* fill a generic container reading data from a lua file.
-Error codes are: 0 = succsefull
-                 1  = error inflating lua
-                 2  = error converting lua to gc
-                 3  = null generic container pointer
-*/
-void fillGenericContainerFromLua(void *const p_generic_container,
-                                 char const lua_file[], char const lua_global_var[],
-                                 int *const p_err_code,
-                                 char error[], size_t error_length) {
-
-  if (p_generic_container == NULL) {
-    *p_err_code = 3;
-    return;
-  }
-
-  GC::LuaInterpreter lua;
   try {
+    GC::LuaInterpreter lua;
     lua.do_file(lua_file);
-  } catch (std::exception &exc) {
-    std::string mess = exc.what();
-    std::strcpy(error, mess.substr(0, error_length - 1).c_str());
-    *p_err_code = 1;
-    return;
-  }
-
-  try {
     lua.global_to_GC(lua_global_var, *((GC::GenericContainer *) p_generic_container));
   } catch (std::exception &exc) {
-    std::string mess = exc.what();
-    std::strcpy(error, mess.substr(0, error_length - 1).c_str());
-    *p_err_code = 2;
-    return;
+    strncpy(err_msg_buf, exc.what(), buf_len);
+    return 1;
   }
 
-  *p_err_code = 0;
+  return 0;
 }
 
+// SPLINES
 
+void * create1DSpline(char const spline_type[], size_t n, maverick_real const * x, maverick_real const * y,
+  bool check_range, char error_msg[], size_t msg_len) {
 
-//#ifdef __cplusplus
-//}
-//#endif
+  Splines::Spline * spline = nullptr;
+
+  try {
+    string spline_type_str(spline_type);
+    if (compareStringIgnoreCase(spline_type_str, string(SPLINE_BESSEL))) spline = new Splines::BesselSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_AKIMA)) spline = new Splines::AkimaSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_CUBIC)) spline = new Splines::CubicSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_QUINTIC)) spline = new Splines::QuinticSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_CONSTANTS)) spline = new Splines::ConstantSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_LINEAR)) spline = new Splines::LinearSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_PCHIP)) spline = new Splines::PchipSpline();
+    else {
+      std::string mess = "unable to initialize spline. Requested spline of type " + spline_type_str +
+          " which is not available. Available types are: " + SPLINE_AKIMA + ", "
+          + SPLINE_BESSEL + ", " + SPLINE_CONSTANTS + ", " + SPLINE_CUBIC + ", " + SPLINE_PCHIP +
+          ", " + SPLINE_QUINTIC + ".\n";
+      strncpy(error_msg, mess.c_str(), msg_len);
+      return nullptr;
+    }
+    spline->reserve(n);
+
+    for (size_t i = 0; i < n; ++i) // add provided points
+      spline->pushBack(x[i], y[i]);
+
+    spline->build();
+
+    spline->setCheckRange(check_range);
+
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), msg_len);
+    return nullptr;
+  }
+
+  return (void*) spline;
+}
+
+void delete1DSpline(void * p_spline) {
+  auto spline = (Splines::Spline *) p_spline;
+  delete spline;
+}
+
+maverick_int eval1DSpline(void * spline_ptr, maverick_real x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    *out = spline->eval(x);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval1DSplineD(void * spline_ptr, maverick_real x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    *out = spline->eval_D(x);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval1DSplineDD(void * spline_ptr, maverick_real x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    *out = spline->eval_DD(x);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval1DSplineVec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval(x[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval1DSplineDVec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D(x[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval1DSplineDDVec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::Spline * spline = (Splines::Spline *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_DD(x[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+size_t getSpline1DSize(void * p_spline, char error_msg[], size_t err_msg_len) {
+  auto spline = (Splines::Spline *) p_spline;
+  try {
+    return spline->numPoints();
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+  }
+  return 0;
+}
+
+maverick_int getSpline1DPoints(void * p_spline, size_t n, maverick_real * x, maverick_real * y, char error_msg[], size_t err_msg_len) {
+  auto spline = (Splines::Spline *) p_spline;
+  try {
+    if (n != spline->numPoints()) {
+      strncpy(error_msg, "Wrong size", err_msg_len);
+      return 1;
+    }
+    for (size_t i=0; i<n; i++) {
+      x[i] = spline->xNode(i);
+      y[i] = spline->yNode(i);
+    }
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+void *create2DSpline(char const spline_type[], size_t nx, maverick_real const * x, size_t ny, maverick_real const * y,
+                     maverick_real const * z, bool check_range, bool fortran_order, bool transposed, char error_msg[], size_t msg_len) {
+
+  Splines::SplineSurf * spline = nullptr;
+
+  try {
+    string spline_type_str(spline_type);
+    if (compareStringIgnoreCase(spline_type_str, string(SPLINE_BILINEAR))) spline = new Splines::BilinearSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_BICUBIC)) spline = new Splines::BiCubicSpline();
+    else if (compareStringIgnoreCase(spline_type_str, SPLINE_BIQUINTIC)) spline = new Splines::BiQuinticSpline();
+    else {
+      std::string mess = "unable to initialize spline. Requested spline of type " + spline_type_str +
+                         " which is not available. Available types are: " + SPLINE_BILINEAR + ", "
+                         + SPLINE_BICUBIC + ", " + SPLINE_BIQUINTIC + ".\n";
+      strncpy(error_msg, mess.c_str(), msg_len);
+      return nullptr;
+    }
+
+    auto x_vec = vec_1d_real(nx);
+    auto y_vec = vec_1d_real(ny);
+    auto z_vec = vec_1d_real(nx * ny);
+    spline->build(x, 1, y, 1, z, 1, nx, ny, fortran_order, transposed);
+    spline->setCheckRange(check_range);
+
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), msg_len);
+    return nullptr;
+  }
+
+  return (void*) spline;
+}
+
+maverick_int eval2DSpline(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD1(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval_D_1(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD2(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval_D_2(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD11(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval_D_1_1(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD22(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval_D_2_2(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD12(void * spline_ptr, maverick_real x, maverick_real y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    *out = spline->eval_D_1_2(x, y);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineVec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD1Vec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D_1(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD2Vec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D_2(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD11Vec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D_1_1(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD22Vec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D_2_2(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+maverick_int eval2DSplineD12Vec(void * spline_ptr, size_t n, maverick_real const * x, maverick_real const * y, maverick_real * out, char error_msg[], size_t err_msg_len) {
+  try {
+    Splines::SplineSurf * spline = (Splines::SplineSurf *) spline_ptr;
+    for (size_t i=0; i<n; i++)
+      out[i] = spline->eval_D_1_2(x[i], y[i]);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}
+
+void delete2DSpline(void * p_spline) {
+  auto spline = (Splines::SplineSurf *) p_spline;
+  delete spline;
+}
+
+size_t getSpline2DSizeX(void * p_spline, char error_msg[], size_t err_msg_len) {
+  auto spline = (Splines::SplineSurf *) p_spline;
+  try {
+    return spline->numPointX();
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+  }
+  return 0;
+}
+
+size_t getSpline2DSizeY(void * p_spline, char error_msg[], size_t err_msg_len) {
+  auto spline = (Splines::SplineSurf *) p_spline;
+  try {
+    return spline->numPointY();
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+  }
+  return 0;
+}
+
+maverick_int getSpline2DPoints(void * p_spline, size_t nx, maverick_real * x, size_t ny, maverick_real * y, maverick_real * z, char error_msg[], size_t err_msg_len) {
+  auto spline = (Splines::SplineSurf *) p_spline;
+  try {
+    if (nx != spline->numPointX()) {
+      strncpy(error_msg, "Wrong size X", err_msg_len);
+      return 1;
+    }
+    if (ny != spline->numPointY()) {
+      strncpy(error_msg, "Wrong size Y", err_msg_len);
+      return 1;
+    }
+    for (size_t i=0; i<nx; i++)
+      x[i] = spline->xNode(i);
+    for (size_t i=0; i<ny; i++)
+      y[i] = spline->yNode(i);
+    for (size_t i=0; i<nx; i++)
+      for (size_t j=0; j<ny; j++)
+        z[i * ny + j] = spline->zNode(i, j);
+  } catch (std::exception & exc) {
+    strncpy(error_msg, exc.what(), err_msg_len);
+    return 1;
+  }
+  return 0;
+}

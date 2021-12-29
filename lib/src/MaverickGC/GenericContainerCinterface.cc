@@ -260,6 +260,14 @@ GC_set_string( char const a[] ) {
   return GENERIC_CONTAINER_OK ;
 }
 
+EXTERN_C
+int
+GC_set_void_pointer(void * ptr) {
+  if ( gc_active == nullptr ) return GENERIC_CONTAINER_BAD_HEAD ;
+  GC_TRY( gc_active -> top() -> set_pointer(ptr) ) ;
+  return GENERIC_CONTAINER_OK ;
+}
+
 //..............................................................................
 
 EXTERN_C
@@ -321,6 +329,13 @@ char const *
 GC_get_string( ) {
   if ( gc_active == nullptr ) return 0 ;
   return gc_active -> top() -> get_string() . c_str() ;
+}
+
+EXTERN_C
+void *
+GC_get_void_pointer() {
+  if ( gc_active == nullptr ) return 0 ;
+  return gc_active -> top() -> get_pvoid();
 }
 
 //..............................................................................

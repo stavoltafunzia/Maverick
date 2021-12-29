@@ -14,7 +14,7 @@ endif
 
 #install directory
 ifeq ($(INSTALL_PATH),)
-	INSTALL_PATH := /usr/local/maverick
+	INSTALL_PATH := /opt/maverick
 endif
 
 #release or debug version
@@ -313,6 +313,7 @@ clean_lua:
 	cp src/MaverickCore/Maverick.hh include/MaverickCore/
 	cp src/MaverickCore/MaverickCInterface.h include/MaverickCore/
 	cp src/MaverickCore/MaverickDefinitions.hh include/MaverickCore/
+	cp src/MaverickCore/MaverickCDefinitions.h include/MaverickCore/
 	cp src/MaverickCore/MaverickOcp.hh include/MaverickCore/
 	cp src/MaverickCore/MaverickOcpSolver.hh include/MaverickCore/
 	cp src/MaverickCore/MeshSinglePhase.hh include/MaverickCore/

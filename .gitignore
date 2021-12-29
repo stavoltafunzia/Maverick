@@ -31,6 +31,7 @@ syntax: glob
 *.m~
 *.macosx
 *.unix
+*.out
 
 #core
 lib/build/*
@@ -52,3 +53,17 @@ lib/CMake*
 
 #test
 core/test/*
+
+#Vscode
+.vscode/*
+
+#Jupyter
+.ipynb_checkpoints
+
+#Jetbrains
+.idea
+
+#python
+build
+*.pyc
+*.egg-info

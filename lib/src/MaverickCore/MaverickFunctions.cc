@@ -386,4 +386,15 @@ namespace Maverick {
       out[i] = vec1[i] * (1 - weight12) + vec2[i] * weight12;
   }
 
+  bool compareStringIgnoreCase(std::string const& a, std::string const& b)
+  {
+      if (a.length()==b.length()) {
+          return std::equal(b.begin(), b.end(),
+                            a.begin(), icompare_pred);
+      }
+      else {
+          return false;
+      }
+  }
+
 }

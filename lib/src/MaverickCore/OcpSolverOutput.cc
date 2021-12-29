@@ -1,7 +1,6 @@
 #include "OcpSolverOutput.hh"
 #include "MaverickFunctions.hh"
 #include "MaverickCore/OcpSolverImpl.hh"
-#include "MaverickCore/MaverickPrivateDefinitions.hh"
 
 using namespace Maverick;
 using namespace std;
@@ -62,8 +61,8 @@ integer OcpSolverOutput::getTotalIterations() const {
 }
 
 // get sum of all cpu msec
-u_long_integer OcpSolverOutput::getTotalCalculationMs() const {
-  u_long_integer out = 0;
+unsigned long OcpSolverOutput::getTotalCalculationMs() const {
+  unsigned long out = 0;
   for (std::vector<SingleIterationOutput>::const_iterator it = _history.begin();
        it != _history.end(); it++) {
     out += it->calculation_ms;

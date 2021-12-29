@@ -1,5 +1,5 @@
 require "readtexttable"
-road_table = readtexttable("./../data/Adria2D.txt")
+road_table = readtexttable("./../data/Adria2D.csv")
 
 mp = {
     g = 9.81,

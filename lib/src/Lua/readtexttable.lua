@@ -8,7 +8,7 @@ function readtexttable(filename)
         print("Lua: reading table " .. filename .. " ...")
         -- io.write("Lua: reading table " .. filename .. " ...")
         csv = require "csv"
-        local f = csv.open(filename,{separator=" ", header=true})
+        local f = csv.open(filename,{separator=",", header=true})
 
         first_line=false;
         content = {}

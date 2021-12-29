@@ -48,14 +48,20 @@ void GF1ASpline::setup(GC::GenericContainer const &gc) {
     _extend_range = keep_derivative;
   } else if (extend_range_str.compare("none") == 0) {
     _extend_range = none;
+  } else {
+    throw runtime_error(string("Unrecognized 'extend_range' value: ") + extend_range_str);
   }
 
   setup(requested_type, x_data, y_data, _extend_range);
 }
 
-void
-GF1ASpline::setup(std::string const &spine_type, vec_1d_real const &x, vec_1d_real const &y, ExtendRange extend_range) {
+void GF1ASpline::setup(std::string const & spine_type, vec_1d_real const &x, vec_1d_real const &y, ExtendRange extend_range) {
+  auto nx = x.size();
+  auto ny = y.size();
 
+  MAVERICK_ASSERT(nx == ny, "GF1ASpline::setup: x and y vector data have different size.\n")
+  MAVERICK_ASSERT(nx > 1, "GF1ASpline::setup: x and y vector must have size greater than 1.\n")
+  
   _extend_range = extend_range;
 
   if (!_has_done_base_setup) {
@@ -67,16 +73,16 @@ GF1ASpline::setup(std::string const &spine_type, vec_1d_real const &x, vec_1d_re
   if (_p_spline != nullptr)
     delete _p_spline;
 
-  if (spine_type.compare(SPLINE_BESSEL) == 0) _p_spline = new BesselSpline();
-  else if (spine_type.compare(SPLINE_AKIMA) == 0) _p_spline = new AkimaSpline();
-  else if (spine_type.compare(SPLINE_CUBIC) == 0) _p_spline = new CubicSpline();
-  else if (spine_type.compare(SPLINE_QUINTIC) == 0) _p_spline = new QuinticSpline();
-  else if (spine_type.compare(SPLINE_CONSTANTS) == 0) _p_spline = new ConstantSpline();
-  else if (spine_type.compare(SPLINE_LINEAR) == 0) _p_spline = new LinearSpline();
-  else if (spine_type.compare(SPLINE_PCHIP) == 0) _p_spline = new PchipSpline();
+  if (compareStringIgnoreCase(spine_type, SPLINE_BESSEL)) _p_spline = new BesselSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_AKIMA)) _p_spline = new AkimaSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_CUBIC)) _p_spline = new CubicSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_QUINTIC)) _p_spline = new QuinticSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_CONSTANTS)) _p_spline = new ConstantSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_LINEAR)) _p_spline = new LinearSpline();
+  else if (compareStringIgnoreCase(spine_type, SPLINE_PCHIP)) _p_spline = new PchipSpline();
   else {
     std::string error_mess = "unable to initialize spline. Requested spline of type " + spine_type +
-                             " which is not available. Availables types are: " + SPLINE_AKIMA + ", "
+                             " which is not available. Available types are: " + SPLINE_AKIMA + ", "
                              + SPLINE_BESSEL + ", " + SPLINE_CONSTANTS + ", " + SPLINE_CUBIC + ", " + SPLINE_PCHIP +
                              ", " + SPLINE_QUINTIC + ".\n";
     std::runtime_error exc(error_mess);
@@ -84,29 +90,29 @@ GF1ASpline::setup(std::string const &spine_type, vec_1d_real const &x, vec_1d_re
   }
   _spline_type = spine_type;
 
-  size nx = x.size();
-  size ny = y.size();
-
-  MAVERICK_ASSERT(nx == ny, "GF1ASpline::setup: x and y vector data have different size.\n")
-  MAVERICK_ASSERT(nx > 1, "GF1ASpline::setup: x and y vector must have size greater than 1.\n")
-
   _p_spline->clear();
 
-  vec_1d_real new_x = elongateVector(x, true); // the domain varaible cannot contain duplicate values
-  vec_1d_real new_y;
+  vec_1d_real tmp_x, tmp_y;
+  vec_1d_real const * x_ptr, * y_ptr;;
   if (extend_range == keep_derivative) { //add extra initial point to preserve derivative at borders
-    new_y = elongateVector(y, true);
+    elongateVector(x, true, tmp_x); // the domain variable cannot contain duplicate values
+    elongateVector(y, true, tmp_y);
+    x_ptr = &tmp_x;
+    y_ptr = &tmp_y;
   } else if (extend_range == keep_value) { //add extra initial point to preserve value at borders
-    new_y = elongateVector(y, false);
+    elongateVector(x, true, tmp_x); // the domain variable cannot contain duplicate values
+    elongateVector(y, false, tmp_y);
+    x_ptr = &tmp_x;
+    y_ptr = &tmp_y;
   } else {
-    new_x = x;
-    new_y = y;
+    x_ptr = &x;
+    y_ptr = &y;
   }
 
-  _p_spline->reserve(new_x.size());
+  _p_spline->reserve(x_ptr->size());
 
-  for (size_t i = 0; i < new_x.size(); ++i) // add provided points
-    _p_spline->pushBack(new_x[i], new_y[i]);
+  for (size_t i = 0; i < x_ptr->size(); ++i) // add provided points
+    _p_spline->pushBack(x_ptr->operator[](i), y_ptr->operator[](i));
 
   _p_spline->build();
 

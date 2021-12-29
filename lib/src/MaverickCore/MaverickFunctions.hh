@@ -61,11 +61,17 @@ namespace Maverick {
 
   //TODO write in a way that makes less memeory copy
   template<typename T>
-  std::vector<T> elongateVector(std::vector<T> const &input_vector, bool const preserve_derivative) {
-    if (input_vector.size() == 0) return {};
-    if (input_vector.size() == 1) return std::vector<T>(3, input_vector[0]);
+  void elongateVector(std::vector<T> const &input_vector, bool const preserve_derivative, std::vector<T> & out) {
+    out.clear();
+    if (input_vector.size() == 0) return;
+    if (input_vector.size() == 1) {
+      out.reserve(3);
+      for (auto i=0; i<3; i++)
+        out.push_back(input_vector[0]);
+      return; 
+    }
 
-    std::vector<T> out;
+    out.reserve(input_vector.size() + 2);
     if (preserve_derivative) {
       out.push_back(input_vector[0] - (input_vector[1] - input_vector[0]));
       concatenateVectors(out, input_vector);
@@ -75,6 +81,13 @@ namespace Maverick {
       concatenateVectors(out, input_vector);
       out.push_back(input_vector.back());
     }
+
+  }
+
+  template<typename T>
+  std::vector<T> elongateVector(std::vector<T> const &input_vector, bool const preserve_derivative) {
+    std::vector<T> out;
+    elongateVector(input_vector, preserve_derivative, out);
     return out;
   }
 
@@ -171,6 +184,10 @@ namespace Maverick {
     }
     return true;
   }
+
+  inline bool icompare_pred(unsigned char a, unsigned char b) { return std::tolower(a) == std::tolower(b); }
+
+  bool compareStringIgnoreCase(std::string const& a, std::string const& b);
 
 }
 

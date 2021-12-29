@@ -23,7 +23,8 @@ namespace MaverickUtils {
 
     void setup(GC::GenericContainer const &gc);
 
-    void setup(std::string const &spine_type, vec_1d_real const &x1, vec_1d_real const &x2, vec_1d_real const &y);
+    void setup(std::string const &spine_type, vec_1d_real const &x1, vec_1d_real const &x2, vec_1d_real const &y,
+               bool check_range, bool fortran_order, bool transposed);
 
     void printParametersInfo(std::ostream &out) const;
 
@@ -45,7 +46,7 @@ namespace MaverickUtils {
 
     std::string _spline_type = "";
 
-    bool _fortran_storage = false;
+    bool _fortran_order = false;
     bool _transposed = false;
     bool _check_range = false;
 

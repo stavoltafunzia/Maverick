@@ -13,28 +13,27 @@
 #include <map>
 #include <sstream>
 #include <vector>
+#include "MaverickCore/MaverickCDefinitions.h"
 
 #define MAVERICK_RESTRICT
 
 namespace Maverick {
 
-  typedef double real;
-  typedef int integer;
-  typedef int64_t long_integer;
-  typedef unsigned int u_integer;
-  typedef uint64_t u_long_integer;
-  typedef std::size_t size;
-  typedef std::map<std::string, std::vector<real>> real_table;
+  using real = maverick_real;
+  using integer = maverick_int;
+  using u_integer = unsigned int;
+  using size = std::size_t;
+  using real_table = std::map<std::string, std::vector<real>>;
 
-  typedef std::vector<real> vec_1d_real;
-  typedef std::vector<std::vector<real>> vec_2d_real;
-  typedef std::vector<std::vector<std::vector<real>>> vec_3d_real;
+  using vec_1d_real = std::vector<real>;
+  using vec_2d_real = std::vector<std::vector<real>> ;
+  using vec_3d_real = std::vector<std::vector<std::vector<real>>>;
 
-  typedef std::vector<integer> vec_1d_integer;
-  typedef std::vector<bool> vec_1d_bool;
+  using vec_1d_integer = std::vector<integer>;
+  using vec_1d_bool = std::vector<bool>;
 
-  typedef std::vector<u_integer> single_thread_affinity;
-  typedef std::vector<single_thread_affinity> threads_affinity;
+  using single_thread_affinity = std::vector<u_integer>;
+  using threads_affinity = std::vector<single_thread_affinity>;
 
   enum InfoLevel {
     info_level_none = 0,

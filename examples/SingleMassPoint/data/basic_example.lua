@@ -1,6 +1,6 @@
 -- Dati test N1.
 require "readtexttable"
-road_table = readtexttable("./../data/Adria2D.txt")
+road_table = readtexttable("./../data/Adria2D.csv")
 
 Data = {
 

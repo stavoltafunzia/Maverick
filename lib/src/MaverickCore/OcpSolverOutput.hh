@@ -37,7 +37,7 @@ namespace Maverick {
 
       integer iterations = 0;
 
-      u_long_integer calculation_ms = 0;
+      unsigned long calculation_ms = 0;
 
       SingleIterationOutput &operator=(SingleIterationOutput const &);
 
@@ -54,7 +54,7 @@ namespace Maverick {
     integer getTotalIterations() const;
 
     // get sum of all calculation milliseconds
-    u_long_integer getTotalCalculationMs() const;
+    unsigned long getTotalCalculationMs() const;
 
     // get history count
     integer getHistoryLength() const;

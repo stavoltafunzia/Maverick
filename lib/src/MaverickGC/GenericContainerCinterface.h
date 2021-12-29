@@ -111,6 +111,9 @@ int GENERIC_CONTAINER_API_DLL GC_set_complex2( double const re, double const im 
 /*! Set actual pointed element of `GenericContainer` to `string` with value `a` */
 int GENERIC_CONTAINER_API_DLL GC_set_string( char const a[] ) ;
 
+/*! Set actual pointed element of `GenericContainer` to a 'pointer' type with value 'ptr' */
+int GENERIC_CONTAINER_API_DLL GC_set_void_pointer(void * ptr) ;
+
 // -----------------------------------------------------------------------------
 
 /*! Get actual pointed element of `GenericContainer` of type `bool` */
@@ -136,6 +139,9 @@ double GENERIC_CONTAINER_API_DLL GC_get_complex_im() ;
 
 /*! Get actual pointed element of `GenericContainer` of type `string` */
 char const * GENERIC_CONTAINER_API_DLL GC_get_string() ;
+
+/*! Get actual pointed element of `GenericContainer` of type `pointer` */
+void * GENERIC_CONTAINER_API_DLL GC_get_void_pointer() ;
 
 // -----------------------------------------------------------------------------
 

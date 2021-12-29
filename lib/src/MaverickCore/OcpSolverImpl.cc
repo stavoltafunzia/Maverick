@@ -147,7 +147,7 @@ OcpSolverOutput OcpSolverImpl::solve() {
       single_it_output.mesh = _p_mesh->copy();
       single_it_output.unscaled_target = _ocp_solution->getTarget();
       single_it_output.iterations = nlp_output.num_iterations;
-      single_it_output.calculation_ms = u_long_integer(time_span.count() * 1000);
+      single_it_output.calculation_ms = (unsigned long) (time_span.count() * 1000);
 
       solver_output.append(single_it_output, *_ocp_solution);
     }
