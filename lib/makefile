@@ -4,7 +4,6 @@ OS := $(shell uname)
 LIBNAME := libmaverick
 LIBNAMEIP := libmavericktoip
 LIBNAMETS := libmaverickts
-PYTHONLIBNAME := maverick
 
 ifeq ($(OS),Darwin) # OsX
 	PLATFORM_SUFFIX := macosx
@@ -39,11 +38,6 @@ endif
 ifeq ($(THISLUA),true)
 	LUA_INCLUDE := -Isrc/Lua/src
 	LUA_LIB := -Lsrc/Lua/src -llua_$(PLATFORM_SUFFIX)
-endif
-
-#default python command: python3
-ifeq ($(PYTHON3),)
-	PYTHON=python3
 endif
 
 #optimisation flags
@@ -129,8 +123,6 @@ MAVERICK_UTILS_SRC_FILES = $(shell find $(MAVERICK_UTILS_PATH) -name '*.cc')
 MAVERICK_UTILS_SRC = $(MAVERICK_UTILS_SRC_FILES:$(MAVERICK_UTILS_PATH)/%=%)
 MAVERICK_UTILS_OBJS = ${MAVERICK_UTILS_SRC:.cc=.o}
 MAVERICK_UTILS_OBJS_FILES = ${MAVERICK_UTILS_OBJS:%=$(MAVERICK_UTILS_PATH)/%}
-
-MAVERICK_PYTHON_PATH = ./src/MaverickPython
 
 ifeq ($(OS),Darwin) # OsX
 	BLAS_LIB := -framework Accelerate
@@ -218,9 +210,6 @@ splines: @(MAVERICK_SPLINES)
 utils: @(MAVERICK_UTILS)
 	@echo Maverick utils compiled
 
-python: @(MAVERICK_PYTHON)
-	@echo Maverick python compiled
-
 install:
 	rm -R -f "$(INSTALL_PATH)/lib"
 	test -d "$(INSTALL_PATH)/lib" || mkdir -p "$(INSTALL_PATH)/lib"
@@ -237,15 +226,9 @@ install:
 	cp -R ./src/Lua/*.lua $(INSTALL_PATH)/lua/
 	@echo Maverick lib succesfully installed
 
-install_python:
-	rm -R -f "$(INSTALL_PATH)/python"
-	test -d "$(INSTALL_PATH)/python" || mkdir -p "$(INSTALL_PATH)/python"
-	cp ./build/$(PYTHONLIBNAME).so $(INSTALL_PATH)/python/
-	@echo Maverick python lib succesfully installed
-
 ### CLEANS
 
-clean: clean_core clean_ipopt clean_tensolve clean_gc clean_splines clean_utils clean_python clean_lua
+clean: clean_core clean_ipopt clean_tensolve clean_gc clean_splines clean_utils clean_lua
 
 clean_core:
 	rm -f $(MAVERICK_CORE_OBJS_FILES)
@@ -282,12 +265,6 @@ clean_utils:
 	rm -f build/libmaverickutils.a
 	rm -f include/MaverickUtils/ComponentBase/*.hh
 	rm -f include/MaverickUtils/GenericFunction/*.hh
-
-clean_python:
-	rm -f $(MAVERICK_PYTHON_PATH)/*.so
-	rm -f $(MAVERICK_PYTHON_PATH)/*.o
-	rm -f build/$(PYTHONLIBNAME).so
-	rm -f -R $(MAVERICK_PYTHON_PATH)/build
 
 clean_lua:
 	rm -f src/Lua/src/*.o
@@ -372,14 +349,6 @@ clean_lua:
 	cp src/MaverickUtils/GenericFunction/GenericFunction2ABase.hh include/MaverickUtils/GenericFunction/
 	cp src/MaverickUtils/GenericFunction/GenericFunction2AFormulasInterface.hh include/MaverickUtils/GenericFunction/
 	cp src/MaverickUtils/GenericFunction/GenericFunction2AInterface.hh include/MaverickUtils/GenericFunction/
-
-@(MAVERICK_PYTHON):
-	rm -f $(MAVERICK_PYTHON_PATH)/*.so
-	rm -f $(MAVERICK_PYTHON_PATH)/*.o
-	rm -f build/$(PYTHONLIBNAME).so
-	rm -f -R $(MAVERICK_PYTHON_PATH)/build
-	cd $(MAVERICK_PYTHON_PATH); $(PYTHON) setup_maverick.py build_ext --inplace
-	cp $(MAVERICK_PYTHON_PATH)/*.so build/$(PYTHONLIBNAME).so
 
 ifeq ($(THISLUA),true)
 @(LUA):
